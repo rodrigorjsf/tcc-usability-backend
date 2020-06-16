@@ -74,6 +74,7 @@ public class UserResource {
             UsuarioDTO usuarioDTO = UsuarioDTO.builder()
                     .login(usuario.getLogin())
                     .email(usuario.getEmail())
+                    .admin(usuario.getAdmin())
                     .build();
             usuarioDTOS.add(usuarioDTO);
         });
