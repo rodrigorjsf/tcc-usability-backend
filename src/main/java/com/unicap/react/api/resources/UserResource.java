@@ -19,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 @RestController
@@ -51,7 +52,7 @@ public class UserResource {
                     .senha(credenciais.getSenha())
                     .build();
             UserDetails usuarioAutenticado = usuarioService.autenticar(usuario);
-            if (!usuarioAutenticado.getUsername().isEmpty()){
+            if (!usuarioAutenticado.getUsername().isEmpty()) {
                 Usuario user = usuarioRepository.findByLogin(usuarioAutenticado.getUsername())
                         .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado na base de dados."));
                 usuario.setAdmin(user.getAdmin());
@@ -66,7 +67,7 @@ public class UserResource {
     @GetMapping("/list-all")
     public List<UsuarioDTO> listarUsuarios() {
         List<Usuario> usuarioList = usuarioRepository.findAll();
-        if (usuarioList.isEmpty()){
+        if (usuarioList.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT);
         }
         List<UsuarioDTO> usuarioDTOS = new ArrayList<>();
@@ -74,7 +75,7 @@ public class UserResource {
             UsuarioDTO usuarioDTO = UsuarioDTO.builder()
                     .login(usuario.getLogin())
                     .email(usuario.getEmail())
-                    .admin(usuario.getAdmin())
+                    .admin(Objects.isNull(usuario.getAdmin()) ? false : usuario.getAdmin())
                     .build();
             usuarioDTOS.add(usuarioDTO);
         });
