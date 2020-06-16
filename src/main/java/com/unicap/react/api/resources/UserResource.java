@@ -4,6 +4,7 @@ import com.unicap.react.api.exception.SenhaInvalidaException;
 import com.unicap.react.api.models.Usuario;
 import com.unicap.react.api.models.dto.CredenciaisDTO;
 import com.unicap.react.api.models.dto.TokenDTO;
+import com.unicap.react.api.models.dto.UsuarioDTO;
 import com.unicap.react.api.security.jwt.JwtService;
 import com.unicap.react.api.service.UsuarioServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -28,10 +29,14 @@ public class UserResource {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Usuario salvar(@RequestBody @Valid Usuario usuario) {
+    public UsuarioDTO salvar(@RequestBody @Valid Usuario usuario) {
         String senhaCriptografada = passwordEncoder.encode(usuario.getSenha());
         usuario.setSenha(senhaCriptografada);
-        return usuarioService.salvar(usuario);
+        Usuario user = usuarioService.salvar(usuario);
+        return UsuarioDTO.builder()
+                .login(user.getLogin())
+                .email(user.getEmail())
+                .build();
     }
 
     @PostMapping("/auth")
