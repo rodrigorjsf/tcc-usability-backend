@@ -38,9 +38,7 @@ public class UsuarioServiceImpl implements UserDetailsService {
 
     public UserDetails autenticar(Usuario usuario) {
         UserDetails userDetails = loadUserByUsername(usuario.getLogin());
-        System.out.println(userDetails.toString());
         Boolean senhaValida = passwordEncoder.matches(usuario.getSenha(), userDetails.getPassword());
-        System.out.println("senhaValida" + senhaValida);
         if (senhaValida) {
             return userDetails;
         }
@@ -49,7 +47,6 @@ public class UsuarioServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        System.out.println(username);
         Usuario usuario = usuarioRepository.findByLogin(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado na base de dados."));
         usuario.setAdmin(Objects.isNull(usuario.getAdmin()) ? false : usuario.getAdmin());

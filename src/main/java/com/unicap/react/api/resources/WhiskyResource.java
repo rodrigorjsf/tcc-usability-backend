@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/whisky")
+@CrossOrigin(origins = "*")
 public class WhiskyResource {
 
     @Autowired

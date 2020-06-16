@@ -24,6 +24,7 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/user")
+@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class UserResource {
 
@@ -55,11 +56,9 @@ public class UserResource {
                     .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado na base de dados."));
             usuario.setAdmin(Objects.isNull(user.getAdmin()) ? false : user.getAdmin());
             UserDetails usuarioAutenticado = usuarioService.autenticar(usuario);
-            System.out.println(usuario.toString());
             String token = jwtService.gerarToken(usuario);
-            System.out.println(token);
             return new TokenDTO(usuario.getLogin(), token, usuarioAutenticado.getAuthorities());
-        } catch (Exception e) {
+        } catch (UsernameNotFoundException | SenhaInvalidaException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
