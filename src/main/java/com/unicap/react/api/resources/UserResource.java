@@ -55,7 +55,7 @@ public class UserResource {
             if (!usuarioAutenticado.getUsername().isEmpty()) {
                 Usuario user = usuarioRepository.findByLogin(usuarioAutenticado.getUsername())
                         .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado na base de dados."));
-                usuario.setAdmin(user.getAdmin());
+                usuario.setAdmin(Objects.isNull(user.getAdmin()) ? false : user.getAdmin());
             }
             String token = jwtService.gerarToken(usuario);
             return new TokenDTO(usuario.getLogin(), token, usuarioAutenticado.getAuthorities());
@@ -84,7 +84,7 @@ public class UserResource {
                 usuarioDTOS.add(usuarioDTO);
             });
             return usuarioDTOS;
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
