@@ -70,16 +70,23 @@ public class UserResource {
         if (usuarioList.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT);
         }
-        List<UsuarioDTO> usuarioDTOS = new ArrayList<>();
-        usuarioList.stream().forEach(usuario -> {
-            UsuarioDTO usuarioDTO = UsuarioDTO.builder()
-                    .login(usuario.getLogin())
-                    .email(usuario.getEmail())
-                    .admin(Objects.isNull(usuario.getAdmin()) ? false : usuario.getAdmin())
-                    .build();
-            usuarioDTOS.add(usuarioDTO);
-        });
-        return usuarioDTOS;
+        try {
+            List<UsuarioDTO> usuarioDTOS = new ArrayList<>();
+            usuarioList.stream().forEach(usuario -> {
+                if (Objects.isNull(usuario.getAdmin())) {
+                    usuario.setAdmin(false);
+                }
+                UsuarioDTO usuarioDTO = UsuarioDTO.builder()
+                        .login(usuario.getLogin())
+                        .email(usuario.getEmail())
+                        .admin(usuario.getAdmin())
+                        .build();
+                usuarioDTOS.add(usuarioDTO);
+            });
+            return usuarioDTOS;
+        }catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        }
     }
 
     @PutMapping("/delete/{id}")
