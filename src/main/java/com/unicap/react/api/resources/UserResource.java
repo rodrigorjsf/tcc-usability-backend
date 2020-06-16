@@ -66,4 +66,9 @@ public class UserResource {
     public List<Usuario> listarUsuarios() {
         return usuarioRepository.findAll();
     }
+
+    @PutMapping("/delete/{id}")
+    public void deletarUsuario(@PathVariable(value = "id") Long id) {
+        usuarioRepository.deleteById(id);
+    }
 }

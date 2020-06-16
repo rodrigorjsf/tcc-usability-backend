@@ -49,6 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/whisky/**").hasAnyRole("USER", "ADMIN")
                 .antMatchers("/api/user-management/**").hasAnyRole("USER", "ADMIN")
                 .antMatchers(HttpMethod.POST, "/api/user/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/user/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
