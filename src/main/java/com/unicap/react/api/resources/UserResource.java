@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
+import java.util.List;
 
 
 @RestController
@@ -59,5 +60,10 @@ public class UserResource {
         } catch (UsernameNotFoundException | SenhaInvalidaException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
+    }
+
+    @GetMapping("/list-all")
+    public List<Usuario> listarUsuarios() {
+        return usuarioRepository.findAll();
     }
 }
