@@ -61,7 +61,7 @@ public class UserResource {
             String token = jwtService.gerarToken(usuario);
             System.out.println(token);
             return new TokenDTO(usuario.getLogin(), token, usuarioAutenticado.getAuthorities());
-        } catch (UsernameNotFoundException | SenhaInvalidaException e) {
+        } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
