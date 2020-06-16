@@ -60,8 +60,8 @@ Após abrir o Eclipse, importar projeto do Git:
 
 Incluir `Run Configurations`:
 
-1. _**Maven Build**_ -> New launch configuration -> Name: `whiskies-backend-project [clean package]`, Base directory: `whiskies-backend-project`, Goals: `clean package`
-2. _**Java Application**_ -> New launch configuration -> Spring Boot, Project: `whiskies-backend-project`, Main class: `com.unicap.react.project.ProjectApplication`
+1. _**Maven Build**_ -> New launch configuration -> Name: `WhiskiesReact [clean package]`, Base directory: `WhiskiesReact`, Goals: `clean package`
+2. _**Java Application**_ -> New launch configuration -> Spring Boot, Project: `WhiskiesReact`, Main class: `com\unicap\react\api\ApiApplication`
 
 ### 1.2- pgAdmin
 
