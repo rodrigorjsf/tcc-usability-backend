@@ -111,57 +111,10 @@ src
 └── test
 ```
 
-## 3- Geração da Build e Deploy no Heroku
-
-### 3.1- Conectar com o servidor remoto
-
-**Pré-requisitos:**
-- Gerar um par de chaves SSH (pública e privada); e,
-- Configurar a chave pública no servidor remoto.
-
-Obs.: Para gerar as chaves, usar o `ssh-keygen` no Linux, ou `puttygen` no Windows.
-
-**Servidor de Homologação:**
-host: `107.20.27.77`
-port: `22` (ssh)
-username: `nome-de-usuario`
-password: `senha-da-chave-privada`
-
-### 3.2- Remover o servidor do sistema do ar (opcional - caso esteja online)
-
-```sh
-$ sudo bash  # senha da chave privada
-
-$ cd /flexpag/pos-backend
-$ ps aux | grep pos-backend
-$ kill -9 pid-do-processo-do-backend 
-```
-
-### 3.3- Recuperar as últimas atualizações do repositório Git
-
-```sh
-$ git checkout path/servicos-solicitados-klaus  # usuario e senha do GitHub
-$ git pull
-```
+## 3- Geração da Build
 
 ### 3.4- Gerar a build do sistema
 
 ```sh
 $ mvn clean package
 ```
-
-### 3.5- Executar aplicação
-
-```sh
-$ nohup java -jar target/pos-backend-thorntail.jar -Shom &
-```
-
-Para visualizar o log da aplicação em tempo real:
-
-```sh
-$ tail -f nohup.out -n 500
-```
-
-Para verificar se a aplicação está online, usar o endereço `http://107.20.27.77:8080/api/pos-device/ping` no navegador. Deve ser apresentada a mensagem `You cannot access this resource`, uma vez que os serviços são protegidos por Basic Authentication.
-
-[![Quality gate](https://sonar.flexpag.com/api/project_badges/quality_gate?project=pos-backend)](https://sonar.flexpag.com/dashboard?id=pos-backend)
