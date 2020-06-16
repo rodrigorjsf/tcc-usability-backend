@@ -30,5 +30,9 @@ public class Usuario {
     @NotEmpty(message = "Campo e-mail é obrigatório.")
     private String email;
     @Column
-    private boolean admin;
+    private Boolean admin;
+
+    public Boolean isAdmin () {
+        return this.admin;
+    }
 }
