@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import javax.ws.rs.DefaultValue;
 
 @Data
 @NoArgsConstructor
@@ -30,6 +31,7 @@ public class Usuario {
     @NotEmpty(message = "Campo e-mail é obrigatório.")
     private String email;
     @Column
+    @DefaultValue(value = "false")
     private Boolean admin;
 
     public Boolean isAdmin () {

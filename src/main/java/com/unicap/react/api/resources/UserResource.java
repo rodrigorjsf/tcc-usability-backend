@@ -71,4 +71,9 @@ public class UserResource {
     public void deletarUsuario(@PathVariable(value = "id") Long id) {
         usuarioRepository.deleteById(id);
     }
+
+    @PutMapping("/delete-all")
+    public void deletarTodosUsuario() {
+        usuarioRepository.deleteAll();
+    }
 }
