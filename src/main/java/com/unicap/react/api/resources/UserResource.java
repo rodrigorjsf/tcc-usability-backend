@@ -51,12 +51,10 @@ public class UserResource {
                     .login(credenciais.getLogin())
                     .senha(credenciais.getSenha())
                     .build();
+            Usuario user = usuarioRepository.findByLogin(usuario.getLogin())
+                    .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado na base de dados."));
+            usuario.setAdmin(Objects.isNull(user.getAdmin()) ? false : user.getAdmin());
             UserDetails usuarioAutenticado = usuarioService.autenticar(usuario);
-            if (!usuarioAutenticado.getUsername().isEmpty()) {
-                Usuario user = usuarioRepository.findByLogin(usuarioAutenticado.getUsername())
-                        .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado na base de dados."));
-                usuario.setAdmin(Objects.isNull(user.getAdmin()) ? false : user.getAdmin());
-            }
             System.out.println(usuario.toString());
             String token = jwtService.gerarToken(usuario);
             System.out.println(token);
