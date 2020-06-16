@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -63,8 +64,19 @@ public class UserResource {
     }
 
     @GetMapping("/list-all")
-    public List<Usuario> listarUsuarios() {
-        return usuarioRepository.findAll();
+    public List<UsuarioDTO> listarUsuarios() {
+        List<Usuario> usuarioList = usuarioRepository.findAll();
+        if (usuarioList.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT);
+        }
+        List<UsuarioDTO> usuarioDTOS = new ArrayList<>();
+        usuarioList.stream().forEach(usuario -> {
+            UsuarioDTO usuarioDTO = UsuarioDTO.builder()
+                    .login(usuario.getLogin())
+                    .email(usuario.getEmail())
+                    .build();
+        });
+        return usuarioDTOS;
     }
 
     @PutMapping("/delete/{id}")

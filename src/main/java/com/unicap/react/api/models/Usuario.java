@@ -30,8 +30,7 @@ public class Usuario {
     @Column
     @NotEmpty(message = "Campo e-mail é obrigatório.")
     private String email;
-    @Column
-    @DefaultValue(value = "false")
+    @Column(columnDefinition = "boolean default false")
     private Boolean admin;
 
     public Boolean isAdmin () {
