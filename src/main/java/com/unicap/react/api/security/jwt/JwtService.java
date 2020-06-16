@@ -29,11 +29,12 @@ public class JwtService {
 
         HashMap<String, Object> claims = new HashMap<>();
         claims.put("roles", usuario.isAdmin() ? new String[]{"USER", "ADMIN"} : new String[]{"USER"});
+        //claims.put("expiration", date);
 
         return Jwts.builder()
+                .setClaims(claims)
                 .setSubject(usuario.getLogin())
                 .setExpiration(date)
-                .setClaims(claims)
                 .signWith(SignatureAlgorithm.HS512, signKey)
                 .compact();
     }

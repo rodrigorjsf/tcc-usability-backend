@@ -5,6 +5,7 @@ import com.unicap.react.api.models.Usuario;
 import com.unicap.react.api.models.dto.CredenciaisDTO;
 import com.unicap.react.api.models.dto.TokenDTO;
 import com.unicap.react.api.models.dto.UsuarioDTO;
+import com.unicap.react.api.repository.UsuarioRepository;
 import com.unicap.react.api.security.jwt.JwtService;
 import com.unicap.react.api.service.UsuarioServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class UserResource {
     private final UsuarioServiceImpl usuarioService;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final UsuarioRepository usuarioRepository;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -47,6 +49,11 @@ public class UserResource {
                     .senha(credenciais.getSenha())
                     .build();
             UserDetails usuarioAutenticado = usuarioService.autenticar(usuario);
+            if (!usuarioAutenticado.getUsername().isEmpty()){
+                Usuario user = usuarioRepository.findByLogin(usuarioAutenticado.getUsername())
+                        .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado na base de dados."));
+                usuario.setAdmin(user.getAdmin());
+            }
             String token = jwtService.gerarToken(usuario);
             return new TokenDTO(usuario.getLogin(), token, usuarioAutenticado.getAuthorities());
         } catch (UsernameNotFoundException | SenhaInvalidaException e) {
