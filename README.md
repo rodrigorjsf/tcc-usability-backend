@@ -31,7 +31,7 @@ Este projeto usa as seguintes tecnologias:
      ->  [Hibernate](https://hibernate.org/)
      ->  [PostgreSQL](https://www.postgresql.org/)
 - [Lombok](https://projectlombok.org/)
-- [Auth0](https://auth0.com/)
+- [JWT](https://jwt.io/)
 
 
 ## 1- Ferramentas e Configurações
@@ -47,7 +47,7 @@ Baixar e descompactar um dos pacotes (Win ou Linux 64-bit) da versão `Eclipse I
 Após abrir o Eclipse, importar projeto do Git:
 
 1. _File_ -> _Import..._ -> _Projects from Git_ -> _Clone URI_
-2. URI: `git@github.com:rodrigorjsf/whiskies-backend-project.git` -> _Next_
+2. URI: `git@github.com:rodrigorjsf/WhiskiesReact.git` -> _Next_
 3. Escolher _branch_ `master`
 4. Local destination: _pasta-do-workspace_
 5. _Import as general project_ -> _Next_ -> _Finish_
@@ -67,26 +67,22 @@ Incluir `Run Configurations`:
 
 Para baixar a ferramenta pgAdmin, clique [aqui](https://www.pgadmin.org/).
 
-**Banco de Dados:**
-host: ``
+**Banco de Dados(Heroku):**
+host: `ec2-52-202-22-140.compute-1.amazonaws.com`
 port: `5432`
-database: ``
-
-### 1.3- Putty (Windows)
-
-Para baixar a ferramenta Putty, clique [aqui](https://www.chiark.greenend.org.uk/~sgtatham/putty/).
+database: `d7gjnr6jclad2i`
 
 ## 2- Arquitetura do Sistema
 
-Este projeto segue um padrão arquitetural em camadas [[1](https://www.oreilly.com/library/view/software-architecture-patterns/9781491971437/ch01.html),[2](https://en.wikipedia.org/wiki/Multitier_architecture)] para fornecer uma API REST [[3](https://dzone.com/articles/intro-rest),[4](https://www.quora.com/What-are-RESTful-APIs-and-how-do-they-work),[5](https://blog.caelum.com.br/rest-principios-e-boas-praticas/)] ao módulo _frontend_ da aplicação. A camada mais externa do sistema (_Service_) implementa os serviços REST (JAX-RS), tendo esta camada a responsabilidade de validar os dados de entrada, assim como realizar as restrições de segurança necessárias (autenticação/autorização) no acesso aos serviços disponibilizados. A camada imediatamente abaixo (_Business_) é responsável pela execução da lógica de negócio de cada serviço, que incluem validações de negócio e transformação dos dados de entrada antes de atualizá-los. A última camada (_Persistence_) do modelo é responsável pelas funcionalidades diretas de acesso/atualização dos dados do sistema no banco de dados.
+Este projeto segue um padrão arquitetural em camadas [[1](https://www.oreilly.com/library/view/software-architecture-patterns/9781491971437/ch01.html),[2](https://en.wikipedia.org/wiki/Multitier_architecture)] para fornecer uma API REST [[3](https://dzone.com/articles/intro-rest),[4](https://www.quora.com/What-are-RESTful-APIs-and-how-do-they-work),[5](https://blog.caelum.com.br/rest-principios-e-boas-praticas/)] ao módulo _frontend_ da aplicação. A camada mais externa do sistema (_Resources_) implementa os serviços REST (JAX-RS), tendo esta camada a responsabilidade de validar os dados de entrada, assim como realizar as restrições de segurança necessárias (autenticação/autorização) no acesso aos serviços disponibilizados. A camada imediatamente abaixo (_Service_) é responsável pela execução da lógica de negócio de cada serviço, que incluem validações de negócio e transformação dos dados de entrada antes de atualizá-los. A última camada (_Repository_) do modelo é responsável pelas funcionalidades diretas de acesso/atualização dos dados do sistema no banco de dados.
 
 ```
 ┌───────────────────┐
-│   Service (REST)  │
+│  Resources (REST) │
 ├───────────────────┤
-│   Business (BC)   │ 
+│    Service        │ 
 ├───────────────────┤
-│ Persistence (DAO) │ SPRING DATA, JPA, HIBERANTE
+│ Repository  (DAO) │ SPRING DATA, JPA, HIBERANTE
 └───────────────────┘
          ||
      ┌────────┐
@@ -101,28 +97,18 @@ A organização e significado de cada um dos pacotes do projeto segue abaixo:
 ```
 src
 ├── main
-│   ├── java/com/flexpag/pos/backend/app
-│   │   ├── bc                                       -> classes da camada de negócio (xxxxBC.java)
-│   │   ├── entity                                   -> classes de entidades/pojos/dtos
-│   │   ├── exception                                -> classes de exceções e mappers
-│   │   ├── integration                              -> classes que implementam a integração com outros sistemas
-│   │   ├── jdbi                                     -> classes de infraestrutura para conexão com banco de dados com jdbi
-│   │   ├── persistence                              -> classes da camada de persistência (xxxxDAO.java)
-│   │   ├── rest                                     -> classes da camada de serviço (xxxxREST.java)
-│   │   ├── security                                 -> classes relacionadas à autenticação/autorização dos serviços
-│   │   ├── thorntail                                -> classes relacionadas à infraestrutura do thorntail
-│   │   └── util                                     -> classes utilitárias
+│   ├── java/com/unicap/react/api
+│   │   ├── cofig                                       -> classes de configuração de segurança
+│   │   ├── exception                                   -> classes de exceções
+│   │   ├── models                                      -> classes de entidades/pojos/dtos
+│   │   ├── repository                                  -> classes da camada de persistência
+│   │   ├── resources                                   -> classes da camada de serviço
+│   │   ├── security                                    -> classes da camada de segurança (JWT)
+│   │   ├── service                                     -> classes da camada de negócio
+│   │   └── utils                                       -> classes utilitárias
 │   ├── resources
-│   │   ├── com/flexpag/pos/backend/app/persistence  -> arquivos *.sql e *.stg (string template)
-│   │   ├── modules/org/postgresql/main
-│   │       └── module.xml                           -> arquivos de configuracao do driver do postgresql
-│   │   ├── MANIFEST.MF                              -> arquivo de manifesto do projeto
-│   │   ├── project-defaults.yml                     -> arquivo de propriedades 'default' do projeto
-│   │   └── project-hom.yml                          -> arquivo de propriedades para ambiente de homologacao do projeto
-|   └── web-inf/WEB-INF
-|       └── beans.xml                                -> arquivo de configuração do cdi
+│   │   ├── aplication.properties                       -> arquivos de propriedades do sistema
 └── test
-    └── java/com/flexpag/pos/backend/app/bc          -> classes de testes unitários
 ```
 
 ## 3- Geração da Build e Deploy no Heroku
