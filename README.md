@@ -68,11 +68,10 @@ Incluir `Run Configurations`:
 Para baixar a ferramenta pgAdmin, clique [aqui](https://www.pgadmin.org/).
 
 **Banco de Dados(Heroku):**
-host: `ec2-52-202-22-140.compute-1.amazonaws.com`
 
-port: `5432`
-
-database: `d7gjnr6jclad2i`
+1. host: `ec2-52-202-22-140.compute-1.amazonaws.com`
+2. port: `5432`
+3. database: `d7gjnr6jclad2i`
 
 ## 2- Arquitetura do Sistema
 
