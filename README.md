@@ -99,7 +99,7 @@ A organização e significado de cada um dos pacotes do projeto segue abaixo:
 src
 ├── main
 │   ├── java/com/unicap/react/api
-│   │   ├── cofig                                       -> classes de configuração de segurança
+│   │   ├── config                                      -> classes de configurações
 │   │   ├── exception                                   -> classes de exceções
 │   │   ├── models                                      -> classes de entidades/pojos/dtos
 │   │   ├── repository                                  -> classes da camada de persistência
