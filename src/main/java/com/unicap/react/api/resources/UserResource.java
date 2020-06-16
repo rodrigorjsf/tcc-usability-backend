@@ -47,10 +47,12 @@ public class UserResource {
     @PostMapping("/auth")
     public TokenDTO autenticar(@RequestBody CredenciaisDTO credenciais) {
         try {
+            System.out.println(credenciais.toString());
             Usuario usuario = Usuario.builder()
                     .login(credenciais.getLogin())
                     .senha(credenciais.getSenha())
                     .build();
+            System.out.println(usuario.toString());
             UserDetails usuarioAutenticado = usuarioService.autenticar(usuario);
             if (!usuarioAutenticado.getUsername().isEmpty()) {
                 Usuario user = usuarioRepository.findByLogin(usuarioAutenticado.getUsername())
