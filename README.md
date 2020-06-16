@@ -113,7 +113,7 @@ src
 
 ## 3- Geração da Build
 
-### 3.4- Gerar a build do sistema
+### 3.1- Gerar a build do sistema
 
 ```sh
 $ mvn clean package
