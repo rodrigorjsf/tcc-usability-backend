@@ -75,6 +75,7 @@ public class UserResource {
                     .login(usuario.getLogin())
                     .email(usuario.getEmail())
                     .build();
+            usuarioDTOS.add(usuarioDTO);
         });
         return usuarioDTOS;
     }
