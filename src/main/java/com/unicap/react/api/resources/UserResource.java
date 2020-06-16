@@ -57,7 +57,9 @@ public class UserResource {
                         .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado na base de dados."));
                 usuario.setAdmin(Objects.isNull(user.getAdmin()) ? false : user.getAdmin());
             }
+            System.out.println(usuario.toString());
             String token = jwtService.gerarToken(usuario);
+            System.out.println(token);
             return new TokenDTO(usuario.getLogin(), token, usuarioAutenticado.getAuthorities());
         } catch (UsernameNotFoundException | SenhaInvalidaException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
