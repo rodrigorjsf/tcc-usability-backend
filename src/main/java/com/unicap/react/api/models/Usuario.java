@@ -17,7 +17,7 @@ import javax.validation.constraints.NotEmpty;
 public class Usuario {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     @Column
     @NotEmpty(message = "Campo login é obrigatório.")
@@ -25,6 +25,9 @@ public class Usuario {
     @Column
     @NotEmpty(message = "Campo senha é obrigatório.")
     private String senha;
+    @Column
+    @NotEmpty(message = "Campo e-mail é obrigatório.")
+    private String email;
     @Column
     private boolean admin;
 }
