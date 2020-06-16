@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -51,7 +52,7 @@ public class UsuarioServiceImpl implements UserDetailsService {
         System.out.println(username);
         Usuario usuario = usuarioRepository.findByLogin(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado na base de dados."));
-        System.out.println(usuario.toString());
+        usuario.setAdmin(Objects.isNull(usuario.getAdmin()) ? false : usuario.getAdmin());
         String[] roles = usuario.isAdmin() ? new String[]{"USER", "ADMIN"} : new String[]{"USER"};
 
         return User.builder()
