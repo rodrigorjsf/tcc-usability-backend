@@ -32,7 +32,11 @@ Este projeto usa as seguintes tecnologias:
      ->  [PostgreSQL](https://www.postgresql.org/)
 - [Lombok](https://projectlombok.org/)
 - [JWT](https://jwt.io/)
+- [Swagger](https://springfox.github.io/springfox/docs/snapshot/)
 
+## Documentação API
+
+- [Whiskies API](https://project-whiskies-backend.herokuapp.com/swagger-ui.html)
 
 ## 1- Ferramentas e Configurações
 
