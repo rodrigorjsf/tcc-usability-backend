@@ -1,5 +1,6 @@
 package com.unicap.react.api.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -7,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import javax.ws.rs.DefaultValue;
 
 @Data
 @NoArgsConstructor
@@ -28,6 +30,10 @@ public class Usuario {
     @Column
     @NotEmpty(message = "Campo e-mail é obrigatório.")
     private String email;
-    @Column
-    private boolean admin;
+    @Column(columnDefinition = "boolean default false")
+    private Boolean admin;
+
+    public Boolean isAdmin () {
+        return this.admin;
+    }
 }

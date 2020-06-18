@@ -14,6 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class UsuarioServiceImpl implements UserDetailsService {
@@ -26,10 +28,11 @@ public class UsuarioServiceImpl implements UserDetailsService {
 
     @Transactional
     public Usuario salvar(Usuario usuario) {
-        Usuario user = usuarioRepository.findByEmail(usuario.getEmail()).orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado na base de dados."));
-        if (user.getEmail().trim().equals(usuario.getEmail().trim())){
+        Optional<Usuario> user = usuarioRepository.findByEmail(usuario.getEmail().trim());
+        if (user.isPresent()) {
             throw new UserAlreadyRegisteredException();
         }
+        usuario.setEmail(usuario.getEmail().trim());
         return usuarioRepository.save(usuario);
     }
 
@@ -46,7 +49,7 @@ public class UsuarioServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Usuario usuario = usuarioRepository.findByLogin(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado na base de dados."));
-
+        usuario.setAdmin(Objects.isNull(usuario.getAdmin()) ? false : usuario.getAdmin());
         String[] roles = usuario.isAdmin() ? new String[]{"USER", "ADMIN"} : new String[]{"USER"};
 
         return User.builder()

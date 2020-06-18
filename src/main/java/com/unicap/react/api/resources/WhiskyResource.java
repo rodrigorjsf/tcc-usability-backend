@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/whisky")
+@CrossOrigin(origins = "*")
 public class WhiskyResource {
 
     @Autowired
@@ -48,7 +49,6 @@ public class WhiskyResource {
 
     @PutMapping("delete/{uuid}")
     public void deleteWhisky(@PathVariable(value = "uuid") String uuid) {
-        System.out.println(uuid);
         whiskyRepository.logicDelete(uuid, LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
     }
 }
