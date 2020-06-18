@@ -37,15 +37,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new JwtAuthFilter(jwtService, usuarioService);
     }
 
-    private static final String[] AUTH_WHITELIST = {
-
-            // -- swagger ui
-            "/swagger-resources/**",
-            "/swagger-ui.html",
-            "/v2/api-docs",
-            "/webjars/**"
-    };
-
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(usuarioService)
@@ -59,7 +50,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/whisky/**").hasAnyRole("USER", "ADMIN")
                 .antMatchers("/api/user-management/**").hasAnyRole("USER", "ADMIN")
                 .antMatchers(HttpMethod.POST, "/api/user/**").permitAll()
-                .antMatchers(AUTH_WHITELIST).permitAll()
                 .antMatchers(HttpMethod.GET, "/api/user/**").hasAnyRole("ADMIN")
                 .antMatchers(HttpMethod.PUT, "/api/user/**").hasAnyRole("ADMIN")
                 .anyRequest().authenticated()
@@ -72,11 +62,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) {
         web.ignoring().antMatchers(
-             "**/v2/api-docs",
+             "/v2/api-docs",
              "/configuration/ui",
-             "**/swagger-resources/**",
+             "/swagger-resources/**",
              "/configuration/security",
-             "**/swagger-ui.html",
+             "/swagger-ui.html",
              "/webjars/**");
     }
 }
