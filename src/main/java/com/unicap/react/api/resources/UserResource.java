@@ -8,6 +8,7 @@ import com.unicap.react.api.models.dto.UsuarioDTO;
 import com.unicap.react.api.repository.UsuarioRepository;
 import com.unicap.react.api.security.jwt.JwtService;
 import com.unicap.react.api.service.UsuarioServiceImpl;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,6 +25,7 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/user")
+@Api("Api usuários")
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class UserResource {
@@ -35,6 +37,8 @@ public class UserResource {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation("Criação de novo usuário")
+    @ApiResponse(code = 201, message = "Cadastro efetuado com sucesso.")
     public UsuarioDTO salvar(@RequestBody @Valid Usuario usuario) {
         String senhaCriptografada = passwordEncoder.encode(usuario.getSenha());
         usuario.setSenha(senhaCriptografada);
@@ -46,6 +50,11 @@ public class UserResource {
     }
 
     @PostMapping("/auth")
+    @ApiOperation("Login de um usuário")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Login efetuado com sucesso."),
+            @ApiResponse(code = 401, message = "Senha incorreta ou usuário não cadastrado")
+    })
     public TokenDTO autenticar(@RequestBody CredenciaisDTO credenciais) {
         try {
             Usuario usuario = Usuario.builder()
@@ -64,6 +73,7 @@ public class UserResource {
     }
 
     @GetMapping("/list-all")
+    @ApiOperation("Lista todos os usuários")
     public List<UsuarioDTO> listarUsuarios() {
         List<Usuario> usuarioList = usuarioRepository.findAll();
         if (usuarioList.isEmpty()) {
@@ -89,12 +99,14 @@ public class UserResource {
     }
 
     @PutMapping("/delete/{id}")
-    public void deletarUsuario(@PathVariable(value = "id") Long id) {
+    @ApiOperation("Deletar (logicamente) usuário")
+    public void deletarUsuario(@PathVariable(value = "id") @ApiParam("ID do Usuário") Long id) {
         usuarioRepository.deleteById(id);
     }
 
-    @PutMapping("/delete-all")
-    public void deletarTodosUsuario() {
-        usuarioRepository.deleteAll();
-    }
+//    @PutMapping("/delete-all")
+//    @ApiOperation("Deletar todos os usuários")
+//    public void deletarTodosUsuario() {
+//        usuarioRepository.deleteAll();
+//    }
 }
