@@ -16,31 +16,33 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/api/whisky")
 @Api("Api whisky")
-@CrossOrigin(origins = "*")
 public class WhiskyResource {
 
     @Autowired
     WhiskyRepository whiskyRepository;
 
-
+	@CrossOrigin
     @GetMapping("/whisky-list")
     @ApiOperation("Busca todos os Whiskies")
     public List<Whisky> getWhiskiesList() {
         return whiskyRepository.findAll();
     }
 
+	@CrossOrigin
     @GetMapping("/get-whisky/{uuid}")
     @ApiOperation("Busca Whisky por UUID")
     public Whisky getWhisky(@PathVariable(value = "uuid") @ApiParam("UUID do Whisky") String uuid) {
         return whiskyRepository.findByUuid(uuid);
     }
 
+	@CrossOrigin
     @PostMapping("/insert")
     @ApiOperation("Inserir um Whisky")
     public Whisky insertWhisky(@RequestBody Whisky whisky) {
         return whiskyRepository.save(whisky);
     }
 
+	@CrossOrigin
     @PostMapping("/insert-whisky-list")
     @ApiOperation("Inserir lista de Whiskies")
     public List<Whisky> insertWhiskiesList(@RequestBody List<Whisky> whiskyList) {
@@ -50,12 +52,14 @@ public class WhiskyResource {
         return whiskyRepository.saveAll(whiskyList);
     }
 
+	@CrossOrigin
     @PutMapping("/update")
     @ApiOperation("Atualização de Whisky")
     public Whisky updateWhisky(@RequestBody Whisky whisky) {
         return whiskyRepository.save(whisky);
     }
 
+	@CrossOrigin
     @PutMapping("delete/{uuid}")
     @ApiOperation("Deleta Whisky por UUID")
     public void deleteWhisky(@PathVariable(value = "uuid") @ApiParam("UUID do Whisky") String uuid) {
