@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@CrossOrigin(origins = "http://172.30.162.145:3000")
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/user")
 @Api("Api usuários")
