@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://172.30.162.145:3000")
 @RestController
 @RequestMapping(value = "/api/whisky")
 @Api("Api whisky")
