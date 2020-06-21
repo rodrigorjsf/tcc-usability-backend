@@ -26,7 +26,6 @@ import java.util.Objects;
 @RestController
 @RequestMapping("/api/user")
 @Api("Api usuários")
-@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class UserResource {
 
@@ -35,6 +34,7 @@ public class UserResource {
     private final JwtService jwtService;
     private final UsuarioRepository usuarioRepository;
 
+	@CrossOrigin
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation("Criação de novo usuário")
@@ -49,6 +49,7 @@ public class UserResource {
                 .build();
     }
 
+	@CrossOrigin
     @PostMapping("/auth")
     @ApiOperation("Login de um usuário")
     @ApiResponses({
@@ -72,6 +73,7 @@ public class UserResource {
         }
     }
 
+	@CrossOrigin
     @GetMapping("/list-all")
     @ApiOperation("Lista todos os usuários")
     public List<UsuarioDTO> listarUsuarios() {
@@ -98,6 +100,7 @@ public class UserResource {
         }
     }
 
+	@CrossOrigin
     @PutMapping("/delete/{id}")
     @ApiOperation("Deletar (logicamente) usuário")
     public void deletarUsuario(@PathVariable(value = "id") @ApiParam("ID do Usuário") Long id) {
