@@ -27,18 +27,11 @@ public class WhiskyResource {
     @Autowired
     WhiskyRepository whiskyRepository;
 
-    private static final HttpHeaders httpHeaders = new HttpHeaders();
-
-    @Bean
-    private void setWhiskyHttpHeaders() {
-        httpHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
-    }
 
     @GetMapping("/whisky-list")
     @ApiOperation("Busca todos os Whiskies")
     public ResponseEntity<List<Whisky>> getWhiskiesList() {
         return ResponseEntity.ok()
-                .headers(httpHeaders)
                 .body(whiskyRepository.findAll());
     }
 
@@ -48,7 +41,6 @@ public class WhiskyResource {
                                             @Pattern(regexp = UUIDUtils.UUID_REGEXP, message = "Invalid id")
                                             @ApiParam("UUID do Whisky") String uuid) {
         return ResponseEntity.ok()
-                .headers(httpHeaders)
                 .body(whiskyRepository.findByUuid(uuid));
     }
 
@@ -56,7 +48,6 @@ public class WhiskyResource {
     @ApiOperation("Inserir um Whisky")
     public ResponseEntity<Whisky> insertWhisky(@RequestBody Whisky whisky) {
         return ResponseEntity.ok()
-                .headers(httpHeaders)
                 .body(whiskyRepository.save(whisky));
     }
 
@@ -67,7 +58,6 @@ public class WhiskyResource {
             whiskyList.forEach(whisky -> whisky.setUuid(UuidGenerator.generateUuid(whisky.getName() + whisky.getType() + whisky.getStyle()).toString()));
         }
         return ResponseEntity.ok()
-                .headers(httpHeaders)
                 .body(whiskyRepository.saveAll(whiskyList)) ;
     }
 
@@ -75,7 +65,6 @@ public class WhiskyResource {
     @ApiOperation("Atualização de Whisky")
     public ResponseEntity<Whisky>  updateWhisky(@RequestBody Whisky whisky) {
         return ResponseEntity.ok()
-                .headers(httpHeaders)
                 .body(whiskyRepository.save(whisky)) ;
     }
 
@@ -86,7 +75,6 @@ public class WhiskyResource {
                              @ApiParam("UUID do Whisky") String uuid) {
         whiskyRepository.logicDelete(uuid, LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
         return ResponseEntity.ok()
-                .headers(httpHeaders)
                 .body("Whisky deletado com sucesso!");
     }
 }

@@ -37,12 +37,6 @@ public class UserResource {
     private final JwtService jwtService;
     private final UsuarioRepository usuarioRepository;
 
-    private static final HttpHeaders httpHeaders = new HttpHeaders();
-
-    @Bean
-    private void setUserHttpHeaders() {
-        httpHeaders.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
-    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -53,7 +47,6 @@ public class UserResource {
         usuario.setSenha(senhaCriptografada);
         Usuario user = usuarioService.salvar(usuario);
         return ResponseEntity.ok()
-                .headers(httpHeaders)
                 .body(UsuarioDTO.builder()
                         .login(user.getLogin())
                         .email(user.getEmail())
@@ -78,7 +71,6 @@ public class UserResource {
             UserDetails usuarioAutenticado = usuarioService.autenticar(usuario);
             String token = jwtService.gerarToken(usuario);
             return ResponseEntity.ok()
-                    .headers(httpHeaders)
                     .body(new TokenDTO(usuario.getLogin(), token, usuarioAutenticado.getAuthorities()));
         } catch (UsernameNotFoundException | SenhaInvalidaException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
@@ -106,7 +98,6 @@ public class UserResource {
                 usuarioDTOS.add(usuarioDTO);
             });
             return ResponseEntity.ok()
-                    .headers(httpHeaders)
                     .body(usuarioDTOS);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
@@ -118,7 +109,6 @@ public class UserResource {
     public ResponseEntity<String> deletarUsuario(@PathVariable(value = "id") @ApiParam("ID do Usuário") Long id) {
         usuarioRepository.deleteById(id);
         return ResponseEntity.ok()
-                .headers(httpHeaders)
                 .body("Usuário deletado com seucesso");
     }
 
