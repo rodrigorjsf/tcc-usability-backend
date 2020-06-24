@@ -50,6 +50,7 @@ public class UserResource {
                 .body(UsuarioDTO.builder()
                         .login(user.getLogin())
                         .email(user.getEmail())
+                        .admin(user.getAdmin())
                         .build());
     }
 
