@@ -9,11 +9,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface WhiskyRepository extends JpaRepository<Whisky, Long> {
 
 
-    Whisky findByUuid(String uuid);
+    Optional<Whisky> findByUuid(String uuid);
 
     @Query(value = "SELECT w FROM Whisky w WHERE w.endDate IS NULL")
     List<Whisky> findAll();

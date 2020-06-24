@@ -8,8 +8,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +16,7 @@ import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/api/whisky")
@@ -31,6 +31,10 @@ public class WhiskyResource {
     @GetMapping("/whisky-list")
     @ApiOperation("Busca todos os Whiskies")
     public ResponseEntity<List<Whisky>> getWhiskiesList() {
+        List<Whisky> whiskyList = whiskyRepository.findAll();
+        if (whiskyList.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
         return ResponseEntity.ok()
                 .body(whiskyRepository.findAll());
     }
@@ -40,14 +44,14 @@ public class WhiskyResource {
     public ResponseEntity<Whisky> getWhisky(@PathVariable(value = "uuid")
                                             @Pattern(regexp = UUIDUtils.UUID_REGEXP, message = "Invalid id")
                                             @ApiParam("UUID do Whisky") String uuid) {
-        return ResponseEntity.ok()
-                .body(whiskyRepository.findByUuid(uuid));
+        Optional<Whisky> whisky = whiskyRepository.findByUuid(uuid);
+        return whisky.map(value -> ResponseEntity.ok().body(value)).orElseGet(() -> ResponseEntity.noContent().build());
     }
 
     @PostMapping("/insert")
     @ApiOperation("Inserir um Whisky")
     public ResponseEntity<Whisky> insertWhisky(@RequestBody Whisky whisky) {
-        return ResponseEntity.ok()
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(whiskyRepository.save(whisky));
     }
 
@@ -57,22 +61,22 @@ public class WhiskyResource {
         if (!whiskyList.isEmpty()) {
             whiskyList.forEach(whisky -> whisky.setUuid(UuidGenerator.generateUuid(whisky.getName() + whisky.getType() + whisky.getStyle()).toString()));
         }
-        return ResponseEntity.ok()
-                .body(whiskyRepository.saveAll(whiskyList)) ;
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(whiskyRepository.saveAll(whiskyList));
     }
 
     @PutMapping("/update")
     @ApiOperation("Atualização de Whisky")
-    public ResponseEntity<Whisky>  updateWhisky(@RequestBody Whisky whisky) {
+    public ResponseEntity<Whisky> updateWhisky(@RequestBody Whisky whisky) {
         return ResponseEntity.ok()
-                .body(whiskyRepository.save(whisky)) ;
+                .body(whiskyRepository.save(whisky));
     }
 
     @PutMapping("delete/{uuid}")
     @ApiOperation("Deleta Whisky por UUID")
     public ResponseEntity<String> deleteWhisky(@PathVariable(value = "uuid")
-                             @Pattern(regexp = UUIDUtils.UUID_REGEXP, message = "Invalid id")
-                             @ApiParam("UUID do Whisky") String uuid) {
+                                               @Pattern(regexp = UUIDUtils.UUID_REGEXP, message = "Invalid id")
+                                               @ApiParam("UUID do Whisky") String uuid) {
         whiskyRepository.logicDelete(uuid, LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
         return ResponseEntity.ok()
                 .body("Whisky deletado com sucesso!");
