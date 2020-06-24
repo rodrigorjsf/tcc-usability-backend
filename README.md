@@ -31,7 +31,8 @@ Este projeto usa as seguintes tecnologias:
      ->  [Hibernate](https://hibernate.org/)
      ->  [PostgreSQL](https://www.postgresql.org/)
 - [Lombok](https://projectlombok.org/)
-- [JWT](https://jwt.io/)
+- [Spring Security](https://spring.io/projects/spring-security)
+     ->  [JWT](https://jwt.io/)
 - [Swagger](https://springfox.github.io/springfox/docs/snapshot/)
 - [Amazon S3](https://www.google.com/aclk?sa=L&ai=DChcSEwjKhOPvmZnqAhWLDJEKHRB0C7wYABAAGgJjZQ&sig=AOD64_3OWaMI-LTewANXHepfmhbkuLfHyQ&q=&ved=2ahUKEwiv5c7vmZnqAhVPKLkGHcJbCB4Q0Qx6BAgVEAE&adurl=)
 
