@@ -71,4 +71,6 @@ public class Whisky implements Serializable {
     private LocalDateTime startDate;
     @JsonIgnore
     private LocalDateTime endDate;
+    private String distilleryImageUrl;
+    private String imageUrl;
 }
