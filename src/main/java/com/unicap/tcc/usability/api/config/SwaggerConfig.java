@@ -14,6 +14,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2WebMvc;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Configuration
@@ -29,15 +30,16 @@ public class SwaggerConfig {
                 .apis(RequestHandlerSelectors.basePackage("com.unicap.react.api.resources"))
                 .paths(PathSelectors.any())
                 .build()
-                .securityContexts(Arrays.asList(securityContext()))
-                .securitySchemes(Arrays.asList(apiKey()))
+                .securityContexts(Collections.singletonList(securityContext()))
+                .securitySchemes(Collections.singletonList(apiKey()))
                 .apiInfo(apiInfo());
     }
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("Whiskies API")
-                .description("API do projeto Whiskies - Cadeira React da UNICAP")
+                .title("TCC Usability API")
+                .description("API of the final project in the graduation of computer science at the " +
+                        "Universidade Católica de Pernambuco.")
                 .version("1.0")
                 .contact(contact())
                 .build();
