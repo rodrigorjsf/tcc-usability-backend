@@ -1,5 +1,6 @@
 package com.unicap.tcc.usability.api.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -20,11 +21,12 @@ import java.util.UUID;
 @Table(name = "sys_user")
 public class User extends BaseEntity implements Serializable {
 
+    @JsonIgnore
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "uuid default uuid_generate_v4()")
+    @Column(columnDefinition = "uuid default uuid_generate_v4()", insertable = false)
     private UUID uid;
 
     @Column

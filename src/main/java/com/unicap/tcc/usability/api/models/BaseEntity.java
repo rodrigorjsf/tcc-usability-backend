@@ -1,5 +1,7 @@
 package com.unicap.tcc.usability.api.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,14 +24,17 @@ public class BaseEntity {
 
     protected static final long serialVersionUID = 1L;
 
+    @JsonIgnore
     @Column(name = "created_at", columnDefinition = "timestamp default now()")
     @CreationTimestamp
     protected LocalDateTime creationDate;
 
+    @JsonIgnore
     @Column(name = "last_updated_at", columnDefinition = "timestamp default now()")
     @UpdateTimestamp
     protected LocalDateTime updateDate;
 
+    @JsonIgnore
     @Column(name = "removed_at")
     protected LocalDateTime removedDate;
 }

@@ -30,7 +30,7 @@ import java.util.Collections;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private UserService usuarioService;
+    private UserService userService;
 
     @Autowired
     private JwtService jwtService;
@@ -42,12 +42,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public OncePerRequestFilter jwtFilter() {
-        return new JwtAuthFilter(jwtService, usuarioService);
+        return new JwtAuthFilter(jwtService, userService);
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(usuarioService)
+        auth.userDetailsService(userService)
                 .passwordEncoder(passwordEncoder());
     }
     
@@ -66,11 +66,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/api/whisky/**").hasAnyRole("USER", "ADMIN")
-                .antMatchers("/api/user-management/**").hasAnyRole("USER", "ADMIN")
-                .antMatchers(HttpMethod.POST, "/api/user/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/user/**").hasAnyRole("ADMIN")
-                .antMatchers(HttpMethod.PUT, "/api/user/**").hasAnyRole("ADMIN")
+                .antMatchers("/api/**").hasAnyRole("USER", "ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)

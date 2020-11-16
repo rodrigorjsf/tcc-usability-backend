@@ -1,5 +1,6 @@
 package com.unicap.tcc.usability.api.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,10 +16,12 @@ import javax.persistence.*;
 @Table(name = "scale_questions")
 public class ScaleQuestions extends BaseEntity {
 
+    @JsonIgnore
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     @Column(name = "scale_id", insertable = false, updatable = false)
     private Long scaleId;
 

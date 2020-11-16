@@ -2,7 +2,7 @@ package com.unicap.tcc.usability.api.resources;
 
 import com.unicap.tcc.usability.api.exception.SenhaInvalidaException;
 import com.unicap.tcc.usability.api.models.User;
-import com.unicap.tcc.usability.api.models.dto.CredenciaisDTO;
+import com.unicap.tcc.usability.api.models.dto.CredentialDTO;
 import com.unicap.tcc.usability.api.models.dto.TokenDTO;
 import com.unicap.tcc.usability.api.models.dto.UserDTO;
 import com.unicap.tcc.usability.api.repository.UserRepository;
@@ -58,11 +58,11 @@ public class UserResource {
             @ApiResponse(code = 200, message = "Login efetuado com sucesso."),
             @ApiResponse(code = 401, message = "Senha incorreta ou usuário não cadastrado")
     })
-    public ResponseEntity<TokenDTO> autenticar(@RequestBody CredenciaisDTO credenciais) {
+    public ResponseEntity<TokenDTO> autenticar(@RequestBody CredentialDTO credenciais) {
         try {
             User user = User.builder()
                     .login(credenciais.getLogin())
-                    .password(credenciais.getSenha())
+                    .password(credenciais.getPassword())
                     .build();
             User registeredUser = userRepository.findByLogin(user.getLogin())
                     .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado na base de dados."));

@@ -1,6 +1,7 @@
 package com.unicap.tcc.usability.api.models;
 
-import com.unicap.tcc.usability.api.models.enums.Scales;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.unicap.tcc.usability.api.models.enums.ScalesEnum;
 import com.vladmihalcea.hibernate.type.array.ListArrayType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,6 +13,7 @@ import org.hibernate.annotations.TypeDefs;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -27,13 +29,17 @@ import java.util.List;
 })
 public class Scale extends BaseEntity {
 
+    @JsonIgnore
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(columnDefinition = "uuid default uuid_generate_v4()", insertable = false)
+    private UUID uid;
+
     @Column(name = "acronym", columnDefinition = "varchar(10)", nullable = false)
     @Enumerated(EnumType.STRING)
-    private Scales acronym;
+    private ScalesEnum acronym;
 
     @Column
     private String name;

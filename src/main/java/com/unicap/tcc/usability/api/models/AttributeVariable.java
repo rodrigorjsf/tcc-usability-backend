@@ -1,6 +1,6 @@
 package com.unicap.tcc.usability.api.models;
 
-import com.unicap.tcc.usability.api.models.enums.Scales;
+import com.unicap.tcc.usability.api.models.enums.ScalesEnum;
 import com.unicap.tcc.usability.api.models.enums.UsabilityAttribute;
 import com.vladmihalcea.hibernate.type.array.ListArrayType;
 import lombok.AllArgsConstructor;
@@ -63,7 +63,7 @@ class AttributeVariable extends BaseEntity {
     @Column
     private String methods;
 
-    @Column(name = "scale", columnDefinition = "varchar(10)", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Scales scale;
+    @ManyToOne(cascade = {CascadeType.ALL})
+    @JoinColumn(name = "scale_id", referencedColumnName = "id", nullable = false)
+    private Scale scale;
 }
