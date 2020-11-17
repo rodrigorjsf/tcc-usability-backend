@@ -1,5 +1,6 @@
-package com.unicap.tcc.usability.api.models;
+package com.unicap.tcc.usability.api.models.assessment;
 
+import com.unicap.tcc.usability.api.models.BaseEntity;
 import com.vladmihalcea.hibernate.type.array.ListArrayType;
 import lombok.AllArgsConstructor;
 import lombok.Data;

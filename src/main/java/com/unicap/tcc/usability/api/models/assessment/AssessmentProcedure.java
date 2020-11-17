@@ -1,14 +1,19 @@
-package com.unicap.tcc.usability.api.models;
+package com.unicap.tcc.usability.api.models.assessment;
 
+import com.unicap.tcc.usability.api.models.BaseEntity;
+import com.vladmihalcea.hibernate.type.array.ListArrayType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Generated;
 import org.hibernate.annotations.GenerationTime;
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -16,6 +21,12 @@ import java.time.LocalDate;
 @SuperBuilder
 @Entity
 @Table(name = "assessment_procedure")
+@TypeDefs({
+        @TypeDef(
+                name = "list-array",
+                typeClass = ListArrayType.class
+        ),
+})
 public class AssessmentProcedure extends BaseEntity {
 
     @Id
@@ -33,6 +44,10 @@ public class AssessmentProcedure extends BaseEntity {
 
     @Column
     private Integer occurTime;
+
+    @OneToMany(cascade = {CascadeType.ALL})
+    @JoinColumn(name = "assessment_procedure_id", referencedColumnName = "id", nullable = false)
+    private List<AssessmentProcedureStep> assessmentProcedureSteps;
 
     @Column(name = "will_have_training", columnDefinition = "boolean default false", insertable = false)
     @Generated(GenerationTime.ALWAYS)

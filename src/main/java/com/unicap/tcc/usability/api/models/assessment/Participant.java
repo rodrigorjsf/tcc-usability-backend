@@ -1,5 +1,6 @@
-package com.unicap.tcc.usability.api.models;
+package com.unicap.tcc.usability.api.models.assessment;
 
+import com.unicap.tcc.usability.api.models.BaseEntity;
 import com.unicap.tcc.usability.api.models.enums.ParticipationLocalType;
 import com.unicap.tcc.usability.api.models.enums.ParticipationType;
 import com.vladmihalcea.hibernate.type.array.ListArrayType;

@@ -1,5 +1,7 @@
-package com.unicap.tcc.usability.api.models;
+package com.unicap.tcc.usability.api.models.assessment;
 
+import com.unicap.tcc.usability.api.models.BaseEntity;
+import com.unicap.tcc.usability.api.models.Scale;
 import com.unicap.tcc.usability.api.models.enums.ScalesEnum;
 import com.unicap.tcc.usability.api.models.enums.UsabilityAttribute;
 import com.vladmihalcea.hibernate.type.array.ListArrayType;
@@ -52,10 +54,10 @@ class AttributeVariable extends BaseEntity {
             }
     )
     @Column(
-            name = "attribute_list",
+            name = "variable_list",
             columnDefinition = "text[]"
     )
-    private List<String> attributeList;
+    private List<String> variableList;
 
     @Column
     private String obtainedBy;

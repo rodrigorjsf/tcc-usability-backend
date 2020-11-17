@@ -38,6 +38,9 @@ public class User extends BaseEntity implements Serializable {
     private String password;
 
     @Column
+    private String name;
+
+    @Column
     @NotEmpty(message = "Campo e-mail é obrigatório.")
     private String email;
 

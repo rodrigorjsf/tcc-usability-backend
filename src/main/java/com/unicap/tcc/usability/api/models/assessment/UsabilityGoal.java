@@ -1,4 +1,4 @@
-package com.unicap.tcc.usability.api.models;
+package com.unicap.tcc.usability.api.models.assessment;
 
 import com.unicap.tcc.usability.api.models.enums.UsabilityAttribute;
 import lombok.AllArgsConstructor;

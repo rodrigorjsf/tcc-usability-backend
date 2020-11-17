@@ -3,13 +3,13 @@ package com.unicap.tcc.usability.api.models.enums;
 import lombok.Getter;
 
 @Getter
-public enum ParticipationLocalType {
-    P("In Person"),
-    R("Remote");
+public enum CategoriesEnum {
+    SC("SmartCity"),
+    UA("UsabilityAttribute");
 
     private final String description;
 
-    ParticipationLocalType(String description){
+    CategoriesEnum(String description){
         this.description = description;
     }
 }
