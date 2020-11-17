@@ -1,25 +1,16 @@
-# Backend Whiskies
+# ValidUsabilityAssessment :: Backend
 
-**Backend destinado ao projeto da eletiva de React da Universidade Católica de Pernambuco.**
-
-```
-:: GRUPO ::
-
-Rodrigo França
-Lucas Matheus
-```
-
-Projeto de desenvolvimento do módulo _backend_ da aplicação **Whiskies**, implementado em linguagem de programação Java, com o objetivo de prover as funcionalidades necessárias para o módulo _frontend_ implementado em linguagem de programação TypeScript utilizando a biblioteca React.
+Projeto de desenvolvimento do módulo _backend_ da aplicação **ValidUsabilityAssessment**  implementado em linguagem de programação Java, com o objetivo de prover as funcionalidades necessárias para o módulo _frontend_ implementado no framework Angular.
 
 ```
-                    :: PROJETO WHISKIES ::
+                    :: ValidUsabilityAssessment ::
 
-┌────────────┐       ┌───┬──────────┐       ┌──────────────┐
-│  WHISKIES  │       │ R │ WHISKIES │       │              │
-│  frontend  │ <===> │ E │ Backend  │ <===> │      BD      │
-│  (React)   │       │ S │ (Java)   │       │ (PostgreSQL) │
-│            │       │ T │          │       │              │
-└────────────┘       └───┴──────────┘       └──────────────┘
+┌────────────┐       ┌───┬─────────┐       ┌──────────────┐
+│            │       │ R │         │       │              │
+│  Frontend  │ <===> │ E │ Backend │ <===> │      BD      │
+│  (Angular) │       │ S │ (Java)  │       │ (PostgreSQL) │
+│            │       │ T │         │       │              │
+└────────────┘       └───┴─────────┘       └──────────────┘
 ```
 
 Este projeto usa as seguintes tecnologias:
@@ -34,11 +25,6 @@ Este projeto usa as seguintes tecnologias:
 - [Spring Security](https://spring.io/projects/spring-security)
      ->  [JWT](https://jwt.io/)
 - [Swagger](https://springfox.github.io/springfox/docs/snapshot/)
-- [Amazon S3](https://www.google.com/aclk?sa=L&ai=DChcSEwjKhOPvmZnqAhWLDJEKHRB0C7wYABAAGgJjZQ&sig=AOD64_3OWaMI-LTewANXHepfmhbkuLfHyQ&q=&ved=2ahUKEwiv5c7vmZnqAhVPKLkGHcJbCB4Q0Qx6BAgVEAE&adurl=)
-
-## Documentação API
-
-- [Whiskies API](https://project-whiskies-backend.herokuapp.com/swagger-ui.html)
 
 ## 1- Ferramentas e Configurações
 
