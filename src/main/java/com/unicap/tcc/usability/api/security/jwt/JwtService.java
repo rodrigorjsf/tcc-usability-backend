@@ -1,10 +1,13 @@
 package com.unicap.tcc.usability.api.security.jwt;
 
 import com.unicap.tcc.usability.api.models.User;
+import com.unicap.tcc.usability.api.properties.SecurityProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -14,16 +17,13 @@ import java.util.Date;
 import java.util.HashMap;
 
 @Service
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class JwtService {
 
-
-    @Value("${security.jwt.expiration}")
-    private String expiration;
-    @Value("${security.jwt.sign-key}")
-    private String signKey;
+    private final SecurityProperties securityProperties;
 
     public String generateToken(User user) {
-        Long expirationString = Long.valueOf(this.expiration);
+        Long expirationString = Long.valueOf(securityProperties.getJwtExpiration());
         LocalDateTime dataHoraExpiration = LocalDateTime.now().plusMinutes(expirationString);
         Date date = Date.from(dataHoraExpiration.atZone(ZoneId.systemDefault()).toInstant());
 
@@ -35,13 +35,13 @@ public class JwtService {
                 .setClaims(claims)
                 .setSubject(user.getLogin())
                 .setExpiration(date)
-                .signWith(SignatureAlgorithm.HS512, signKey)
+                .signWith(SignatureAlgorithm.HS512, securityProperties.getJwtSignKey())
                 .compact();
     }
 
     private Claims obterClaims(String token) throws ExpiredJwtException {
         return Jwts.parser()
-                .setSigningKey(signKey)
+                .setSigningKey(securityProperties.getJwtSignKey())
                 .parseClaimsJws(token)
                 .getBody();
     }

@@ -16,7 +16,7 @@ import java.util.UUID;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/api/scale")
+@RequestMapping("/scale")
 @Api("Scale API")
 @RequiredArgsConstructor
 public class ScaleResource {

@@ -28,7 +28,7 @@ import java.util.Objects;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/api/assessment")
+@RequestMapping("/assessment")
 @Api("Assessment API")
 @RequiredArgsConstructor
 public class AssessmentResource {

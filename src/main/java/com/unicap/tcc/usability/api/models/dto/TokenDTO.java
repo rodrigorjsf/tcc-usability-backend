@@ -12,8 +12,8 @@ import java.util.Collection;
 @AllArgsConstructor
 public class TokenDTO {
 
-    private String login;
-    private String token;
+    private String username;
+    private String accessToken;
     private Collection<? extends GrantedAuthority> roles;
 
 }

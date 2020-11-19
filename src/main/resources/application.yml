@@ -1,0 +1,86 @@
+server:
+  error:
+    include-stacktrace: on_trace_param
+  port: 8084
+  servlet:
+    context-path: /api/
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  batch:
+    initialize-schema: always
+    job:
+      #Disable batch job's auto start
+      enabled: false
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    password: banco123
+    url: jdbc:postgresql://localhost:5432/usability_db
+    username: postgres
+    continueOnError: true
+    initialSize: 0
+    timeBetweenEvictionRunsMillis: 5000
+    minEvictableIdleTimeMillis: 5000
+    minIdle: 0
+    initialization-mode: always
+  resources:
+    chain:
+      enabled: true
+  jpa:
+    show-sql: false
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+      naming_strategy: org.hibernate.cfg.DefaultNamingStrategy
+      jdbc:
+        lob:
+          non_contextual_creation: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        hbm2ddl:
+          auto: create
+        temp:
+          use_jdbc_metadata_defaults: false
+          hibernate.enable_lazy_load_no_trans: true
+        enable_lazy_load_no_trans: true
+  mail:
+    host: email-smtp.sa-east-1.amazonaws.com
+    password: BCa7g75XoKPoH65Pu8CL8u5CMDaXH4kjdyBAOOFryVVk
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth: true
+          connectiontimeout: 5000
+          starttls:
+            enable: true
+            required: true
+          timeout: 5000
+          writetimeout: 5000
+    username: AKIAVEETHJ3RMC46IWUI
+
+aws:
+  access_key_id:
+  secret_access_key:
+
+logging:
+  level:
+    io:
+      swagger:
+        models:
+          parameters:
+            AbstractSerializableParameter: error
+
+s3:
+  bucket: cadeira-spring-react
+  region: sa-east-1
+
+sas:
+  from: rodrigo.2018150572@unicap.br
+  from-name: Valid Usability Assessment
+
+security:
+    jwt-expiration: 30
+    jwt-sign-key: n2r5u7x!A%D*G-KaPdSgVkYp3s6v9y/B?E(H+MbQeThWmZq4t7w!z%C&F)J@NcRf
