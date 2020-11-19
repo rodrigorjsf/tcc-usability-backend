@@ -56,4 +56,8 @@ public class UserService implements UserDetailsService {
                 .roles(roles)
                 .build();
     }
+
+    public User findByEmail(String email) {
+        return userRepository.findByEmailIgnoreCase(email);
+    }
 }

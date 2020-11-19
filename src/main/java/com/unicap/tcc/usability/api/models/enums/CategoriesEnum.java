@@ -4,8 +4,15 @@ import lombok.Getter;
 
 @Getter
 public enum CategoriesEnum {
+    AP("Application"),
     SC("SmartCity"),
-    UA("UsabilityAttribute");
+    GO("Goals"),
+    VM("VariablesAndMeasurement"),
+    PA("Participants"),
+    TM("TasksAndMaterials"),
+    PR("Procedure"),
+    DT("DataCollectionAndAnalysis"),
+    TH("Threats");
 
     private final String description;
 

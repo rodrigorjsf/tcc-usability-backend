@@ -44,9 +44,8 @@ public class Assessment extends BaseEntity {
     @OneToOne(cascade = {CascadeType.ALL})
     private SmartCityQuestionnaire smartCityQuestionnaire;
 
-    @OneToMany(cascade = {CascadeType.ALL})
-    @JoinColumn(name = "assessment_id", referencedColumnName = "id", nullable = false)
-    private List<AttributeVariable> attributeVariables;
+    @OneToOne(cascade = {CascadeType.ALL})
+    private AssessmentVariables attributeAssessmentVariables;
 
     @OneToOne(cascade = {CascadeType.ALL})
     private Participant participant;

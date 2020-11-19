@@ -7,7 +7,6 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.unicap.tcc.usability.api.models.assessment.*;
-import com.unicap.tcc.usability.api.models.enums.ParticipationType;
 import com.unicap.tcc.usability.api.models.enums.SmartCityAttribute;
 
 import java.io.ByteArrayOutputStream;
@@ -156,26 +155,22 @@ public class PdfGenerator {
             catPart = new Chapter(new Paragraph(anchor), 2);
             subPara = new Paragraph("Usability attributes variables to be measured", subFont);
 
-            for (AttributeVariable attributeVariable : assessment.getAttributeVariables()) {
-                subCatPart = catPart.addSection(subPara);
-                subCatPart.add(new Paragraph(" " + attributeVariable.getUsabilityAttribute().getDescription() + ": "));
-                var list = new com.itextpdf.text.List();
-                attributeVariable.getVariableList().forEach(s -> list.add(new ListItem(s)));
-                subCatPart.add(list);
-                addEmptyLine(subPara, 1);
-                subCatPart.add(new Paragraph(" How will the variables be obtained: "));
-                subCatPart.add(new Paragraph(attributeVariable.getObtainedBy()));
-                addEmptyLine(subPara, 1);
-                subCatPart.add(new Paragraph(" Methods and criteria for measuring these variables: "));
-                subCatPart.add(new Paragraph(attributeVariable.getMethods()));
-                addEmptyLine(subPara, 1);
-                subCatPart.add(new Paragraph(" Methods and criteria for measuring these variables: "));
-                subCatPart.add(new Paragraph(attributeVariable.getMethods()));
-                addEmptyLine(subPara, 1);
-                subCatPart.add(new Paragraph(" Which scale will be used: "));
-                subCatPart.add(new Paragraph(attributeVariable.getScale().getName() +
-                        " (" + attributeVariable.getScale().getAcronym() + ")"));
-            }
+//            for (AssessmentVariables assessmentVariables : assessment.getAttributeAssessmentVariables()) {
+//                subCatPart = catPart.addSection(subPara);
+//                subCatPart.add(new Paragraph(" " + assessmentVariables.getUsabilityAttribute().getDescription() + ": "));
+//                var list = new com.itextpdf.text.List();
+//                assessmentVariables.getVariableList().forEach(s -> list.add(new ListItem(s)));
+//                subCatPart.add(list);
+//                addEmptyLine(subPara, 1);
+//                subCatPart.add(new Paragraph(" How will the variables be obtained (methods and criteria for measuring description): "));
+//                subCatPart.add(new Paragraph(assessmentVariables.getObtainedBy()));
+//                addEmptyLine(subPara, 1);
+//                subCatPart.add(new Paragraph(" Which scales will be used: "));
+//                var scaleList = new com.itextpdf.text.List();
+//                assessmentVariables.getScale().forEach(s -> scaleList.add(new ListItem(s.getName() +
+//                        " (" + s.getAcronym().toString() + ")")));
+//                subCatPart.add(scaleList);
+//            }
             document.add(catPart);
 
             //////////// PARTICIPANTS
@@ -193,9 +188,9 @@ public class PdfGenerator {
                     .getParticipantsQuantity().toString()));
             subCatPart.add(getKeyValueParagraph(" Participate method: ", assessment.getParticipant()
                     .getParticipationLocalType().getDescription().toUpperCase()));
-            subCatPart.add(getKeyValueParagraph(" Participation type: ", assessment.getParticipant()
-                    .getParticipationType().getDescription().toUpperCase()));
-            if (assessment.getParticipant().getParticipationType().equals(ParticipationType.C)) {
+            subCatPart.add(getKeyValueParagraph(" Participants will be compensated? ", assessment.getParticipant()
+                    .getHasCompensation() ? "YES" : "NO"));
+            if (assessment.getParticipant().getHasCompensation()) {
                 subCatPart.add(getKeyValueParagraph("  Form of compensation: ", assessment.getParticipant()
                         .getCompensationDescription()));
             }
@@ -265,8 +260,8 @@ public class PdfGenerator {
                 subCatPart.add(getKeyValueParagraph(" Step description: ", assessmentProcedureStep.getDescription()));
                 addEmptyLine(subPara, 1);
             }
-            subCatPart.add(getKeyValueParagraph(" There will be training for participants: ",
-                    assessment.getAssessmentProcedure().getWillHaveTraining() ? "YES" : "NO"));
+            subCatPart.add(getKeyValueParagraph(" Participants will be able to ask questions: ",
+                    assessment.getAssessmentProcedure().getQuestionsAllowed() ? "YES" : "NO"));
             subCatPart.add(getKeyValueParagraph(" Will there be a pilot assessment? ",
                     assessment.getAssessmentProcedure().getIsPilotAssessment() ? "YES" : "NO"));
             if (assessment.getAssessmentProcedure().getIsPilotAssessment()) {
@@ -287,8 +282,6 @@ public class PdfGenerator {
             subCatPart = catPart.addSection(subPara);
             addEmptyLine(subPara, 1);
             subCatPart.add(getKeyValueParagraph(" How will the data be collected: ", assessment.getAssessmentData().getDataCollectionProcedure()));
-            subCatPart.add(getKeyValueParagraph(" Participants will be able to ask questions: ",
-                    assessment.getAssessmentData().getQuestionsAllowed() ? "YES" : "NO"));
             subCatPart.add(getKeyValueParagraph(" How will the data collected be analyzed: ", assessment.getAssessmentData().getAnalysisDescription()));
             subCatPart.add(getKeyValueParagraph(" Will statistical methods be used? ",
                     assessment.getAssessmentData().getStatisticalMethods() ? "YES" : "NO"));

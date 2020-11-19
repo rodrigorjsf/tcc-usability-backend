@@ -67,7 +67,7 @@ public class AssessmentThreat extends BaseEntity {
     )
     private List<String> limitations;
 
-    @Column(name = "ethical_aspects_defined", columnDefinition = "boolean default false", insertable = false)
+    @Column(name = "ethical_aspects_defined", columnDefinition = "boolean default false")
     @Generated(GenerationTime.ALWAYS)
     private Boolean ethicalAspectsDefined;
 

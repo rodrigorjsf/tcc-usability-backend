@@ -2,7 +2,6 @@ package com.unicap.tcc.usability.api.models.assessment;
 
 import com.unicap.tcc.usability.api.models.BaseEntity;
 import com.unicap.tcc.usability.api.models.Scale;
-import com.unicap.tcc.usability.api.models.enums.ScalesEnum;
 import com.unicap.tcc.usability.api.models.enums.UsabilityAttribute;
 import com.vladmihalcea.hibernate.type.array.ListArrayType;
 import lombok.AllArgsConstructor;
@@ -23,7 +22,7 @@ import java.util.List;
 @AllArgsConstructor
 @SuperBuilder
 @Entity
-@Table(name = "attributes_variable")
+@Table(name = "variable")
 @TypeDefs({
         @TypeDef(
                 name = "list-array",
@@ -31,14 +30,14 @@ import java.util.List;
         ),
 })
 public @Data
-class AttributeVariable extends BaseEntity {
+class Variable extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "assessment_id", insertable = false, updatable = false)
-    private Long assessmentId;
+    @Column(name = "assessment_variable_id", insertable = false, updatable = false)
+    private Long assessmentVariableId;
 
     @Column(name = "usability_attribute", columnDefinition = "varchar(20)", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -62,10 +61,10 @@ class AttributeVariable extends BaseEntity {
     @Column
     private String obtainedBy;
 
-    @Column
-    private String methods;
-
-    @ManyToOne(cascade = {CascadeType.ALL})
-    @JoinColumn(name = "scale_id", referencedColumnName = "id", nullable = false)
-    private Scale scale;
+    @ManyToMany(cascade = {CascadeType.ALL})
+    @JoinTable(
+            name = "av_scale",
+            joinColumns = @JoinColumn(name = "attribute_variable_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "scale_id", referencedColumnName = "id"))
+    private List<Scale> scale;
 }

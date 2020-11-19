@@ -49,14 +49,14 @@ public class AssessmentProcedure extends BaseEntity {
     @JoinColumn(name = "assessment_procedure_id", referencedColumnName = "id", nullable = false)
     private List<AssessmentProcedureStep> assessmentProcedureSteps;
 
-    @Column(name = "will_have_training", columnDefinition = "boolean default false", insertable = false)
-    @Generated(GenerationTime.ALWAYS)
-    private Boolean willHaveTraining;
-
-    @Column(name = "is_pilot_assessment", columnDefinition = "boolean default false", insertable = false)
+    @Column(name = "is_pilot_assessment", columnDefinition = "boolean default false")
     @Generated(GenerationTime.ALWAYS)
     private Boolean isPilotAssessment;
 
     @Column
     private String pilotDescription;
+
+    @Column(name = "questions_allowed", columnDefinition = "boolean default false")
+    @Generated(GenerationTime.ALWAYS)
+    private Boolean questionsAllowed;
 }

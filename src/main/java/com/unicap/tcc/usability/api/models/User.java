@@ -1,6 +1,8 @@
 package com.unicap.tcc.usability.api.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.unicap.tcc.usability.api.models.enums.CategoriesEnum;
+import com.unicap.tcc.usability.api.models.enums.UserProfileEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -46,6 +48,13 @@ public class User extends BaseEntity implements Serializable {
 
     @Column(columnDefinition = "boolean default false")
     private Boolean admin;
+
+    @Column(columnDefinition = "boolean default false")
+    private boolean isEnabled;
+
+    @Column(columnDefinition = "boolean default false")
+    private boolean isReviewer;
+
 
     public Boolean isAdmin() {
         return this.admin;
