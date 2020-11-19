@@ -1,5 +1,6 @@
-package com.unicap.tcc.usability.api.models;
+package com.unicap.tcc.usability.api.models.assessment;
 
+import com.unicap.tcc.usability.api.models.BaseEntity;
 import com.vladmihalcea.hibernate.type.array.ListArrayType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -66,7 +67,7 @@ public class AssessmentThreat extends BaseEntity {
     )
     private List<String> limitations;
 
-    @Column(name = "ethical_aspects_defined", columnDefinition = "boolean default false", insertable = false)
+    @Column(name = "ethical_aspects_defined", columnDefinition = "boolean default false")
     @Generated(GenerationTime.ALWAYS)
     private Boolean ethicalAspectsDefined;
 

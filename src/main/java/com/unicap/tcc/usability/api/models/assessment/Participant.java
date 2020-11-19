@@ -1,5 +1,6 @@
-package com.unicap.tcc.usability.api.models;
+package com.unicap.tcc.usability.api.models.assessment;
 
+import com.unicap.tcc.usability.api.models.BaseEntity;
 import com.unicap.tcc.usability.api.models.enums.ParticipationLocalType;
 import com.unicap.tcc.usability.api.models.enums.ParticipationType;
 import com.vladmihalcea.hibernate.type.array.ListArrayType;
@@ -38,9 +39,9 @@ public class Participant extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ParticipationLocalType participationLocalType;
 
-    @Column(name = "participation_type", columnDefinition = "varchar(1)", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private ParticipationType participationType;
+    @Column(name = "has_compensation", columnDefinition = "boolean default false")
+    @Generated(GenerationTime.ALWAYS)
+    private Boolean hasCompensation;
 
     @Column
     private String compensationDescription;
@@ -61,7 +62,7 @@ public class Participant extends BaseEntity {
     private List<String> criteriaList;
 
 
-    @Column(name = "has_collected_information", columnDefinition = "boolean default false", insertable = false)
+    @Column(name = "has_collected_information", columnDefinition = "boolean default false")
     @Generated(GenerationTime.ALWAYS)
     private Boolean hasCollectedInformation;
 

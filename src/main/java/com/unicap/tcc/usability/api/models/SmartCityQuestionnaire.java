@@ -23,28 +23,28 @@ public class SmartCityQuestionnaire extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "has_data_management", columnDefinition = "boolean default false", insertable = false)
+    @Column(name = "has_data_management", columnDefinition = "boolean default false")
     @Generated(GenerationTime.ALWAYS)
     private Boolean hasDataManagement;
-    @Column(name = "has_app_execution", columnDefinition = "boolean default false", insertable = false)
+    @Column(name = "has_app_execution", columnDefinition = "boolean default false")
     @Generated(GenerationTime.ALWAYS)
     private Boolean hasAppExecution;
-    @Column(name = "has_sensor_network", columnDefinition = "boolean default false", insertable = false)
+    @Column(name = "has_sensor_network", columnDefinition = "boolean default false")
     @Generated(GenerationTime.ALWAYS)
     private Boolean hasSensorNetwork;
-    @Column(name = "has_data_processing", columnDefinition = "boolean default false", insertable = false)
+    @Column(name = "has_data_processing", columnDefinition = "boolean default false")
     @Generated(GenerationTime.ALWAYS)
     private Boolean hasDataProcessing;
-    @Column(name = "has_data_access", columnDefinition = "boolean default false", insertable = false)
+    @Column(name = "has_data_access", columnDefinition = "boolean default false")
     @Generated(GenerationTime.ALWAYS)
     private Boolean hasDataAccess;
-    @Column(name = "has_service_management", columnDefinition = "boolean default false", insertable = false)
+    @Column(name = "has_service_management", columnDefinition = "boolean default false")
     @Generated(GenerationTime.ALWAYS)
     private Boolean hasServiceManagement;
-    @Column(name = "has_software_tools", columnDefinition = "boolean default false", insertable = false)
+    @Column(name = "has_software_tools", columnDefinition = "boolean default false")
     @Generated(GenerationTime.ALWAYS)
     private Boolean hasSoftwareTools;
-    @Column(name = "define_city_model", columnDefinition = "boolean default false", insertable = false)
+    @Column(name = "define_city_model", columnDefinition = "boolean default false")
     @Generated(GenerationTime.ALWAYS)
     private Boolean defineCityModel;
 

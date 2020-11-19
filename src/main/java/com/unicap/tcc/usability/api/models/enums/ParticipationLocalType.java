@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum ParticipationLocalType {
-    P("InPerson"),
+    P("In Person"),
     R("Remote");
 
     private final String description;

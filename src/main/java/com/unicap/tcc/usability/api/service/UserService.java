@@ -5,6 +5,7 @@ import com.unicap.tcc.usability.api.exception.SenhaInvalidaException;
 import com.unicap.tcc.usability.api.exception.UserAlreadyRegisteredException;
 import com.unicap.tcc.usability.api.models.User;
 import com.unicap.tcc.usability.api.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,13 +18,11 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class UserService implements UserDetailsService {
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
 
     @Transactional
     public User save(User user) {
@@ -56,5 +55,9 @@ public class UserService implements UserDetailsService {
                 .password(user.getPassword())
                 .roles(roles)
                 .build();
+    }
+
+    public User findByEmail(String email) {
+        return userRepository.findByEmailIgnoreCase(email);
     }
 }

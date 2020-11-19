@@ -1,5 +1,6 @@
-package com.unicap.tcc.usability.api.models;
+package com.unicap.tcc.usability.api.models.assessment;
 
+import com.unicap.tcc.usability.api.models.BaseEntity;
 import com.vladmihalcea.hibernate.type.array.ListArrayType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,12 +17,6 @@ import javax.persistence.*;
 @SuperBuilder
 @Entity
 @Table(name = "assessment_procedure_step")
-@TypeDefs({
-        @TypeDef(
-                name = "list-array",
-                typeClass = ListArrayType.class
-        ),
-})
 public class AssessmentProcedureStep extends BaseEntity {
 
     @Id

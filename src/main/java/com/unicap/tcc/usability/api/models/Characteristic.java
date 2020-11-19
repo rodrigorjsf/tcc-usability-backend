@@ -18,9 +18,9 @@ public class Characteristic extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column
+    @Column(name = "category", columnDefinition = "varchar(2)")
     private String category;
-    @Column
+    @Column(name = "key", columnDefinition = "varchar(3)")
     private String key;
     @Column(name = "description", columnDefinition = "text")
     private String description;

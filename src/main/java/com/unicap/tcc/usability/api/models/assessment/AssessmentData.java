@@ -1,5 +1,6 @@
-package com.unicap.tcc.usability.api.models;
+package com.unicap.tcc.usability.api.models.assessment;
 
+import com.unicap.tcc.usability.api.models.BaseEntity;
 import com.vladmihalcea.hibernate.type.array.ListArrayType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -33,14 +34,10 @@ public class AssessmentData extends BaseEntity {
     @Column
     private String dataCollectionProcedure;
 
-    @Column(name = "questions_allowed", columnDefinition = "boolean default false", insertable = false)
-    @Generated(GenerationTime.ALWAYS)
-    private Boolean questionsAllowed;
-
     @Column(name = "analysis_description", columnDefinition = "text")
     private String analysisDescription;
 
-    @Column(name = "statistical_methods", columnDefinition = "boolean default false", insertable = false)
+    @Column(name = "statistical_methods", columnDefinition = "boolean default false")
     @Generated(GenerationTime.ALWAYS)
     private Boolean statisticalMethods;
 

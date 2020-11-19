@@ -64,7 +64,7 @@ public class Scale extends BaseEntity {
 
     @OneToMany(cascade = {CascadeType.ALL})
     @JoinColumn(name = "scale_id", referencedColumnName = "id", nullable = false)
-    private List<ScaleQuestions> scaleQuestions;
+    private List<ScaleQuestion> scaleQuestions;
 }
 
 

@@ -4,11 +4,11 @@ import lombok.Getter;
 
 @Getter
 public enum UsabilityAttribute {
-    LEARNABILITY("Learnability"),
-    EFFICIENCY("Efficiency"),
-    USER_RETENTION("UserRetentionOT"),
-    ERROR_RATE("ErrorRate"),
-    SATISFACTION("Satisfaction");
+    LRN("Learnability"),
+    EFF("Efficiency"),
+    USR("UserRetentionOT"),
+    ERR("ErrorRate"),
+    STF("Satisfaction");
 
     private final String description;
 

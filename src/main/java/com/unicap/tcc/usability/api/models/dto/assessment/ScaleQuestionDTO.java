@@ -1,6 +1,7 @@
-package com.unicap.tcc.usability.api.models;
+package com.unicap.tcc.usability.api.models.dto.assessment;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.unicap.tcc.usability.api.models.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,7 @@ import javax.persistence.*;
 @SuperBuilder
 @Entity
 @Table(name = "scale_questions")
-public class ScaleQuestions extends BaseEntity {
+public class ScaleQuestionDTO extends BaseEntity {
 
     @JsonIgnore
     @Id
