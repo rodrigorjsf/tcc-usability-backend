@@ -19,7 +19,7 @@ import java.util.UUID;
 @SuperBuilder
 @Entity
 @Table(name = "confirmation_token")
-public class ConfirmationToken extends BaseEntity implements Serializable {
+public class ConfirmationToken extends BaseEntity {
 
     @JsonIgnore
     @Id
@@ -27,10 +27,11 @@ public class ConfirmationToken extends BaseEntity implements Serializable {
     private Long id;
 
     @Column(columnDefinition = "uuid default uuid_generate_v4()", insertable = false)
-    private UUID confirmationToken;
+    private UUID uid;
 
     @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
     @JoinColumn(nullable = false, name = "user_id")
     private User user;
+
 
 }

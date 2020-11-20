@@ -1,8 +1,7 @@
 package com.unicap.tcc.usability.api.service;
 
-import com.amazonaws.services.kinesisanalyticsv2.model.EnvironmentProperties;
 import com.unicap.tcc.usability.api.models.assessment.Assessment;
-import com.unicap.tcc.usability.api.models.dto.assessment.AssessmentCreationDTO;
+import com.unicap.tcc.usability.api.properties.AmazonSASProperties;
 import com.unicap.tcc.usability.api.repository.UserRepository;
 import com.unicap.tcc.usability.api.utils.HtmlUtils;
 import com.unicap.tcc.usability.api.utils.LoggerUtil;
@@ -14,7 +13,6 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
 import javax.mail.internet.MimeMessage;
-import java.time.LocalDate;
 import java.util.List;
 
 @Component("MailSender")
@@ -24,8 +22,9 @@ public class MailSender {
 
     private final JavaMailSender javaMailSender;
     private final UserRepository userRepository;
+    private final AmazonSASProperties amazonSASProperties;
 
-    private void send(String[] recipients, String subject, String text) {
+    public void send(String[] recipients, String subject, String text) {
 
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, "utf-8");
@@ -33,7 +32,7 @@ public class MailSender {
             helper.setText(text, true);
             helper.setTo(recipients);
             helper.setSubject(subject);
-            helper.setFrom("no-reply@validua.com");
+            helper.setFrom(amazonSASProperties.getFrom(), amazonSASProperties.getFromName());
             javaMailSender.send(message);
         } catch (Exception e) {
             LoggerUtil.logError(log, e, text);
@@ -66,9 +65,9 @@ public class MailSender {
             htmlMailText = userOptional.map(user ->
                     HtmlUtils.setHtmlMailCollaborator(assessment, user))
                     .orElseGet(() -> HtmlUtils.setHtmlMailNewCollaborator(assessment));
-            if (!htmlMailText.equals("")){
+            if (!htmlMailText.equals("")) {
                 String subject = "[VALID USABILITY ASSESSMENT] - COLLABORATOR INVITE";
-                send(new String[]{email} , subject, htmlMailText);
+                send(new String[]{email}, subject, htmlMailText);
             }
         });
     }
