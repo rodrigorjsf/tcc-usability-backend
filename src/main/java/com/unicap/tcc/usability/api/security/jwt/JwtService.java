@@ -41,7 +41,7 @@ public class JwtService {
                         .setExpiration(date)
                         .signWith(SignatureAlgorithm.HS512, securityProperties.getJwtSignKey())
                         .compact())
-                .date(date)
+                .date(date.getTime())
                 .build();
     }
 
