@@ -40,7 +40,7 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         hbm2ddl:
-          auto: create
+          auto: update
         temp:
           use_jdbc_metadata_defaults: false
           hibernate.enable_lazy_load_no_trans: true
@@ -82,5 +82,5 @@ sas:
   from-name: Valid Usability Assessment
 
 security:
-    jwt-expiration: 30
+    jwt-expiration: 120
     jwt-sign-key: n2r5u7x!A%D*G-KaPdSgVkYp3s6v9y/B?E(H+MbQeThWmZq4t7w!z%C&F)J@NcRf

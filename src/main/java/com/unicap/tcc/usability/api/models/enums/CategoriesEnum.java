@@ -19,4 +19,13 @@ public enum CategoriesEnum {
     CategoriesEnum(String description){
         this.description = description;
     }
+
+    public static CategoriesEnum convert(String name){
+        for (CategoriesEnum value : CategoriesEnum.values()) {
+            if(value.name().equals(name)){
+                return value;
+            }
+        }
+        return null;
+    }
 }

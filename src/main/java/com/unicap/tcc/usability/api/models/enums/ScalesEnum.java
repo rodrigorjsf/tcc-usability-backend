@@ -1,9 +1,7 @@
 package com.unicap.tcc.usability.api.models.enums;
 
-import com.unicap.tcc.usability.api.models.Scale;
 import lombok.Getter;
 
-import java.util.List;
 import java.util.Optional;
 
 @Getter

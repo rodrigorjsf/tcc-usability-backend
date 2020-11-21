@@ -3,8 +3,9 @@ package com.unicap.tcc.usability.api.models.assessment;
 import com.unicap.tcc.usability.api.models.BaseEntity;
 import com.vladmihalcea.hibernate.type.array.ListArrayType;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Generated;
 import org.hibernate.annotations.GenerationTime;
@@ -15,11 +16,12 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter
+@Setter
 @SuperBuilder
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "assessment_procedure")
 @TypeDefs({
         @TypeDef(

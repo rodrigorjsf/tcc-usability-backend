@@ -6,7 +6,10 @@ import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.unicap.tcc.usability.api.models.assessment.*;
+import com.unicap.tcc.usability.api.models.assessment.Assessment;
+import com.unicap.tcc.usability.api.models.assessment.AssessmentProcedureStep;
+import com.unicap.tcc.usability.api.models.assessment.Task;
+import com.unicap.tcc.usability.api.models.assessment.UsabilityGoal;
 import com.unicap.tcc.usability.api.models.enums.SmartCityAttribute;
 
 import java.io.ByteArrayOutputStream;

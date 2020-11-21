@@ -2,22 +2,20 @@ package com.unicap.tcc.usability.api.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
-import java.io.Serializable;
 import java.util.UUID;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter
+@Setter
 @SuperBuilder
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "confirmation_token")
 public class ConfirmationToken extends BaseEntity {
 

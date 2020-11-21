@@ -71,12 +71,14 @@ public class UserResource {
 
         if (Objects.nonNull(token)) {
             User user = userRepository.findByEmailIgnoreCase(token.getUser().getEmail());
-            user.setEnabled(true);
+            if (user.getIsEnabled().equals(true))
+                return ResponseEntity.ok().build();
+            user.setIsEnabled(true);
             userRepository.save(user);
             ResponseEntity.ok().body(UserDTO.builder()
                     .admin(user.getAdmin())
                     .email(user.getEmail())
-                    .isEnable(user.isEnabled())
+                    .isEnable(user.getIsEnabled())
                     .login(user.getLogin())
                     .build());
         }

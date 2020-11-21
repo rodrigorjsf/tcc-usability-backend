@@ -4,15 +4,17 @@ import com.unicap.tcc.usability.api.exception.ApiException;
 import com.unicap.tcc.usability.api.models.SmartCityQuestionnaire;
 import com.unicap.tcc.usability.api.models.assessment.Assessment;
 import com.unicap.tcc.usability.api.models.constants.ApplicationConstants;
-import com.unicap.tcc.usability.api.models.dto.assessment.AssessmentVariablesDTO;
-import com.unicap.tcc.usability.api.models.dto.assessment.AssessmentCreationDTO;
+import com.unicap.tcc.usability.api.models.dto.AssessmentListDTO;
 import com.unicap.tcc.usability.api.models.dto.SmartCityResponse;
+import com.unicap.tcc.usability.api.models.dto.assessment.AssessmentCreationDTO;
 import com.unicap.tcc.usability.api.models.dto.assessment.CollaboratorDTO;
+import com.unicap.tcc.usability.api.models.dto.assessment.SmartCityQuestionnaireDTO;
 import com.unicap.tcc.usability.api.models.dto.assessment.UsabilityGoalDTO;
 import com.unicap.tcc.usability.api.service.AssessmentService;
 import com.unicap.tcc.usability.api.utils.UUIDUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,7 +26,10 @@ import javax.validation.constraints.Pattern;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -46,8 +51,8 @@ public class AssessmentResource {
 
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation("Assessment creation.")
-    @ApiResponse(code = 200, message = "Assessment created.")
+    @ApiOperation("Assessment plan creation.")
+    @ApiResponse(code = 200, message = "Assessment plan created.")
     public ResponseEntity<Assessment> createAssessment(@RequestBody @Valid AssessmentCreationDTO assessmentCreationDTO) {
         Assessment assessment = assessmentService.createAssessment(assessmentCreationDTO);
         if (Objects.isNull(assessment)) {
@@ -56,9 +61,40 @@ public class AssessmentResource {
         return ResponseEntity.ok().body(assessment);
     }
 
+    @GetMapping("/list/by-user-uid/{uid}")
+    @ApiOperation("Search list of assessment plans.")
+    public ResponseEntity<List<AssessmentListDTO>> findPlanListByUid(@PathVariable(value = "uid") @ApiParam("User uid") String uid) {
+        var assessmentList = assessmentService.findUserAssessmentList(UUID.fromString(uid));
+        if (assessmentList.isEmpty())
+            return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().body(assessmentList);
+    }
+
+    @GetMapping("/by-uid/{uid}")
+    @ApiOperation("Search list of assessment plans.")
+    public ResponseEntity<Assessment> findAssessmentPlanByUid(@PathVariable(value = "uid") @ApiParam("Assessment plan uid") String uid) {
+        Optional<Assessment> assessmentOptional = assessmentService.findAssessmentPlanByUid(UUID.fromString(uid));
+        if (assessmentOptional.isEmpty())
+            return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().body(assessmentOptional.get());
+    }
+
+
+    @PostMapping("/add/smartcity-questionnaire")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation("Add smartcity questionnaire to assessment plan.")
+    @ApiResponse(code = 200, message = "Smartcity questionnaire added.")
+    public ResponseEntity<Assessment> addSmartCityQuestionnaire(@RequestBody @Valid SmartCityQuestionnaireDTO questionnaire) {
+        Assessment assessment = assessmentService.addSmartCityQuestionnaire(questionnaire);
+        if (Objects.isNull(assessment)) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok().body(assessment);
+    }
+
     @PostMapping("/add/collaborator")
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation("Add collaborator to assessment.")
+    @ApiOperation("Add collaborator to assessment plan.")
     @ApiResponse(code = 200, message = "Collaborator added.")
     public ResponseEntity<Assessment> addCollaborators(@RequestBody @Valid CollaboratorDTO collaboratorDTO) {
         Assessment assessment = assessmentService.addCollaborator(collaboratorDTO);

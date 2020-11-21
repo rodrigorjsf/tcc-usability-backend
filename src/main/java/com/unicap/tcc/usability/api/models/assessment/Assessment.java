@@ -1,25 +1,31 @@
 package com.unicap.tcc.usability.api.models.assessment;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.unicap.tcc.usability.api.models.BaseEntity;
 import com.unicap.tcc.usability.api.models.SmartCityQuestionnaire;
 import com.unicap.tcc.usability.api.models.User;
+import com.unicap.tcc.usability.api.models.enums.AssessmentState;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter
+@Setter
 @SuperBuilder
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "assessment")
-public class Assessment extends BaseEntity {
+public class Assessment extends BaseEntity implements Serializable {
 
+    @JsonIgnore
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,8 +33,12 @@ public class Assessment extends BaseEntity {
     @Column(columnDefinition = "uuid default uuid_generate_v4()", insertable = false)
     private UUID uid;
 
-    @OneToOne(fetch=FetchType.LAZY)
+    @OneToOne(fetch=FetchType.EAGER)
     private User systemUser;
+
+    @Column(name = "state", columnDefinition = "varchar(30)")
+    @Enumerated(EnumType.STRING)
+    private AssessmentState state;
     ////////// GOALS
     @Column
     private String projectName;

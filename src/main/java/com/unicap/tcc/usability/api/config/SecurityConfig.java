@@ -7,7 +7,6 @@ import com.unicap.tcc.usability.api.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -70,6 +69,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/user/**").hasAnyRole("USER", "ADMIN")
                 .antMatchers("/assessment/**").hasAnyRole("USER", "ADMIN")
                 .antMatchers("/scale/**").hasAnyRole("USER", "ADMIN")
+                .antMatchers("/question/**").hasAnyRole("USER", "ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -81,11 +81,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) {
         web.ignoring().antMatchers(
-             "/v2/api-docs",
-             "/configuration/ui",
-             "/swagger-resources/**",
-             "/configuration/security",
-             "/swagger-ui.html",
-             "/webjars/**");
+             "/api/v2/api-docs",
+             "/api/configuration/ui",
+             "/api/swagger-resources/**",
+             "/api/configuration/security",
+             "/api/swagger-ui.html",
+             "/api/webjars/**");
     }
 }

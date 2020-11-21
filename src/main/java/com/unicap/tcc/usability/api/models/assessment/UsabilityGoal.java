@@ -2,17 +2,19 @@ package com.unicap.tcc.usability.api.models.assessment;
 
 import com.unicap.tcc.usability.api.models.enums.UsabilityAttribute;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Getter
+@Setter
+@SuperBuilder
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "usabiliy_goals")
 public class UsabilityGoal {
 
