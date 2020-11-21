@@ -6,6 +6,8 @@ server:
     context-path: /api/
 
 spring:
+  profiles:
+    active: dev
   main:
     allow-bean-definition-overriding: true
   batch:
@@ -13,17 +15,6 @@ spring:
     job:
       #Disable batch job's auto start
       enabled: false
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    password: banco123
-    url: jdbc:postgresql://localhost:5432/usability_db
-    username: postgres
-    continueOnError: true
-    initialSize: 0
-    timeBetweenEvictionRunsMillis: 5000
-    minEvictableIdleTimeMillis: 5000
-    minIdle: 0
-    initialization-mode: always
   resources:
     chain:
       enabled: true

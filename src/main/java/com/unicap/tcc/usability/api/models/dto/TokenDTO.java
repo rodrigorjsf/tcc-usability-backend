@@ -19,7 +19,7 @@ public class TokenDTO {
     private String username;
     private String userUid;
     private String accessToken;
-    private Long date;
+    private Long expirationTime;
     private Collection<? extends GrantedAuthority> roles;
 
 }
