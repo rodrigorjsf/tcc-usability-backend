@@ -1,12 +1,10 @@
 package com.unicap.tcc.usability.api.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.unicap.tcc.usability.api.models.enums.CategoriesEnum;
-import com.unicap.tcc.usability.api.models.enums.UserProfileEnum;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
@@ -14,12 +12,12 @@ import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 import java.util.UUID;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter
+@Setter
 @SuperBuilder
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "sys_user")
 public class User extends BaseEntity implements Serializable {
 
@@ -31,10 +29,12 @@ public class User extends BaseEntity implements Serializable {
     @Column(columnDefinition = "uuid default uuid_generate_v4()", insertable = false)
     private UUID uid;
 
+    @JsonIgnore
     @Column
     @NotEmpty(message = "Campo login é obrigatório.")
     private String login;
 
+    @JsonIgnore
     @Column
     @NotEmpty(message = "Campo password é obrigatório.")
     private String password;
@@ -42,18 +42,22 @@ public class User extends BaseEntity implements Serializable {
     @Column
     private String name;
 
+    @JsonIgnore
     @Column
     @NotEmpty(message = "Campo e-mail é obrigatório.")
     private String email;
 
+    @JsonIgnore
     @Column(columnDefinition = "boolean default false")
     private Boolean admin;
 
+    @JsonIgnore
     @Column(columnDefinition = "boolean default false")
-    private boolean isEnabled;
+    private Boolean isEnabled;
 
+    @JsonIgnore
     @Column(columnDefinition = "boolean default false")
-    private boolean isReviewer;
+    private Boolean isReviewer;
 
 
     public Boolean isAdmin() {

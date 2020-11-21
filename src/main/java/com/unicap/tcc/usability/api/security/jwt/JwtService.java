@@ -1,6 +1,7 @@
 package com.unicap.tcc.usability.api.security.jwt;
 
 import com.unicap.tcc.usability.api.models.User;
+import com.unicap.tcc.usability.api.models.dto.TokenDTO;
 import com.unicap.tcc.usability.api.properties.SecurityProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -8,7 +9,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -22,7 +22,7 @@ public class JwtService {
 
     private final SecurityProperties securityProperties;
 
-    public String generateToken(User user) {
+    public TokenDTO generateToken(User user) {
         Long expirationString = Long.valueOf(securityProperties.getJwtExpiration());
         LocalDateTime dataHoraExpiration = LocalDateTime.now().plusMinutes(expirationString);
         Date date = Date.from(dataHoraExpiration.atZone(ZoneId.systemDefault()).toInstant());
@@ -31,12 +31,18 @@ public class JwtService {
         claims.put("roles", user.isAdmin() ? new String[]{"USER", "ADMIN"} : new String[]{"USER"});
         //claims.put("expiration", date);
 
-        return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(user.getLogin())
-                .setExpiration(date)
-                .signWith(SignatureAlgorithm.HS512, securityProperties.getJwtSignKey())
-                .compact();
+        return TokenDTO.builder()
+                .name(user.getName())
+                .username(user.getLogin())
+                .userUid(user.getUid().toString())
+                .accessToken(Jwts.builder()
+                        .setClaims(claims)
+                        .setSubject(user.getLogin())
+                        .setExpiration(date)
+                        .signWith(SignatureAlgorithm.HS512, securityProperties.getJwtSignKey())
+                        .compact())
+                .date(date)
+                .build();
     }
 
     private Claims obterClaims(String token) throws ExpiredJwtException {

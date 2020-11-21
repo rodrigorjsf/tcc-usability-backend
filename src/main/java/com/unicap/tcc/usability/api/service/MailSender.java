@@ -58,13 +58,13 @@ public class MailSender {
 //        send(returnFileImpl.getEmails(), subject, htmlMailText);
 //    }
 
-    public void sendCollaboratorEmail(Assessment assessment, List<String> emails) {
+    public void sendCollaboratorEmail(Assessment assessment, String assessmentUid, List<String> emails) {
         emails.forEach(email -> {
             String htmlMailText;
             var userOptional = userRepository.findByEmail(email);
             htmlMailText = userOptional.map(user ->
-                    HtmlUtils.setHtmlMailCollaborator(assessment, user))
-                    .orElseGet(() -> HtmlUtils.setHtmlMailNewCollaborator(assessment));
+                    HtmlUtils.setHtmlMailCollaborator(assessment, assessmentUid, user))
+                    .orElseGet(() -> HtmlUtils.setHtmlMailNewCollaborator(assessment, assessmentUid));
             if (!htmlMailText.equals("")) {
                 String subject = "[VALID USABILITY ASSESSMENT] - COLLABORATOR INVITE";
                 send(new String[]{email}, subject, htmlMailText);

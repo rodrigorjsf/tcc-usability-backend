@@ -1,24 +1,22 @@
 package com.unicap.tcc.usability.api.models.assessment;
 
 import com.unicap.tcc.usability.api.models.BaseEntity;
-import com.unicap.tcc.usability.api.models.SmartCityQuestionnaire;
 import com.unicap.tcc.usability.api.models.User;
-import com.unicap.tcc.usability.api.models.enums.ParticipationLocalType;
 import com.unicap.tcc.usability.api.models.enums.UserProfileEnum;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
-import java.util.List;
-import java.util.UUID;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter
+@Setter
 @SuperBuilder
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "assessment_user_group")
 public class AssessmentUserGroup extends BaseEntity {
 

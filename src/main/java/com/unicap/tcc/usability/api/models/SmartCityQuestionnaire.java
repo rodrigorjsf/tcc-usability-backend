@@ -1,25 +1,30 @@
 package com.unicap.tcc.usability.api.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Generated;
 import org.hibernate.annotations.GenerationTime;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter
+@Setter
 @SuperBuilder
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "sc_questionnaire")
-public class SmartCityQuestionnaire extends BaseEntity {
+public class SmartCityQuestionnaire extends BaseEntity implements Serializable {
 
+    @JsonIgnore
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -48,6 +53,7 @@ public class SmartCityQuestionnaire extends BaseEntity {
     @Generated(GenerationTime.ALWAYS)
     private Boolean defineCityModel;
 
+    @JsonIgnore
     public List<Boolean> getListOfResults(){
         return new ArrayList<>(Arrays.asList(hasDataManagement,hasAppExecution,hasSensorNetwork,
                 hasDataProcessing, hasDataAccess, hasServiceManagement,hasSoftwareTools, defineCityModel));

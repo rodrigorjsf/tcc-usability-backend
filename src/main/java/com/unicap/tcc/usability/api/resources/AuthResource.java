@@ -6,6 +6,7 @@ import com.unicap.tcc.usability.api.models.User;
 import com.unicap.tcc.usability.api.models.dto.CredentialDTO;
 import com.unicap.tcc.usability.api.models.dto.TokenDTO;
 import com.unicap.tcc.usability.api.models.dto.UserDTO;
+import com.unicap.tcc.usability.api.models.dto.UserRegisterDTO;
 import com.unicap.tcc.usability.api.repository.ConfirmationTokenRepository;
 import com.unicap.tcc.usability.api.repository.UserRepository;
 import com.unicap.tcc.usability.api.security.jwt.JwtService;
@@ -46,14 +47,21 @@ public class AuthResource {
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation("Criação de novo usuário")
     @ApiResponse(code = 201, message = "Cadastro efetuado com sucesso.")
-    public ResponseEntity<UserDTO> save(@RequestBody @Valid User user) {
-        var oldUser = userService.findByEmail(user.getEmail());
+    public ResponseEntity<UserDTO> save(@RequestBody @Valid UserRegisterDTO userRegisterDTO) {
+        var oldUser = userService.findByEmail(userRegisterDTO.getEmail());
         if (Objects.nonNull(oldUser)) {
             return ResponseEntity.noContent().build();
         }
-        String encryptedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(encryptedPassword);
-        User newUser = userService.save(user);
+        String encryptedPassword = passwordEncoder.encode(userRegisterDTO.getPassword());
+        User newUser = User.builder()
+                .admin(false)
+                .name(userRegisterDTO.getName())
+                .login(userRegisterDTO.getUserName())
+                .email(userRegisterDTO.getEmail())
+                .isReviewer(userRegisterDTO.getIsReviewer())
+                .password(encryptedPassword)
+                .build();
+        newUser = userService.save(newUser);
         ConfirmationToken confirmationToken = ConfirmationToken.builder().user(newUser).build();
 
         confirmationToken = confirmationTokenRepository.save(confirmationToken);
@@ -61,16 +69,17 @@ public class AuthResource {
         String token;
         if (optionalToken.isPresent()) {
             token = optionalToken.get();
-            String subject = "ValidUsabilityAssessment - Complete Registration!";
-            String url = "http://localhost:8084/api/auth/confirm-account?token=" + token;
-            String body = "To confirm your account, please click here: "
-                    + "<a href=" + "\"" + url + "\"" + ">Confirm</a>";
-            mailSender.send(new String[]{user.getEmail()}, subject, body);
+//            String subject = "ValidUsabilityAssessment - Complete Registration!";
+//            String url = "http://localhost:8084/api/auth/confirm-account?token=" + token;
+//            String body = "To confirm your account, please click here: "
+//                    + "<a href=" + "\"" + url + "\"" + ">Confirm</a>";
+            //mailSender.send(new String[]{userRegisterDTO.getEmail()}, subject, body);
             return ResponseEntity.ok()
                     .body(UserDTO.builder()
                             .login(newUser.getLogin())
                             .email(newUser.getEmail())
                             .admin(newUser.getAdmin())
+                            .name(newUser.getName())
                             .build());
         }
         return ResponseEntity.badRequest().build();
@@ -95,13 +104,14 @@ public class AuthResource {
                 throw new UsernameNotFoundException("User not found.");
             } else
                 registeredUser = registeredUserLogin.orElseGet(registeredUserEmail::get);
-            user.setAdmin(!Objects.isNull(registeredUser.getAdmin()) && registeredUser.getAdmin());
+            user.setLogin(registeredUser.getLogin());
+            registeredUser.setAdmin(!Objects.isNull(registeredUser.getAdmin()) && registeredUser.getAdmin());
             UserDetails authenticatedUser = userService.auth(user);
-            String token = jwtService.generateToken(user);
-            return ResponseEntity.ok()
-                    .body(new TokenDTO(user.getLogin(), token, authenticatedUser.getAuthorities()));
+            var token = jwtService.generateToken(registeredUser);
+            token.setRoles(authenticatedUser.getAuthorities());
+            return ResponseEntity.ok().body(token);
         } catch (UsernameNotFoundException | SenhaInvalidaException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, e.getMessage());
         }
     }
 
@@ -165,12 +175,14 @@ public class AuthResource {
 
         if (Objects.nonNull(token)) {
             User user = userRepository.findByEmailIgnoreCase(token.getUser().getEmail());
-            user.setEnabled(true);
+            if (user.getIsEnabled().equals(true))
+                return ResponseEntity.ok().build();
+            user.setIsEnabled(true);
             userRepository.save(user);
             ResponseEntity.ok().body(UserDTO.builder()
                     .admin(user.getAdmin())
                     .email(user.getEmail())
-                    .isEnable(user.isEnabled())
+                    .isEnable(user.getIsEnabled())
                     .login(user.getLogin())
                     .build());
         }

@@ -9,7 +9,6 @@ import com.unicap.tcc.usability.api.properties.AWSProperties;
 import com.unicap.tcc.usability.api.properties.BucketS3Properties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

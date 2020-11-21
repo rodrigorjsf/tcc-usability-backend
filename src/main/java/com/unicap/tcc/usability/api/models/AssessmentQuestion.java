@@ -2,19 +2,20 @@ package com.unicap.tcc.usability.api.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.unicap.tcc.usability.api.models.enums.CategoriesEnum;
-import com.unicap.tcc.usability.api.models.enums.ScalesEnum;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter
+@Setter
 @SuperBuilder
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "assessment_questions")
 public class AssessmentQuestion extends BaseEntity {
 

@@ -2,14 +2,9 @@ package com.unicap.tcc.usability.api.models.assessment;
 
 import com.unicap.tcc.usability.api.models.BaseEntity;
 import com.unicap.tcc.usability.api.models.Scale;
-import com.unicap.tcc.usability.api.models.enums.UsabilityAttribute;
 import com.vladmihalcea.hibernate.type.array.ListArrayType;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
 
@@ -17,11 +12,12 @@ import javax.persistence.*;
 import java.util.List;
 
 
-@EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter
+@Setter
 @SuperBuilder
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "assessment_variables")
 @TypeDefs({
         @TypeDef(

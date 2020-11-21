@@ -2,22 +2,21 @@ package com.unicap.tcc.usability.api.models.review;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.unicap.tcc.usability.api.models.BaseEntity;
-import com.unicap.tcc.usability.api.models.User;
-import com.unicap.tcc.usability.api.models.assessment.Assessment;
-import com.unicap.tcc.usability.api.models.enums.EReviewState;
 import com.unicap.tcc.usability.api.models.enums.EScore;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter
+@Setter
 @SuperBuilder
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "review_item")
 public class ReviewItem extends BaseEntity {
 

@@ -5,7 +5,6 @@ import com.unicap.tcc.usability.api.exception.SenhaInvalidaException;
 import com.unicap.tcc.usability.api.exception.UserAlreadyRegisteredException;
 import com.unicap.tcc.usability.api.models.User;
 import com.unicap.tcc.usability.api.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,11 +17,13 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class UserService implements UserDetailsService {
 
-    private final PasswordEncoder passwordEncoder;
-    private final UserRepository userRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Transactional
     public User save(User user) {
@@ -46,7 +47,7 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByLogin(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado na base de dados."));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found in database."));
         user.setAdmin(!Objects.isNull(user.getAdmin()) && user.getAdmin());
         String[] roles = user.isAdmin() ? new String[]{"USER", "ADMIN"} : new String[]{"USER"};
 

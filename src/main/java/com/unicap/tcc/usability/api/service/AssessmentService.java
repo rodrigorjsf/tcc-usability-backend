@@ -5,11 +5,13 @@ import com.unicap.tcc.usability.api.exception.ApiException;
 import com.unicap.tcc.usability.api.models.SmartCityQuestionnaire;
 import com.unicap.tcc.usability.api.models.assessment.Assessment;
 import com.unicap.tcc.usability.api.models.assessment.AssessmentUserGroup;
-import com.unicap.tcc.usability.api.models.dto.assessment.AssessmentVariablesDTO;
-import com.unicap.tcc.usability.api.models.dto.assessment.AssessmentCreationDTO;
+import com.unicap.tcc.usability.api.models.dto.AssessmentListDTO;
 import com.unicap.tcc.usability.api.models.dto.SmartCityResponse;
+import com.unicap.tcc.usability.api.models.dto.assessment.AssessmentCreationDTO;
 import com.unicap.tcc.usability.api.models.dto.assessment.CollaboratorDTO;
+import com.unicap.tcc.usability.api.models.dto.assessment.SmartCityQuestionnaireDTO;
 import com.unicap.tcc.usability.api.models.dto.assessment.UsabilityGoalDTO;
+import com.unicap.tcc.usability.api.models.enums.AssessmentState;
 import com.unicap.tcc.usability.api.models.enums.UserProfileEnum;
 import com.unicap.tcc.usability.api.repository.AssessmentRepository;
 import com.unicap.tcc.usability.api.repository.AssessmentUserGroupRepository;
@@ -23,8 +25,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.ByteArrayOutputStream;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -40,7 +42,8 @@ public class AssessmentService {
         var resultsQuantity = Long.valueOf(resultList.size());
         var positiveResults = Long.valueOf(resultList.stream().filter(aBoolean -> aBoolean.equals(true)).count());
         return SmartCityResponse.builder()
-                .smartCityPercentage(resultsQuantity.doubleValue() / positiveResults.doubleValue())
+                .smartCityPercentage(positiveResults.doubleValue() == 0 ?
+                        0 : (positiveResults.doubleValue() * 100) / resultsQuantity.doubleValue())
                 .build();
     }
 
@@ -75,13 +78,16 @@ public class AssessmentService {
                 .systemUser(user.get())
                 .projectName(assessmentCreationDTO.getProjectName())
                 .projectDescription(assessmentCreationDTO.getProjectDescription())
+                .state(AssessmentState.CREATED)
                 .build());
         assessmentUserGroupRepository.save(AssessmentUserGroup.builder()
                 .assessment(assessment)
                 .profile(UserProfileEnum.AUTHOR)
                 .systemUser(assessment.getSystemUser())
                 .build());
-        mailSender.sendCollaboratorEmail(assessment, assessmentCreationDTO.getCollaboratorsEmail());
+        var optionalUid = assessmentUserGroupRepository.findUidById(assessment.getId());
+        optionalUid.ifPresent(s ->
+                mailSender.sendCollaboratorEmail(assessment, s, assessmentCreationDTO.getCollaboratorsEmail()));
         return assessment;
     }
 
@@ -90,7 +96,9 @@ public class AssessmentService {
         if (assessment.isEmpty()) {
             return null;
         }
-        mailSender.sendCollaboratorEmail(assessment.get(), collaboratorDTO.getCollaboratorsEmail());
+        var optionalUid = assessmentUserGroupRepository.findUidById(assessment.get().getId());
+        optionalUid.ifPresent(s ->
+                mailSender.sendCollaboratorEmail(assessment.get(), s, collaboratorDTO.getCollaboratorsEmail()));
         return assessment.get();
     }
 
@@ -98,6 +106,41 @@ public class AssessmentService {
         var optionalAssessment = assessmentRepository.findByUid(usabilityGoals.getAssessmentUid());
         if (optionalAssessment.isPresent()) {
             optionalAssessment.get().setUsabilityGoals(usabilityGoals.toUsabilityGoals());
+            return assessmentRepository.save(optionalAssessment.get());
+        }
+        return null;
+    }
+
+    public List<AssessmentListDTO> findUserAssessmentList(UUID uid) {
+        List<Assessment> assessmentList;
+        assessmentList = assessmentRepository.findBySystemUserUidAndRemovedDateIsNullAndSystemUserRemovedDateIsNull(uid);
+        if (assessmentList.isEmpty())
+            assessmentList = assessmentRepository.findByCollaboratorUid(uid);
+        if (assessmentList.isEmpty())
+            return Collections.emptyList();
+        return assessmentList.stream().map(assessment ->
+                AssessmentListDTO.builder()
+                        .assessmentUid(assessment.getUid().toString())
+                        .authorName(assessment.getSystemUser().getName())
+                        .projectName(assessment.getProjectName())
+                        .state(assessment.getState().getValue())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    public Optional<Assessment> findAssessmentPlanByUid(UUID uid) {
+        return assessmentRepository.findByUid(uid);
+    }
+
+    public Assessment addSmartCityQuestionnaire(SmartCityQuestionnaireDTO questionnaire) {
+        var optionalAssessment = assessmentRepository.findByUid(questionnaire.getAssessmentUid());
+        if (optionalAssessment.isPresent()) {
+            questionnaire.updateSmartCityQuestionnaire(optionalAssessment.get().getSmartCityQuestionnaire());
+            var resultList = questionnaire.toSmartCityQuestionnaire().getListOfResults();
+            var resultsQuantity = Long.valueOf(resultList.size());
+            var positiveResults = Long.valueOf(resultList.stream().filter(aBoolean -> aBoolean.equals(true)).count());
+            optionalAssessment.get().setSmartCityPercentage(positiveResults.doubleValue() == 0 ?
+                    0 : (positiveResults.doubleValue() * 100) / resultsQuantity.doubleValue());
             return assessmentRepository.save(optionalAssessment.get());
         }
         return null;
