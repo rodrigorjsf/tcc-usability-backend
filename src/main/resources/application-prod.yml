@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://ec2-34-233-186-251.compute-1.amazonaws.com:5432/d2q6uf5r8c32ok
+    username: mijhirxlqifple
+    password: 2c7fcb09931ac664b951171d35466db12fc12af85d31f4a8e8bfde5066d120e6
+    continueOnError: true
+    initialSize: 0
+    timeBetweenEvictionRunsMillis: 5000
+    minEvictableIdleTimeMillis: 5000
+    minIdle: 0
+    initialization-mode: always
