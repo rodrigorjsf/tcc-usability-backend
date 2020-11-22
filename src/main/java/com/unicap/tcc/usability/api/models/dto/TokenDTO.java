@@ -20,6 +20,9 @@ public class TokenDTO {
     private String userUid;
     private String accessToken;
     private Long expirationTime;
+    private String userEmail;
+    private boolean isReviewer;
+    private boolean isAdmin;
     private Collection<? extends GrantedAuthority> roles;
 
 }
