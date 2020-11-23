@@ -158,6 +158,7 @@ public class AssessmentService {
     public Optional<Assessment> deleteAssessmentPlan(UUID uid) {
         var assessmentOptional = assessmentRepository.findByUid(uid);
         if (assessmentOptional.isPresent()){
+            assessmentOptional.get().setState(AssessmentState.CANCELED);
             assessmentOptional.get().setRemovedDate(LocalDateTime.now());
             return Optional.of(assessmentRepository.save(assessmentOptional.get()));
         }

@@ -129,7 +129,7 @@ public class AssessmentResource {
 
     @PutMapping("/delete/{uid}")
     @ApiOperation("Delete assessment plan.")
-    public ResponseEntity<Object> deleteAssessmentPlan(@NotNull @PathVariable(value = "uid") @ApiParam("Assessment plan uid") String uid) {
+    public ResponseEntity<Object> deleteAssessmentPlan(@Valid @PathVariable(value = "uid") @ApiParam("Assessment plan uid") String uid) {
         Optional<Assessment> assessmentOptional = assessmentService.deleteAssessmentPlan(UUID.fromString(uid));
         if (assessmentOptional.isEmpty())
             return ResponseEntity.noContent().build();
