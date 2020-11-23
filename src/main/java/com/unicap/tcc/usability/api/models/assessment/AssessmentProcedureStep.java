@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import net.minidev.json.annotate.JsonIgnore;
 
 import javax.persistence.*;
 
@@ -18,6 +19,7 @@ import javax.persistence.*;
 @Table(name = "assessment_procedure_step")
 public class AssessmentProcedureStep extends BaseEntity {
 
+    @JsonIgnore
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

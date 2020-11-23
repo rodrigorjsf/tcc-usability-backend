@@ -4,16 +4,23 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.unicap.tcc.usability.api.models.BaseEntity;
 import com.unicap.tcc.usability.api.models.SmartCityQuestionnaire;
 import com.unicap.tcc.usability.api.models.User;
+import com.unicap.tcc.usability.api.models.assessment.answer.PlanAnswers;
 import com.unicap.tcc.usability.api.models.enums.AssessmentState;
+import com.vladmihalcea.hibernate.type.array.StringArrayType;
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Getter
@@ -23,6 +30,12 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "assessment")
+@TypeDefs({
+        @TypeDef(
+                name = "jsonb",
+                typeClass = JsonBinaryType.class
+        )
+})
 public class Assessment extends BaseEntity implements Serializable {
 
     @JsonIgnore
@@ -71,6 +84,13 @@ public class Assessment extends BaseEntity implements Serializable {
 
     @OneToOne(cascade = {CascadeType.ALL})
     private AssessmentThreat assessmentThreat;
+
+    @Type(type = "jsonb")
+    @Column(
+            name = "answers",
+            columnDefinition = "jsonb"
+    )
+    private PlanAnswers answers;
 }
 
 

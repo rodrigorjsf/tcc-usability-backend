@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.annotations.*;
 
 import javax.persistence.Entity;
@@ -29,6 +30,7 @@ import java.util.List;
 })
 public class AssessmentThreat extends BaseEntity {
 
+    @JsonIgnore
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import net.minidev.json.annotate.JsonIgnore;
+import org.hibernate.annotations.Generated;
+import org.hibernate.annotations.GenerationTime;
 
 import javax.persistence.*;
 
@@ -18,6 +21,7 @@ import javax.persistence.*;
 @Table(name = "usabiliy_goals")
 public class UsabilityGoal {
 
+    @JsonIgnore
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,4 +32,7 @@ public class UsabilityGoal {
     private UsabilityAttribute attribute;
     @Column
     private String goal;
+    @Column(name = "done", columnDefinition = "boolean default false")
+    @Generated(GenerationTime.ALWAYS)
+    private Boolean done;
 }

@@ -2,6 +2,7 @@ package com.unicap.tcc.usability.api.service;
 
 
 import com.unicap.tcc.usability.api.exception.ApiException;
+import com.unicap.tcc.usability.api.models.Scale;
 import com.unicap.tcc.usability.api.models.SmartCityQuestionnaire;
 import com.unicap.tcc.usability.api.models.assessment.Assessment;
 import com.unicap.tcc.usability.api.models.assessment.AssessmentUserGroup;
@@ -15,6 +16,7 @@ import com.unicap.tcc.usability.api.models.enums.AssessmentState;
 import com.unicap.tcc.usability.api.models.enums.UserProfileEnum;
 import com.unicap.tcc.usability.api.repository.AssessmentRepository;
 import com.unicap.tcc.usability.api.repository.AssessmentUserGroupRepository;
+import com.unicap.tcc.usability.api.repository.ScaleRepository;
 import com.unicap.tcc.usability.api.repository.UserRepository;
 import com.unicap.tcc.usability.api.utils.PdfGenerator;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +37,7 @@ public class AssessmentService {
     private final AssessmentRepository assessmentRepository;
     private final UserRepository userRepository;
     private final AssessmentUserGroupRepository assessmentUserGroupRepository;
+    private final ScaleRepository scaleRepository;
     private final MailSender mailSender;
 
     public SmartCityResponse calculateSmartCityPercentage(SmartCityQuestionnaire questionnaire) {
@@ -141,11 +144,15 @@ public class AssessmentService {
             var positiveResults = Long.valueOf(resultList.stream().filter(aBoolean -> aBoolean.equals(true)).count());
             optionalAssessment.get().setSmartCityPercentage(positiveResults.doubleValue() == 0 ?
                     0 : (positiveResults.doubleValue() * 100) / resultsQuantity.doubleValue());
+            optionalAssessment.get().setState(AssessmentState.COLLECTING_DATA);
             return assessmentRepository.save(optionalAssessment.get());
         }
         return null;
     }
 
+    public List<Scale> getScaleList () {
+        return scaleRepository.findAll();
+    }
 //    public Assessment addAssessmentAttributeVariables(AssessmentVariablesDTO assessmentVariablesDTO) {
 //        var optionalAssessment = assessmentRepository.findByUid(assessmentVariablesDTO.getAssessmentUid());
 //        if (optionalAssessment.isPresent()) {

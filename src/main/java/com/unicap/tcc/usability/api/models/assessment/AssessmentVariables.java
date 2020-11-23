@@ -5,6 +5,7 @@ import com.unicap.tcc.usability.api.models.Scale;
 import com.vladmihalcea.hibernate.type.array.ListArrayType;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
 
@@ -28,6 +29,7 @@ import java.util.List;
 public @Data
 class AssessmentVariables extends BaseEntity {
 
+    @JsonIgnore
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
