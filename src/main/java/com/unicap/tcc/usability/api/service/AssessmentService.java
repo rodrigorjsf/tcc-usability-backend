@@ -27,6 +27,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.ByteArrayOutputStream;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -152,6 +153,15 @@ public class AssessmentService {
 
     public List<Scale> getScaleList () {
         return scaleRepository.findAll();
+    }
+
+    public Optional<Assessment> deleteAssessmentPlan(UUID uid) {
+        var assessmentOptional = assessmentRepository.findByUid(uid);
+        if (assessmentOptional.isPresent()){
+            assessmentOptional.get().setRemovedDate(LocalDateTime.now());
+            return Optional.of(assessmentRepository.save(assessmentOptional.get()));
+        }
+        return Optional.empty();
     }
 //    public Assessment addAssessmentAttributeVariables(AssessmentVariablesDTO assessmentVariablesDTO) {
 //        var optionalAssessment = assessmentRepository.findByUid(assessmentVariablesDTO.getAssessmentUid());
