@@ -14,12 +14,13 @@ import java.util.Date;
 @AllArgsConstructor
 @Builder
 public class TokenDTO {
-
     private String name;
     private String username;
     private String userUid;
     private String accessToken;
     private Long expirationTime;
+    private String userEmail;
+    private boolean isReviewer;
+    private boolean isAdmin;
     private Collection<? extends GrantedAuthority> roles;
-
 }

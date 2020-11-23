@@ -6,6 +6,7 @@ import com.unicap.tcc.usability.api.models.enums.UsabilityAttribute;
 import com.vladmihalcea.hibernate.type.array.ListArrayType;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
@@ -30,6 +31,7 @@ import java.util.List;
 public @Data
 class Variable extends BaseEntity {
 
+    @JsonIgnore
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -58,11 +60,4 @@ class Variable extends BaseEntity {
 
     @Column
     private String obtainedBy;
-
-    @ManyToMany(cascade = {CascadeType.ALL})
-    @JoinTable(
-            name = "av_scale",
-            joinColumns = @JoinColumn(name = "attribute_variable_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "scale_id", referencedColumnName = "id"))
-    private List<Scale> scale;
 }

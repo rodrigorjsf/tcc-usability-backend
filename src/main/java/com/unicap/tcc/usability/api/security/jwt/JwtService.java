@@ -32,6 +32,9 @@ public class JwtService {
         //claims.put("expiration", date);
 
         return TokenDTO.builder()
+                .userEmail(user.getEmail())
+                .isReviewer(user.getIsReviewer())
+                .isAdmin(user.isAdmin())
                 .name(user.getName())
                 .username(user.getLogin())
                 .userUid(user.getUid().toString())

@@ -1,6 +1,7 @@
 package com.unicap.tcc.usability.api.resources;
 
 import com.unicap.tcc.usability.api.exception.ApiException;
+import com.unicap.tcc.usability.api.models.Scale;
 import com.unicap.tcc.usability.api.models.SmartCityQuestionnaire;
 import com.unicap.tcc.usability.api.models.assessment.Assessment;
 import com.unicap.tcc.usability.api.models.constants.ApplicationConstants;
@@ -114,6 +115,15 @@ public class AssessmentResource {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok().body(assessment);
+    }
+
+    @GetMapping("/scales")
+    @ApiOperation("Get list of scales.")
+    public ResponseEntity< List<Scale>> getScaleList() {
+        List<Scale> scaleList = assessmentService.getScaleList();
+        if (scaleList.isEmpty())
+            return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().body(scaleList);
     }
 
 //    @PostMapping("/add/attributes-variables")
