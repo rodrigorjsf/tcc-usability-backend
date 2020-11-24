@@ -38,7 +38,7 @@ class Variable extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private UsabilityAttribute usabilityAttribute;
 
-    @Column(name = "variable_list", columnDefinition = "text[]")
+    @Column(name = "variable_list", columnDefinition = "text")
     private String variables;
 
     @Column

@@ -16,6 +16,6 @@ public @Data
 class VariableDTO {
 
     private UsabilityAttribute usabilityAttribute;
-    private List<String> variableList;
+    private String variables;
     private String obtainedBy;
 }
