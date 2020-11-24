@@ -22,7 +22,7 @@ spring:
     show-sql: false
     generate-ddl: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
       naming_strategy: org.hibernate.cfg.DefaultNamingStrategy
       jdbc:
         lob:
@@ -31,7 +31,7 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         hbm2ddl:
-          auto: update
+          auto: create
         temp:
           use_jdbc_metadata_defaults: false
           hibernate.enable_lazy_load_no_trans: true
