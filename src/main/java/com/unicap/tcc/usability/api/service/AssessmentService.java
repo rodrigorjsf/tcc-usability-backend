@@ -1,6 +1,5 @@
 package com.unicap.tcc.usability.api.service;
 
-
 import com.unicap.tcc.usability.api.exception.ApiException;
 import com.unicap.tcc.usability.api.models.Scale;
 import com.unicap.tcc.usability.api.models.SmartCityQuestionnaire;
@@ -9,10 +8,7 @@ import com.unicap.tcc.usability.api.models.assessment.AssessmentUserGroup;
 import com.unicap.tcc.usability.api.models.assessment.answer.PlanAnswers;
 import com.unicap.tcc.usability.api.models.dto.AssessmentListDTO;
 import com.unicap.tcc.usability.api.models.dto.SmartCityResponse;
-import com.unicap.tcc.usability.api.models.dto.assessment.AssessmentCreationDTO;
-import com.unicap.tcc.usability.api.models.dto.assessment.CollaboratorDTO;
-import com.unicap.tcc.usability.api.models.dto.assessment.SmartCityQuestionnaireDTO;
-import com.unicap.tcc.usability.api.models.dto.assessment.UsabilityGoalDTO;
+import com.unicap.tcc.usability.api.models.dto.assessment.*;
 import com.unicap.tcc.usability.api.models.enums.AssessmentState;
 import com.unicap.tcc.usability.api.models.enums.UserProfileEnum;
 import com.unicap.tcc.usability.api.repository.AssessmentRepository;
@@ -21,6 +17,7 @@ import com.unicap.tcc.usability.api.repository.ScaleRepository;
 import com.unicap.tcc.usability.api.repository.UserRepository;
 import com.unicap.tcc.usability.api.utils.PdfGenerator;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -146,13 +143,13 @@ public class AssessmentService {
         return null;
     }
 
-    public List<Scale> getScaleList () {
+    public List<Scale> getScaleList() {
         return scaleRepository.findAll();
     }
 
     public Optional<Assessment> deleteAssessmentPlan(UUID uid) {
         var assessmentOptional = assessmentRepository.findByUid(uid);
-        if (assessmentOptional.isPresent()){
+        if (assessmentOptional.isPresent()) {
             assessmentOptional.get().setState(AssessmentState.CANCELED);
             assessmentOptional.get().setRemovedDate(LocalDateTime.now());
             return Optional.of(assessmentRepository.save(assessmentOptional.get()));
@@ -172,15 +169,17 @@ public class AssessmentService {
         return null;
     }
 
-
-//    public Assessment addAssessmentAttributeVariables(AssessmentVariablesDTO assessmentVariablesDTO) {
-//        var optionalAssessment = assessmentRepository.findByUid(assessmentVariablesDTO.getAssessmentUid());
-//        if (optionalAssessment.isPresent()) {
-//            optionalAssessment.get().setAttributeAssessmentVariables(usabilityGoals.toUsabilityGoals());
-//            return assessmentRepository.save(optionalAssessment.get());
-//        }
-//        return null;
-//    }
-
-
+    public Assessment addVariables(AssessmentVariablesDTO assessmentVariablesDTO) {
+        var optionalAssessment = assessmentRepository.findByUid(assessmentVariablesDTO.getAssessmentUid());
+        if (optionalAssessment.isPresent()) {
+            optionalAssessment.get().setVariables(assessmentVariablesDTO.convertToVariableList());
+            var scaleList = scaleRepository.findByAcronymIn(assessmentVariablesDTO.getScale());
+            if (CollectionUtils.isNotEmpty(scaleList))
+                optionalAssessment.get().setScale(scaleList);
+            if (!optionalAssessment.get().getState().equals(AssessmentState.COLLECTING_DATA))
+                optionalAssessment.get().setState(AssessmentState.COLLECTING_DATA);
+            return assessmentRepository.save(optionalAssessment.get());
+        }
+        return null;
+    }
 }

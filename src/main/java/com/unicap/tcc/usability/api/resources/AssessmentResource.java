@@ -7,10 +7,7 @@ import com.unicap.tcc.usability.api.models.assessment.Assessment;
 import com.unicap.tcc.usability.api.models.constants.ApplicationConstants;
 import com.unicap.tcc.usability.api.models.dto.AssessmentListDTO;
 import com.unicap.tcc.usability.api.models.dto.SmartCityResponse;
-import com.unicap.tcc.usability.api.models.dto.assessment.AssessmentCreationDTO;
-import com.unicap.tcc.usability.api.models.dto.assessment.CollaboratorDTO;
-import com.unicap.tcc.usability.api.models.dto.assessment.SmartCityQuestionnaireDTO;
-import com.unicap.tcc.usability.api.models.dto.assessment.UsabilityGoalDTO;
+import com.unicap.tcc.usability.api.models.dto.assessment.*;
 import com.unicap.tcc.usability.api.service.AssessmentService;
 import com.unicap.tcc.usability.api.utils.UUIDUtils;
 import io.swagger.annotations.Api;
@@ -42,7 +39,7 @@ public class AssessmentResource {
 
     private final AssessmentService assessmentService;
 
-    @PostMapping
+    @PostMapping("/sc-percentage")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation("Smart city percentage calculation.")
     @ApiResponse(code = 200, message = "Calculo realizado.")
@@ -100,6 +97,18 @@ public class AssessmentResource {
     @ApiResponse(code = 200, message = "Goals added.")
     public ResponseEntity<Assessment> addUsabilityGoals(@RequestBody @Valid UsabilityGoalDTO usabilityGoalDTO) {
         Assessment assessment = assessmentService.addUsabilityGoals(usabilityGoalDTO);
+        if (Objects.isNull(assessment)) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok().body(assessment);
+    }
+
+    @PostMapping("/add/variables")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation("Add variables to assessment plan.")
+    @ApiResponse(code = 200, message = "Variables added.")
+    public ResponseEntity<Assessment> addVariables(@RequestBody @Valid AssessmentVariablesDTO assessmentVariablesDTO) {
+        Assessment assessment = assessmentService.addVariables(assessmentVariablesDTO);
         if (Objects.isNull(assessment)) {
             return ResponseEntity.noContent().build();
         }
