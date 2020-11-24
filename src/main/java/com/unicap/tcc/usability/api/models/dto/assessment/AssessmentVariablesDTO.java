@@ -1,6 +1,5 @@
 package com.unicap.tcc.usability.api.models.dto.assessment;
 
-import com.unicap.tcc.usability.api.models.assessment.AssessmentVariables;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,8 +19,4 @@ class AssessmentVariablesDTO {
     private List<VariableDTO> variables;
     private List<String> scale;
 
-    public AssessmentVariables toAssessmentVariables(){
-        return AssessmentVariables.builder()
-                .build();
-    }
 }

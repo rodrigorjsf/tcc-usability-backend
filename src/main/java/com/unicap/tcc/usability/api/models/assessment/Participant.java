@@ -49,21 +49,8 @@ public class Participant extends BaseEntity {
     @Column
     private String compensationDescription;
 
-    @Type(
-            type = "com.vladmihalcea.hibernate.type.array.ListArrayType",
-            parameters = {
-                    @org.hibernate.annotations.Parameter(
-                            name = ListArrayType.SQL_ARRAY_TYPE,
-                            value = "text"
-                    )
-            }
-    )
-    @Column(
-            name = "eligibility_criteria",
-            columnDefinition = "text[]"
-    )
-    private List<String> criteriaList;
-
+    @Column(name = "eligibility_criteria", columnDefinition = "text[]")
+    private String criteria;
 
     @Column(name = "has_collected_information", columnDefinition = "boolean default false")
     @Generated(GenerationTime.ALWAYS)

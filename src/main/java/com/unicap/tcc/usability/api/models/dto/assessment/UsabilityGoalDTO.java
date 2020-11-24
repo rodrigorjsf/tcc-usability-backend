@@ -1,6 +1,8 @@
 package com.unicap.tcc.usability.api.models.dto.assessment;
 
 import com.unicap.tcc.usability.api.models.assessment.UsabilityGoal;
+import com.unicap.tcc.usability.api.models.assessment.answer.PlanApplicationAnswers;
+import com.unicap.tcc.usability.api.models.assessment.answer.PlanGoalsAnswers;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +20,7 @@ public class UsabilityGoalDTO {
 
     private UUID assessmentUid;
     private List<GoalDTO> goals;
+    private PlanGoalsAnswers planGoalsAnswers;
 
     public List<UsabilityGoal> toUsabilityGoals() {
         return goals.stream().map(goalDTO ->

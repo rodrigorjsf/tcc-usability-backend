@@ -198,9 +198,7 @@ public class PdfGenerator {
                         .getCompensationDescription()));
             }
             subCatPart.add(new Paragraph(" Eligibility criteria: "));
-            var criteriaList = new com.itextpdf.text.List();
-            assessment.getParticipant().getCriteriaList().forEach(s -> criteriaList.add(new ListItem(s)));
-            subCatPart.add(criteriaList);
+            subCatPart.add(new Paragraph(assessment.getParticipant().getCriteria()));
             subCatPart.add(getKeyValueParagraph(" Use of demographic questionnaire to collect information from the participants: ",
                     assessment.getParticipant().getHasCollectedInformation() ? "YES" : "NO"));
             if (assessment.getParticipant().getHasCollectedInformation()) {

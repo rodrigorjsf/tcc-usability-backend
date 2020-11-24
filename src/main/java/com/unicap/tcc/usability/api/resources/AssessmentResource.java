@@ -23,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -93,6 +94,18 @@ public class AssessmentResource {
         return ResponseEntity.ok().body(assessment);
     }
 
+    @PostMapping("/add/goals")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation("Add goals to assessment plan.")
+    @ApiResponse(code = 200, message = "Goals added.")
+    public ResponseEntity<Assessment> addUsabilityGoals(@RequestBody @Valid UsabilityGoalDTO usabilityGoalDTO) {
+        Assessment assessment = assessmentService.addUsabilityGoals(usabilityGoalDTO);
+        if (Objects.isNull(assessment)) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok().body(assessment);
+    }
+
     @PostMapping("/add/collaborator")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation("Add collaborator to assessment plan.")
@@ -105,18 +118,6 @@ public class AssessmentResource {
         return ResponseEntity.ok().body(assessment);
     }
 
-    @PostMapping("/add/goals")
-    @ResponseStatus(HttpStatus.OK)
-    @ApiOperation("Add goals to assessment.")
-    @ApiResponse(code = 200, message = "Goals Added.")
-    public ResponseEntity<Assessment> addAssessmentGoals(@RequestBody @Valid UsabilityGoalDTO usabilityGoals) {
-        Assessment assessment = assessmentService.addAssessmentGoals(usabilityGoals);
-        if (Objects.isNull(assessment)) {
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.ok().body(assessment);
-    }
-
     @GetMapping("/scales")
     @ApiOperation("Get list of scales.")
     public ResponseEntity< List<Scale>> getScaleList() {
@@ -124,6 +125,15 @@ public class AssessmentResource {
         if (scaleList.isEmpty())
             return ResponseEntity.noContent().build();
         return ResponseEntity.ok().body(scaleList);
+    }
+
+    @PutMapping("/delete/{uid}")
+    @ApiOperation("Delete assessment plan.")
+    public ResponseEntity<Object> deleteAssessmentPlan(@Valid @PathVariable(value = "uid") @ApiParam("Assessment plan uid") String uid) {
+        Optional<Assessment> assessmentOptional = assessmentService.deleteAssessmentPlan(UUID.fromString(uid));
+        if (assessmentOptional.isEmpty())
+            return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
 //    @PostMapping("/add/attributes-variables")

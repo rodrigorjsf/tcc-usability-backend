@@ -22,12 +22,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "variable")
-@TypeDefs({
-        @TypeDef(
-                name = "list-array",
-                typeClass = ListArrayType.class
-        ),
-})
 public @Data
 class Variable extends BaseEntity {
 
@@ -36,27 +30,16 @@ class Variable extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "assessment_variable_id", insertable = false, updatable = false)
-    private Long assessmentVariableId;
+    @JsonIgnore
+    @Column(name = "assessment_id", insertable = false, updatable = false)
+    private Long assessmentId;
 
     @Column(name = "usability_attribute", columnDefinition = "varchar(20)", nullable = false)
     @Enumerated(EnumType.STRING)
     private UsabilityAttribute usabilityAttribute;
 
-    @Type(
-            type = "com.vladmihalcea.hibernate.type.array.ListArrayType",
-            parameters = {
-                    @org.hibernate.annotations.Parameter(
-                            name = ListArrayType.SQL_ARRAY_TYPE,
-                            value = "text"
-                    )
-            }
-    )
-    @Column(
-            name = "variable_list",
-            columnDefinition = "text[]"
-    )
-    private List<String> variableList;
+    @Column(name = "variable_list", columnDefinition = "text[]")
+    private String variables;
 
     @Column
     private String obtainedBy;
