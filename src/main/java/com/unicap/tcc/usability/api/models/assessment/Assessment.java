@@ -2,6 +2,7 @@ package com.unicap.tcc.usability.api.models.assessment;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.unicap.tcc.usability.api.models.BaseEntity;
+import com.unicap.tcc.usability.api.models.Scale;
 import com.unicap.tcc.usability.api.models.SmartCityQuestionnaire;
 import com.unicap.tcc.usability.api.models.User;
 import com.unicap.tcc.usability.api.models.assessment.answer.PlanAnswers;
@@ -68,9 +69,6 @@ public class Assessment extends BaseEntity implements Serializable {
     private SmartCityQuestionnaire smartCityQuestionnaire;
 
     @OneToOne(cascade = {CascadeType.ALL})
-    private AssessmentVariables attributeAssessmentVariables;
-
-    @OneToOne(cascade = {CascadeType.ALL})
     private Participant participant;
 
     @OneToOne(cascade = {CascadeType.ALL})
@@ -91,6 +89,17 @@ public class Assessment extends BaseEntity implements Serializable {
             columnDefinition = "jsonb"
     )
     private PlanAnswers answers;
+
+    @OneToMany(cascade = {CascadeType.ALL})
+    @JoinColumn(name = "assessment_id", referencedColumnName = "id", nullable = false)
+    private List<Variable> variables;
+
+    @ManyToMany(cascade = {CascadeType.ALL})
+    @JoinTable(
+            name = "av_scale",
+            joinColumns = @JoinColumn(name = "assessment_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "scale_id", referencedColumnName = "id"))
+    private List<Scale> scale;
 }
 
 

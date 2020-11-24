@@ -94,6 +94,18 @@ public class AssessmentResource {
         return ResponseEntity.ok().body(assessment);
     }
 
+    @PostMapping("/add/goals")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation("Add goals to assessment plan.")
+    @ApiResponse(code = 200, message = "Goals added.")
+    public ResponseEntity<Assessment> addUsabilityGoals(@RequestBody @Valid UsabilityGoalDTO usabilityGoalDTO) {
+        Assessment assessment = assessmentService.addUsabilityGoals(usabilityGoalDTO);
+        if (Objects.isNull(assessment)) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok().body(assessment);
+    }
+
     @PostMapping("/add/collaborator")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation("Add collaborator to assessment plan.")
@@ -102,18 +114,6 @@ public class AssessmentResource {
         Assessment assessment = assessmentService.addCollaborator(collaboratorDTO);
         if (Objects.isNull(assessment)) {
             return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok().body(assessment);
-    }
-
-    @PostMapping("/add/goals")
-    @ResponseStatus(HttpStatus.OK)
-    @ApiOperation("Add goals to assessment.")
-    @ApiResponse(code = 200, message = "Goals Added.")
-    public ResponseEntity<Assessment> addAssessmentGoals(@RequestBody @Valid UsabilityGoalDTO usabilityGoals) {
-        Assessment assessment = assessmentService.addAssessmentGoals(usabilityGoals);
-        if (Objects.isNull(assessment)) {
-            return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok().body(assessment);
     }

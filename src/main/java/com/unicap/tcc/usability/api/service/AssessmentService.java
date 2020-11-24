@@ -6,6 +6,7 @@ import com.unicap.tcc.usability.api.models.Scale;
 import com.unicap.tcc.usability.api.models.SmartCityQuestionnaire;
 import com.unicap.tcc.usability.api.models.assessment.Assessment;
 import com.unicap.tcc.usability.api.models.assessment.AssessmentUserGroup;
+import com.unicap.tcc.usability.api.models.assessment.answer.PlanAnswers;
 import com.unicap.tcc.usability.api.models.dto.AssessmentListDTO;
 import com.unicap.tcc.usability.api.models.dto.SmartCityResponse;
 import com.unicap.tcc.usability.api.models.dto.assessment.AssessmentCreationDTO;
@@ -83,6 +84,7 @@ public class AssessmentService {
                 .projectName(assessmentCreationDTO.getProjectName())
                 .projectDescription(assessmentCreationDTO.getProjectDescription())
                 .state(AssessmentState.CREATED)
+                .answers(PlanAnswers.newPlanAnswers())
                 .build());
         assessmentUserGroupRepository.save(AssessmentUserGroup.builder()
                 .assessment(assessment)
@@ -104,15 +106,6 @@ public class AssessmentService {
         optionalUid.ifPresent(s ->
                 mailSender.sendCollaboratorEmail(assessment.get(), s, collaboratorDTO.getCollaboratorsEmail()));
         return assessment.get();
-    }
-
-    public Assessment addAssessmentGoals(UsabilityGoalDTO usabilityGoals) {
-        var optionalAssessment = assessmentRepository.findByUid(usabilityGoals.getAssessmentUid());
-        if (optionalAssessment.isPresent()) {
-            optionalAssessment.get().setUsabilityGoals(usabilityGoals.toUsabilityGoals());
-            return assessmentRepository.save(optionalAssessment.get());
-        }
-        return null;
     }
 
     public List<AssessmentListDTO> findUserAssessmentList(UUID uid) {
@@ -139,13 +132,15 @@ public class AssessmentService {
     public Assessment addSmartCityQuestionnaire(SmartCityQuestionnaireDTO questionnaire) {
         var optionalAssessment = assessmentRepository.findByUid(questionnaire.getAssessmentUid());
         if (optionalAssessment.isPresent()) {
-            questionnaire.updateSmartCityQuestionnaire(optionalAssessment.get().getSmartCityQuestionnaire());
+            optionalAssessment.get().setSmartCityQuestionnaire(questionnaire.updateSmartCityQuestionnaire());
             var resultList = questionnaire.toSmartCityQuestionnaire().getListOfResults();
             var resultsQuantity = Long.valueOf(resultList.size());
             var positiveResults = Long.valueOf(resultList.stream().filter(aBoolean -> aBoolean.equals(true)).count());
+            optionalAssessment.get().getAnswers().setPlanApplicationAnswers(questionnaire.getPlanApplicationAnswers());
             optionalAssessment.get().setSmartCityPercentage(positiveResults.doubleValue() == 0 ?
                     0 : (positiveResults.doubleValue() * 100) / resultsQuantity.doubleValue());
-            optionalAssessment.get().setState(AssessmentState.COLLECTING_DATA);
+            if (!optionalAssessment.get().getState().equals(AssessmentState.COLLECTING_DATA))
+                optionalAssessment.get().setState(AssessmentState.COLLECTING_DATA);
             return assessmentRepository.save(optionalAssessment.get());
         }
         return null;
@@ -164,6 +159,20 @@ public class AssessmentService {
         }
         return Optional.empty();
     }
+
+    public Assessment addUsabilityGoals(UsabilityGoalDTO usabilityGoalDTO) {
+        var optionalAssessment = assessmentRepository.findByUid(usabilityGoalDTO.getAssessmentUid());
+        if (optionalAssessment.isPresent()) {
+            optionalAssessment.get().setUsabilityGoals(usabilityGoalDTO.toUsabilityGoals());
+            optionalAssessment.get().getAnswers().setPlanGoalsAnswers(usabilityGoalDTO.getPlanGoalsAnswers());
+            if (!optionalAssessment.get().getState().equals(AssessmentState.COLLECTING_DATA))
+                optionalAssessment.get().setState(AssessmentState.COLLECTING_DATA);
+            return assessmentRepository.save(optionalAssessment.get());
+        }
+        return null;
+    }
+
+
 //    public Assessment addAssessmentAttributeVariables(AssessmentVariablesDTO assessmentVariablesDTO) {
 //        var optionalAssessment = assessmentRepository.findByUid(assessmentVariablesDTO.getAssessmentUid());
 //        if (optionalAssessment.isPresent()) {

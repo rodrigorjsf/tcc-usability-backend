@@ -1,6 +1,7 @@
 package com.unicap.tcc.usability.api.models.dto.assessment;
 
 import com.unicap.tcc.usability.api.models.SmartCityQuestionnaire;
+import com.unicap.tcc.usability.api.models.assessment.answer.PlanApplicationAnswers;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,6 +24,7 @@ public class SmartCityQuestionnaireDTO {
     private Boolean hasServiceManagement;
     private Boolean hasSoftwareTools;
     private Boolean defineCityModel;
+    private PlanApplicationAnswers planApplicationAnswers;
 
     public SmartCityQuestionnaire toSmartCityQuestionnaire() {
         return SmartCityQuestionnaire.builder()
@@ -37,15 +39,16 @@ public class SmartCityQuestionnaireDTO {
                 .build();
     }
 
-    public void updateSmartCityQuestionnaire(SmartCityQuestionnaire cityQuestionnaire) {
-        cityQuestionnaire.setHasDataManagement(this.hasDataManagement);
-        cityQuestionnaire.setHasAppExecution(this.hasAppExecution);
-        cityQuestionnaire.setHasSensorNetwork(this.hasSensorNetwork);
-        cityQuestionnaire.setHasDataProcessing(this.hasDataProcessing);
-        cityQuestionnaire.setHasDataAccess(this.hasDataAccess);
-        cityQuestionnaire.setHasServiceManagement(this.hasServiceManagement);
-        cityQuestionnaire.setHasSoftwareTools(this.hasSoftwareTools);
-        cityQuestionnaire.setDefineCityModel(this.defineCityModel);
+    public SmartCityQuestionnaire updateSmartCityQuestionnaire() {
+        return SmartCityQuestionnaire.builder().hasDataManagement(this.hasDataManagement)
+                .hasAppExecution(this.hasAppExecution)
+                .hasSensorNetwork(this.hasSensorNetwork)
+                .hasDataProcessing(this.hasDataProcessing)
+                .hasDataAccess(this.hasDataAccess)
+                .hasServiceManagement(this.hasServiceManagement)
+                .hasSoftwareTools(this.hasSoftwareTools)
+                .defineCityModel(this.defineCityModel)
+                .build();
     }
 
 }
