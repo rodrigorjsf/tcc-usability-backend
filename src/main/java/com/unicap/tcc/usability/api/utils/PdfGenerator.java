@@ -6,25 +6,35 @@ import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.draw.DottedLineSeparator;
+import com.unicap.tcc.usability.api.models.Scale;
 import com.unicap.tcc.usability.api.models.assessment.Assessment;
-import com.unicap.tcc.usability.api.models.assessment.AssessmentProcedureStep;
-import com.unicap.tcc.usability.api.models.assessment.Task;
+import com.unicap.tcc.usability.api.models.assessment.Attribute;
 import com.unicap.tcc.usability.api.models.assessment.UsabilityGoal;
+import com.unicap.tcc.usability.api.models.enums.ScalesEnum;
 import com.unicap.tcc.usability.api.models.enums.SmartCityAttribute;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class PdfGenerator {
 
     public static final String THREATS_SECTION_KEY = "tv";
-    private static Font catFont = new Font(Font.FontFamily.TIMES_ROMAN, 16, Font.BOLD);
-    private static Font redFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL, BaseColor.RED);
-    private static Font subFont = new Font(Font.FontFamily.TIMES_ROMAN, 14, Font.BOLD);
-    private static Font smallBold = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.BOLD);
+    private static Font catFont = new Font(Font.FontFamily.HELVETICA, 16, Font.BOLD);
+    private static Font redFont = new Font(Font.FontFamily.HELVETICA, 12, Font.NORMAL, BaseColor.RED);
+    private static Font subFont = new Font(Font.FontFamily.HELVETICA, 14, Font.BOLD);
+    private static Font smallBold = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
+    private static final String PARAGRAPH_SPACE = "   ";
 
     private static Font getBoldFormat(Integer size) {
         return new Font(Font.FontFamily.HELVETICA, size, Font.BOLD);
@@ -56,6 +66,11 @@ public class PdfGenerator {
         table.addCell(assessment.getProjectName());
         table.addCell("Project Description");
         table.addCell(assessment.getProjectDescription());
+        table.addCell(getKeyValueParagraph("Created by: ", assessment.getSystemUser().getName()));
+        table.addCell(getKeyValueParagraph("Created by: ", assessment.getSystemUser().getName()));
+        table.addCell(getKeyValueParagraph("Creation date: ", assessment.getSystemUser().getCreationDate().toLocalDate().toString()));
+        table.addCell(getKeyValueParagraph("Creation date: ", assessment.getSystemUser().getCreationDate().toLocalDate().toString()));
+
 
         return table;
     }
@@ -70,7 +85,7 @@ public class PdfGenerator {
         return p1;
     }
 
-    public static ByteArrayOutputStream generatePlanReport(Assessment assessment) {
+    public static ByteArrayOutputStream generatePlan(Assessment assessment) {
         Document document = new Document();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
@@ -88,7 +103,6 @@ public class PdfGenerator {
             document.add(getKeyValueParagraph("Created by: ", assessment.getSystemUser().getName()));
             document.add(getKeyValueParagraph("Creation date: ", assessment.getSystemUser().getCreationDate().toLocalDate().toString()));
             document.add(Chunk.NEWLINE);
-            document.newPage();
 
             /////////GOALS
             Anchor anchor = new Anchor("GOALS", catFont);
@@ -96,55 +110,43 @@ public class PdfGenerator {
 
             // Second parameter is the number of the chapter
             Chapter catPart = new Chapter(new Paragraph(anchor), 1);
-//            document.add(getBoldParagraph("Usability attributes goals that will be evaluated in this assessment", 14));
 
             Paragraph subPara = new Paragraph("Usability attributes goals that will be evaluated in this assessment", subFont);
             Section subCatPart;
+            subCatPart = catPart.addSection(subPara);
             for (UsabilityGoal usabilityGoal : assessment.getUsabilityGoals()) {
-                subCatPart = catPart.addSection(subPara);
-                subCatPart.add(new Paragraph("   " + usabilityGoal.getAttribute().getDescription() + ": " + usabilityGoal.getGoal()));
-                addEmptyLine(subPara, 1);
+                if (StringUtils.isNotEmpty(usabilityGoal.getGoal()))
+                    subCatPart.add(new Paragraph(PARAGRAPH_SPACE + usabilityGoal.getAttribute().getDescription() + ": " + usabilityGoal.getGoal()));
             }
-
+            addEmptyLine(subCatPart, 2);
             subPara = new Paragraph("Smart city factor", subFont);
             subCatPart = catPart.addSection(subPara);
+            subCatPart.add(new Paragraph(getKeyValueParagraph(PARAGRAPH_SPACE + "Percentage result: ", assessment.getSmartCityPercentage().toString() + "%")));
             addEmptyLine(subPara, 1);
-            subCatPart.add(new Paragraph(getKeyValueParagraph("Percentage result: ", assessment.getSmartCityPercentage().toString() + "%")));
+            addEmptyLine(subCatPart, 1);
             PdfPTable table = new PdfPTable(2);
-
-            PdfPCell c1 = new PdfPCell(new Phrase("Funcional Requirement"));
-            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
-            table.addCell(c1);
-
-            c1 = new PdfPCell(new Phrase("Answer"));
-            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
-            table.addCell(c1);
-            table.setHeaderRows(1);
-
-            table.addCell(SmartCityAttribute.AEE.getDescription());
-            table.addCell(assessment.getSmartCityQuestionnaire().getHasAppExecution() ? "YES" : "NO");
-            table.addCell(SmartCityAttribute.DCM.getDescription());
-            table.addCell(assessment.getSmartCityQuestionnaire().getDefineCityModel() ? "YES" : "NO");
-            table.addCell(SmartCityAttribute.DMN.getDescription());
-            table.addCell(assessment.getSmartCityQuestionnaire().getHasDataManagement() ? "YES" : "NO");
-            table.addCell(SmartCityAttribute.DPR.getDescription());
-            table.addCell(assessment.getSmartCityQuestionnaire().getHasDataProcessing() ? "YES" : "NO");
-            table.addCell(SmartCityAttribute.DTA.getDescription());
-            table.addCell(assessment.getSmartCityQuestionnaire().getHasDataAccess() ? "YES" : "NO");
-            table.addCell(SmartCityAttribute.SMN.getDescription());
-            table.addCell(assessment.getSmartCityQuestionnaire().getHasServiceManagement() ? "YES" : "NO");
-            table.addCell(SmartCityAttribute.TSD.getDescription());
-            table.addCell(assessment.getSmartCityQuestionnaire().getHasSoftwareTools() ? "YES" : "NO");
-            table.addCell(SmartCityAttribute.SNM.getDescription());
-            table.addCell(assessment.getSmartCityQuestionnaire().getHasSensorNetwork() ? "YES" : "NO");
-            subCatPart = catPart.addSection(subPara);
-
+            addTableHeader(table, new String[]{"Smart City Functional Requirement", "Answer"});
+            addRows(table, SmartCityAttribute.AEE.getDescription(), assessment.getSmartCityQuestionnaire()
+                    .getHasAppExecution() ? "YES" : "NO");
+            addRows(table, SmartCityAttribute.DCM.getDescription(), assessment.getSmartCityQuestionnaire()
+                    .getDefineCityModel() ? "YES" : "NO");
+            addRows(table, SmartCityAttribute.DMN.getDescription(), assessment.getSmartCityQuestionnaire()
+                    .getHasDataManagement() ? "YES" : "NO");
+            addRows(table, SmartCityAttribute.DPR.getDescription(), assessment.getSmartCityQuestionnaire()
+                    .getHasDataProcessing() ? "YES" : "NO");
+            addRows(table, SmartCityAttribute.DTA.getDescription(), assessment.getSmartCityQuestionnaire()
+                    .getHasDataAccess() ? "YES" : "NO");
+            addRows(table, SmartCityAttribute.SMN.getDescription(), assessment.getSmartCityQuestionnaire()
+                    .getHasServiceManagement() ? "YES" : "NO");
+            addRows(table, SmartCityAttribute.TSD.getDescription(), assessment.getSmartCityQuestionnaire()
+                    .getHasSoftwareTools() ? "YES" : "NO");
+            addRows(table, SmartCityAttribute.SNM.getDescription(), assessment.getSmartCityQuestionnaire()
+                    .getHasSensorNetwork() ? "YES" : "NO");
+            subCatPart.add(table);
 
             Paragraph paragraph = new Paragraph();
             addEmptyLine(paragraph, 1);
             subCatPart.add(paragraph);
-
-            // add a table
 
             // now add all this to the document
             document.add(catPart);
@@ -157,23 +159,77 @@ public class PdfGenerator {
 
             catPart = new Chapter(new Paragraph(anchor), 2);
             subPara = new Paragraph("Usability attributes variables to be measured", subFont);
+            subCatPart = catPart.addSection(subPara);
+            DottedLineSeparator dottedline = new DottedLineSeparator();
+            dottedline.setOffset(-10);
+            dottedline.setGap(2f);
+            for (Attribute attribute : assessment.getAttributes()) {
+                if (StringUtils.isNotEmpty(attribute.getVariables())) {
+                    subCatPart.add(new Paragraph(PARAGRAPH_SPACE + attribute.getUsabilityAttribute().getDescription() + " variable(s): ", smallBold));
+                    subCatPart.add(new Paragraph(PARAGRAPH_SPACE + PARAGRAPH_SPACE + attribute.getVariables()));
+                    addEmptyLine(subCatPart, 1);
+                    subCatPart.add(new Paragraph(PARAGRAPH_SPACE + "How will the " +
+                            attribute.getUsabilityAttribute().getDescription() +
+                            " variables be obtained (methods and criteria for measuring description): ", smallBold));
+                    Paragraph p = new Paragraph(PARAGRAPH_SPACE + PARAGRAPH_SPACE + attribute.getObtainedBy());
+                    p.add(dottedline);
+                    subCatPart.add(p);
+                    addEmptyLine(subCatPart, 1);
+                }
+            }
+            subPara = new Paragraph(PARAGRAPH_SPACE + "Which scales will be used: ", subFont);
+            subCatPart = catPart.addSection(subPara);
+            var scaleList = new com.itextpdf.text.List();
+            assessment.getScale().forEach(s -> scaleList.add(new ListItem(PARAGRAPH_SPACE + PARAGRAPH_SPACE + s.getName() +
+                    " (" + s.getAcronym().toString() + ")")));
+            subCatPart.add(scaleList);
+            addEmptyLine(subCatPart, 2);
+            document.add(catPart);
 
-//            for (AssessmentVariables assessmentVariables : assessment.getAttributeAssessmentVariables()) {
-//                subCatPart = catPart.addSection(subPara);
-//                subCatPart.add(new Paragraph(" " + assessmentVariables.getUsabilityAttribute().getDescription() + ": "));
-//                var list = new com.itextpdf.text.List();
-//                assessmentVariables.getVariableList().forEach(s -> list.add(new ListItem(s)));
-//                subCatPart.add(list);
-//                addEmptyLine(subPara, 1);
-//                subCatPart.add(new Paragraph(" How will the variables be obtained (methods and criteria for measuring description): "));
-//                subCatPart.add(new Paragraph(assessmentVariables.getObtainedBy()));
-//                addEmptyLine(subPara, 1);
-//                subCatPart.add(new Paragraph(" Which scales will be used: "));
-//                var scaleList = new com.itextpdf.text.List();
-//                assessmentVariables.getScale().forEach(s -> scaleList.add(new ListItem(s.getName() +
-//                        " (" + s.getAcronym().toString() + ")")));
-//                subCatPart.add(scaleList);
-//            }
+            document.newPage();
+
+            anchor = new Anchor("SUGGESTED SCALES FOR USABILITY ASSESSMENT", catFont);
+            anchor.setName("SUGGESTED SCALES FOR USABILITY ASSESSMENT");
+
+            catPart = new Chapter(new Paragraph(anchor), 3);
+            addEmptyLine(catPart, 2);
+            for (Scale scale : assessment.getScale()) {
+                document.newPage();
+                try {
+                    if (!scale.getAcronym().equals(ScalesEnum.SUMI)) {
+                        var title = new Paragraph(new Phrase(scale.getName() +
+                                " (" + scale.getAcronym().toString() + ")", smallBold));
+                        title.setAlignment(Element.ALIGN_CENTER);
+                        catPart.add(title);
+                        catPart.add(new Phrase(scale.getName()));
+                        Path path = Paths.get("src/main/resources/scales-image/" +
+                                scale.getAcronym() + "Scale.jpg");
+                        Image img = Image.getInstance(path.toAbsolutePath().toString());
+                        img.scaleToFit(PageSize.A4);
+                        img.setAlignment(Element.ALIGN_CENTER);
+                        catPart.add(img);
+                    } else {
+                        var title = new Paragraph(new Phrase(scale.getName() +
+                                " (" + scale.getAcronym().toString() + ")", smallBold));
+                        title.setAlignment(Element.ALIGN_CENTER);
+                        catPart.add(title);
+                        Path path = Paths.get("src/main/resources/scales-image/" +
+                                scale.getAcronym() + "Scale1.jpg");
+                        Image firstImg = Image.getInstance(path.toAbsolutePath().toString());
+                        firstImg.scaleToFit(PageSize.A4);
+                        firstImg.setAlignment(Element.ALIGN_CENTER);
+                        catPart.add(firstImg);
+                        path = Paths.get("src/main/resources/scales-image/" +
+                                scale.getAcronym() + "Scale2.jpg");
+                        Image secondImg = Image.getInstance(path.toAbsolutePath().toString());
+                        secondImg.scaleToFit(PageSize.A4);
+                        secondImg.setAlignment(Element.ALIGN_CENTER);
+                        catPart.add(secondImg);
+                    }
+                } catch (IOException | DocumentException e) {
+                    e.printStackTrace();
+                }
+            }
             document.add(catPart);
 
             //////////// PARTICIPANTS
@@ -182,32 +238,45 @@ public class PdfGenerator {
             anchor = new Anchor("PARTICIPANTS", catFont);
             anchor.setName("PARTICIPANTS");
 
-            catPart = new Chapter(new Paragraph(anchor), 3);
+            catPart = new Chapter(new Paragraph(anchor), 4);
             subPara = new Paragraph("Participants information", subFont);
 
+
             subCatPart = catPart.addSection(subPara);
-            addEmptyLine(subPara, 1);
-            subCatPart.add(getKeyValueParagraph(" Number of participants: ", assessment.getParticipant()
-                    .getParticipantsQuantity().toString()));
-            subCatPart.add(getKeyValueParagraph(" Participate method: ", assessment.getParticipant()
-                    .getParticipationLocalType().getDescription().toUpperCase()));
-            subCatPart.add(getKeyValueParagraph(" Participants will be compensated? ", assessment.getParticipant()
-                    .getHasCompensation() ? "YES" : "NO"));
+            PdfPTable participantTable = new PdfPTable(2);
+            addTableHeader(participantTable, new String[]{"Question", "Answer"});
+            addRows(participantTable, "Number of participants:", assessment.getParticipant()
+                    .getParticipantsQuantity().toString());
+            addRows(participantTable, "Participate method", assessment.getParticipant()
+                    .getParticipationLocalType().getDescription().toUpperCase());
+            addRows(participantTable, "Participants will be compensated", assessment.getParticipant()
+                    .getHasCompensation() ? "YES" : "NO");
+            addEmptyLine(subCatPart, 1);
+            subCatPart.add(participantTable);
+            addEmptyLine(subCatPart, 1);
             if (assessment.getParticipant().getHasCompensation()) {
-                subCatPart.add(getKeyValueParagraph("  Form of compensation: ", assessment.getParticipant()
-                        .getCompensationDescription()));
+                subCatPart.add(new Paragraph(PARAGRAPH_SPACE + "Form of compensation:", smallBold));
+                subCatPart.add(new Paragraph(assessment.getParticipant().getCompensationDescription()));
             }
-            subCatPart.add(new Paragraph(" Eligibility criteria: "));
-            subCatPart.add(new Paragraph(assessment.getParticipant().getCriteria()));
-            subCatPart.add(getKeyValueParagraph(" Use of demographic questionnaire to collect information from the participants: ",
-                    assessment.getParticipant().getHasCollectedInformation() ? "YES" : "NO"));
+            subCatPart.add(new Paragraph(PARAGRAPH_SPACE + "Eligibility criteria: ", smallBold));
+            subCatPart.add(new Paragraph(PARAGRAPH_SPACE + PARAGRAPH_SPACE + assessment.getParticipant().getCriteria()));
+            addEmptyLine(subCatPart, 1);
+            subCatPart.add(new Paragraph(PARAGRAPH_SPACE + "Will have use of demographic questionnaire to collect information from the participants:  ", smallBold));
+            subCatPart.add(new Paragraph(PARAGRAPH_SPACE + PARAGRAPH_SPACE + (assessment.getParticipant().getHasCollectedInformation() ? "YES" : "NO")));
+            addEmptyLine(subCatPart, 1);
+
             if (assessment.getParticipant().getHasCollectedInformation()) {
-                subCatPart.add(getKeyValueParagraph("  How the data will be used: ", assessment.getParticipant()
+                subCatPart.add(new Paragraph(PARAGRAPH_SPACE + "How the data will be used: ", smallBold));
+                subCatPart.add(new Paragraph(PARAGRAPH_SPACE + PARAGRAPH_SPACE + assessment.getParticipant()
                         .getCollectedInformationUse()));
+                addEmptyLine(subCatPart, 1);
             }
-            subCatPart.add(getKeyValueParagraph(" How will the participants be instructed: ", assessment.getParticipant()
+            subCatPart.add(new Paragraph(PARAGRAPH_SPACE + "How will the participants be instructed:", smallBold));
+            subCatPart.add(new Paragraph(PARAGRAPH_SPACE + PARAGRAPH_SPACE + assessment.getParticipant()
                     .getInstructions()));
-            subCatPart.add(new Paragraph(" Questions to be asked to the participants: "));
+            addEmptyLine(subCatPart, 1);
+            subPara = new Paragraph("Questions to be asked to the participants", subFont);
+            subCatPart = catPart.addSection(subPara);
             var questionList = new com.itextpdf.text.List();
             assessment.getParticipant().getQuestions().forEach(s -> questionList.add(new ListItem(s)));
             subCatPart.add(questionList);
@@ -220,23 +289,25 @@ public class PdfGenerator {
             anchor = new Anchor("TASKS AND MATERIALS", catFont);
             anchor.setName("TASKS AND MATERIALS");
 
-            catPart = new Chapter(new Paragraph(anchor), 4);
-            subPara = new Paragraph("Task and materials information", subFont);
-
+            catPart = new Chapter(new Paragraph(anchor), 5);
+            subPara = new Paragraph("Instruments, materials, technology and tools that will be used", subFont);
             subCatPart = catPart.addSection(subPara);
-            addEmptyLine(subPara, 1);
-            subCatPart.add(new Paragraph(" Instruments, materials, technology and tools that will be used: "));
             var toolList = new com.itextpdf.text.List();
             assessment.getAssessmentTools().getTools().forEach(s -> toolList.add(new ListItem(s)));
             subCatPart.add(toolList);
-            subCatPart.add(getKeyValueParagraph(" Tools usage: ", assessment.getAssessmentTools().getToolsUsageDescription()));
-            subCatPart.add(new Paragraph(" Tasks to be performed by participants ", smallBold));
-            for (Task task : assessment.getAssessmentTools().getTasks()) {
-                subCatPart.add(getKeyValueParagraph(" Task description: ", task.getDescription()));
-                subCatPart.add(getKeyValueParagraph(" Task execution time: ", task.getTaskExecutionTime().toString() + " minutes"));
-                subCatPart.add(getKeyValueParagraph(" Task criteria: ", task.getAcceptanceCriteria()));
-                addEmptyLine(subPara, 1);
-            }
+            subCatPart.add(new Paragraph(PARAGRAPH_SPACE + "Tools usage:", subFont));
+            subCatPart.add(new Paragraph(PARAGRAPH_SPACE + PARAGRAPH_SPACE + assessment.getAssessmentTools().getToolsUsageDescription()));
+            addEmptyLine(subCatPart, 1);
+            subPara = new Paragraph("Task to be performed by participants", subFont);
+            subCatPart = catPart.addSection(subPara);
+            addEmptyLine(subCatPart, 1);
+            PdfPTable tasksTable = new PdfPTable(3);
+            addTableHeader(tasksTable, new String[]{"Task Description", "Execution Time", "Acceptance Criteria"});
+            assessment.getAssessmentTools().getTasks().forEach(task ->
+                    addRows(tasksTable, task.getDescription(), task.getTaskExecutionTime(), task.getAcceptanceCriteria()));
+            addEmptyLine(subCatPart, 1);
+            subCatPart.add(tasksTable);
+            addEmptyLine(subCatPart, 1);
 
             document.add(catPart);
 
@@ -246,27 +317,46 @@ public class PdfGenerator {
             anchor = new Anchor("PROCEDURE", catFont);
             anchor.setName("PROCEDURE");
 
-            catPart = new Chapter(new Paragraph(anchor), 5);
-            subPara = new Paragraph("Procedure guide", subFont);
-
+            catPart = new Chapter(new Paragraph(anchor), 6);
+            subPara = new Paragraph("Procedure Guide", subFont);
             subCatPart = catPart.addSection(subPara);
-            addEmptyLine(subPara, 1);
-            subCatPart.add(getKeyValueParagraph(" Time when it will take place: ", assessment.getAssessmentProcedure().getOccurDate().toString()));
-            subCatPart.add(getKeyValueParagraph(" Place where it will take place: ", assessment.getAssessmentProcedure().getOccurLocal()));
-            subCatPart.add(getKeyValueParagraph(" How it will occur: ", assessment.getAssessmentProcedure().getOccurDetail()));
-            subCatPart.add(getKeyValueParagraph(" How long will it take: ", assessment.getAssessmentProcedure().getOccurTime().toString() + " minutes"));
-            subCatPart.add(new Paragraph(" Design of the assessment ", smallBold));
-            for (AssessmentProcedureStep assessmentProcedureStep : assessment.getAssessmentProcedure().getAssessmentProcedureSteps()) {
-                subCatPart.add(getKeyValueParagraph(" Step name: ", assessmentProcedureStep.getName()));
-                subCatPart.add(getKeyValueParagraph(" Step description: ", assessmentProcedureStep.getDescription()));
-                addEmptyLine(subPara, 1);
-            }
-            subCatPart.add(getKeyValueParagraph(" Participants will be able to ask questions: ",
-                    assessment.getAssessmentProcedure().getQuestionsAllowed() ? "YES" : "NO"));
-            subCatPart.add(getKeyValueParagraph(" Will there be a pilot assessment? ",
-                    assessment.getAssessmentProcedure().getIsPilotAssessment() ? "YES" : "NO"));
+            subCatPart.add(new Paragraph(PARAGRAPH_SPACE + "When it will take place", smallBold));
+            subCatPart.add(new Paragraph(PARAGRAPH_SPACE + PARAGRAPH_SPACE + assessment.getAssessmentProcedure().getOccurDate().toString()));
+            addEmptyLine(subCatPart, 1);
+            subCatPart.add(new Paragraph(PARAGRAPH_SPACE + "Where it will take place", smallBold));
+            subCatPart.add(new Paragraph(PARAGRAPH_SPACE + PARAGRAPH_SPACE + assessment.getAssessmentProcedure().getOccurLocal()));
+            addEmptyLine(subCatPart, 1);
+            subCatPart.add(new Paragraph(PARAGRAPH_SPACE + "How it will occur", smallBold));
+            subCatPart.add(new Paragraph(PARAGRAPH_SPACE + PARAGRAPH_SPACE + assessment.getAssessmentProcedure().getOccurDetail()));
+            addEmptyLine(subCatPart, 1);
+            subCatPart.add(new Paragraph(PARAGRAPH_SPACE + "How long will it take", smallBold));
+            subCatPart.add(new Paragraph(PARAGRAPH_SPACE + PARAGRAPH_SPACE + (NumberUtils.isCreatable(assessment.getAssessmentProcedure().getOccurTime()) ?
+                    assessment.getAssessmentProcedure().getOccurTime() + " minutes" : assessment.getAssessmentProcedure().getOccurTime())));
+            addEmptyLine(subCatPart, 1);
+            subPara = new Paragraph("Design of the assessment", subFont);
+            subCatPart = catPart.addSection(subPara);
+            addEmptyLine(subCatPart, 1);
+
+            PdfPTable stepsTable = new PdfPTable(2);
+            addTableHeader(stepsTable, new String[]{"Step Name", "Step Description"});
+            assessment.getAssessmentProcedure().getAssessmentProcedureSteps().forEach(step ->
+                    addRows(stepsTable, step.getName(), step.getDescription()));
+            addEmptyLine(subCatPart, 1);
+            subCatPart.add(stepsTable);
+            addEmptyLine(subCatPart, 1);
+            subPara = new Paragraph("Participants will be able to ask questions", subFont);
+            subCatPart = catPart.addSection(subPara);
+            subCatPart.add(new Paragraph(PARAGRAPH_SPACE +
+                    (assessment.getAssessmentProcedure().getQuestionsAllowed() ? "YES" : "NO")));
+            addEmptyLine(subCatPart, 1);
+            subPara = new Paragraph("Will there be a pilot assessment?", subFont);
+            subCatPart = catPart.addSection(subPara);
+            subCatPart.add(new Paragraph(PARAGRAPH_SPACE +
+                    (assessment.getAssessmentProcedure().getIsPilotAssessment() ? "YES" : "NO")));
+            addEmptyLine(subCatPart, 1);
             if (assessment.getAssessmentProcedure().getIsPilotAssessment()) {
-                subCatPart.add(getKeyValueParagraph("  How the pilot will be conducted: ", assessment.getAssessmentProcedure()
+                subCatPart.add(new Paragraph(PARAGRAPH_SPACE + "How the pilot will be conducted", subFont));
+                subCatPart.add(new Paragraph(PARAGRAPH_SPACE + PARAGRAPH_SPACE + assessment.getAssessmentProcedure()
                         .getPilotDescription()));
             }
             document.add(catPart);
@@ -277,18 +367,24 @@ public class PdfGenerator {
             anchor = new Anchor("DATA COLLECTION AND DATA ANALYSIS", catFont);
             anchor.setName("DATA COLLECTION AND DATA ANALYSIS");
 
-            catPart = new Chapter(new Paragraph(anchor), 6);
-            subPara = new Paragraph("Data collection and usage information", subFont);
-
+            catPart = new Chapter(new Paragraph(anchor), 7);
+            subPara = new Paragraph("How will the data be collected", subFont);
             subCatPart = catPart.addSection(subPara);
-            addEmptyLine(subPara, 1);
-            subCatPart.add(getKeyValueParagraph(" How will the data be collected: ", assessment.getAssessmentData().getDataCollectionProcedure()));
-            subCatPart.add(getKeyValueParagraph(" How will the data collected be analyzed: ", assessment.getAssessmentData().getAnalysisDescription()));
-            subCatPart.add(getKeyValueParagraph(" Will statistical methods be used? ",
-                    assessment.getAssessmentData().getStatisticalMethods() ? "YES" : "NO"));
+            subCatPart.add(new Paragraph(PARAGRAPH_SPACE + assessment.getAssessmentData().getDataCollectionProcedure()));
+            addEmptyLine(subCatPart, 1);
+            subPara = new Paragraph("How will the data collected be analyzed", subFont);
+            subCatPart = catPart.addSection(subPara);
+            subCatPart.add(new Paragraph(PARAGRAPH_SPACE + assessment.getAssessmentData().getAnalysisDescription()));
+            addEmptyLine(subCatPart, 1);
+            subPara = new Paragraph("Will statistical methods be used?", subFont);
+            subCatPart = catPart.addSection(subPara);
+            subCatPart.add(new Paragraph(PARAGRAPH_SPACE + (assessment.getAssessmentData().getStatisticalMethods() ? "YES" : "NO")));
+            addEmptyLine(subCatPart, 1);
             if (assessment.getAssessmentData().getStatisticalMethods()) {
-                subCatPart.add(getKeyValueParagraph("  Statistical methods description: ", assessment.getAssessmentData()
+                subCatPart.add(new Paragraph(PARAGRAPH_SPACE + "Statistical methods use description", subFont));
+                subCatPart.add(new Paragraph(PARAGRAPH_SPACE + PARAGRAPH_SPACE + "- " + assessment.getAssessmentData()
                         .getStatisticalMethodsDescription()));
+                addEmptyLine(subCatPart, 1);
             }
             document.add(catPart);
 
@@ -298,85 +394,52 @@ public class PdfGenerator {
             anchor = new Anchor("THREATS TO VALIDITY", catFont);
             anchor.setName("THREATS TO VALIDITY");
 
-            catPart = new Chapter(new Paragraph(anchor), 7);
-            subPara = new Paragraph("Threats information", subFont);
+            catPart = new Chapter(new Paragraph(anchor), 8);
+            subPara = new Paragraph("Are there any threats to the validity of the assessment?", subFont);
             subCatPart = catPart.addSection(subPara);
-            addEmptyLine(subPara, 1);
-
-            subCatPart.add(new Paragraph(" Are there any threats to the validity of the assessment? ", smallBold));
-            if (CollectionUtils.isNullOrEmpty(assessment.getAssessmentThreat().getThreats())) {
-                subCatPart.add(new Paragraph(" NO"));
-            } else {
-                subCatPart.add(new Paragraph(" YES"));
-                addEmptyLine(subPara, 1);
-                subCatPart.add(new Paragraph(" What are the threats to the validity of the assessment: "));
+            subCatPart.add(new Paragraph(PARAGRAPH_SPACE +
+                    (CollectionUtils.isNullOrEmpty(assessment.getAssessmentThreat().getThreats()) ? "NO" : "YES")));
+            addEmptyLine(subCatPart, 1);
+            if (!CollectionUtils.isNullOrEmpty(assessment.getAssessmentThreat().getThreats())){
+                subPara = new Paragraph("What are the threats to the validity of the assessment?", subFont);
+                subCatPart = catPart.addSection(subPara);
                 var threatList = new com.itextpdf.text.List();
                 assessment.getAssessmentThreat().getThreats().forEach(s -> threatList.add(new ListItem(s)));
                 subCatPart.add(threatList);
-                subCatPart.add(getKeyValueParagraph(" How will the threats to validity be controlled: ",
-                        assessment.getAssessmentThreat().getControlMeasure()));
-                subCatPart.add(new Paragraph(" Assessment limitations: "));
-                if (CollectionUtils.isNullOrEmpty(assessment.getAssessmentThreat().getLimitations())) {
-                    subCatPart.add(new Paragraph(" No limitations."));
-                } else {
-                    var limitationList = new com.itextpdf.text.List();
-                    assessment.getAssessmentThreat().getLimitations().forEach(s -> limitationList.add(new ListItem(s)));
-                    subCatPart.add(limitationList);
-                }
-                subCatPart.add(getKeyValueParagraph(" Are the ethical aspects of the assessment well defined for the participants? ",
-                        assessment.getAssessmentThreat().getEthicalAspectsDefined() ? "YES" : "NO"));
-                if (assessment.getAssessmentThreat().getEthicalAspectsDefined()) {
-                    subCatPart.add(getKeyValueParagraph("  Ethical aspects definition: ", assessment.getAssessmentThreat()
-                            .getEthicalAspectsDescription()));
-                }
-                subCatPart.add(getKeyValueParagraph(" Bias of the assessment: ",
-                        assessment.getAssessmentThreat().getBiasDescription()));
+                addEmptyLine(subCatPart, 1);
             }
+            subPara = new Paragraph("How will the threats to validity be controlled?", subFont);
+            subCatPart = catPart.addSection(subPara);
+            subCatPart.add(new Paragraph(PARAGRAPH_SPACE +
+                    (CollectionUtils.isNullOrEmpty(assessment.getAssessmentThreat().getThreats()) ? "NO" : "YES")));
+            addEmptyLine(subCatPart, 1);
+
+            if (!CollectionUtils.isNullOrEmpty(assessment.getAssessmentThreat().getLimitations())){
+                subPara = new Paragraph("Assessment limitations:", subFont);
+                subCatPart = catPart.addSection(subPara);
+                var limitationList = new com.itextpdf.text.List();
+                assessment.getAssessmentThreat().getLimitations().forEach(s -> limitationList.add(new ListItem(s)));
+                subCatPart.add(limitationList);
+                addEmptyLine(subCatPart, 1);
+            }
+            subPara = new Paragraph("Are the ethical aspects of the assessment well defined for the participants?", subFont);
+            subCatPart = catPart.addSection(subPara);
+            subCatPart.add(new Paragraph(PARAGRAPH_SPACE +
+                    (assessment.getAssessmentThreat().getEthicalAspectsDefined() ? "YES" : "NO")));
+            addEmptyLine(subCatPart, 1);
+            if (assessment.getAssessmentThreat().getEthicalAspectsDefined()) {
+                subCatPart.add(new Paragraph(PARAGRAPH_SPACE + "Ethical aspects definition", subFont));
+                subCatPart.add(new Paragraph(PARAGRAPH_SPACE + PARAGRAPH_SPACE + "- " + assessment.getAssessmentThreat()
+                        .getEthicalAspectsDescription()));
+                addEmptyLine(subCatPart, 1);
+            }
+            subPara = new Paragraph("Bias of the assessment", subFont);
+            subCatPart = catPart.addSection(subPara);
+            subCatPart.add(new Paragraph(PARAGRAPH_SPACE +
+                    assessment.getAssessmentThreat().getBiasDescription()));
+            addEmptyLine(subCatPart, 1);
+
             document.add(catPart);
-
-//            for (InstrumentSection section : instrumentQuestions) {
-//                document.add(getBoldParagraph(section.getSection(), 12));
-//                document.add(Chunk.NEWLINE);
-
-//                for (InstrumentQuestion question : section.getQuestions()) {
-//                    String questionStatement =
-//                            String.format("%d. %s", questionNumber, question.getTitle());
-//                    document.add(getItalicParagraph(questionStatement, 12));
-//
-//                    Object auxObject = detailsMap.get(question.getProjectKey());
-//
-//                    if (auxObject instanceof String) {
-//                        String statement = auxObject.toString();
-//                        document.add(getSingleParagraph(statement));
-//                    } else if (auxObject instanceof LinkedTreeMap) {
-//                        // if hits here, the field has text and tables
-//                        LinkedTreeMap<String, Object> auxMap
-//                                = (LinkedTreeMap<String, Object>) auxObject;
-//
-//                        // write text field
-//                        String textField = (String) auxMap.get("text");
-//                        document.add(getSingleParagraph(textField));
-//
-//                        // draw table
-//                        Object tableObject = auxMap.get("table");
-//                        if (tableObject != null) {
-//                            PdfPTable table = buildAnswerTable(tableObject, document);
-//                            document.add(table);
-//                        }
-//
-//                    } else {
-//                        PdfPTable table = buildAnswerTable(auxObject, document);
-//                        document.add(table);
-//                    }
-//
-//                    document.add(Chunk.NEWLINE);
-//
-//                    if (section.getKey().equals(THREATS_SECTION_KEY)) {
-//                        buildSuggestedThreats(document, groupedThreats);
-//                    }
-//
-//                    questionNumber++;
-//                }
 
             document.add(Chunk.NEWLINE);
             document.add(Chunk.NEWLINE);
@@ -392,6 +455,12 @@ public class PdfGenerator {
     private static void addEmptyLine(Paragraph paragraph, int number) {
         for (int i = 0; i < number; i++) {
             paragraph.add(new Paragraph(" "));
+        }
+    }
+
+    private static void addEmptyLine(Section section, int number) {
+        for (int i = 0; i < number; i++) {
+            section.add(new Paragraph(" "));
         }
     }
 
@@ -419,6 +488,63 @@ public class PdfGenerator {
         }
 
         return table;
+    }
+
+    private static void addTableHeader(PdfPTable table, String[] titles) {
+        Stream.of(titles)
+                .forEach(columnTitle -> {
+                    PdfPCell header = new PdfPCell();
+                    header.setBackgroundColor(BaseColor.LIGHT_GRAY);
+                    header.setBorderWidth(2);
+                    header.setHorizontalAlignment(Element.ALIGN_CENTER);
+                    header.setPhrase(new Phrase(columnTitle));
+                    table.addCell(header);
+                });
+    }
+
+    private static void addRows(PdfPTable table, String firstRow, String secondRow) {
+        PdfPCell firstCell = new PdfPCell(new Phrase(firstRow));
+        firstCell.setBackgroundColor(BaseColor.YELLOW);
+        firstCell.setVerticalAlignment(Element.ALIGN_CENTER);
+        firstCell.setBorderWidth(2);
+        table.addCell(firstCell);
+        PdfPCell answerCell = new PdfPCell(new Phrase(secondRow));
+        answerCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        table.addCell(answerCell);
+    }
+
+    private static void addRows(PdfPTable table, String firstRow, String secondRow, String thirdRow) {
+        PdfPCell firstCell = new PdfPCell(new Phrase(firstRow));
+        firstCell.setBackgroundColor(BaseColor.YELLOW);
+        firstCell.setVerticalAlignment(Element.ALIGN_CENTER);
+        firstCell.setBorderWidth(2);
+        table.addCell(firstCell);
+        PdfPCell secondCell = new PdfPCell(new Phrase(secondRow));
+        secondCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        secondCell.setVerticalAlignment(Element.ALIGN_CENTER);
+        table.addCell(secondCell);
+        PdfPCell thirdCell = new PdfPCell(new Phrase(thirdRow));
+        thirdCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        thirdCell.setVerticalAlignment(Element.ALIGN_CENTER);
+        table.addCell(thirdCell);
+    }
+
+    private void addCustomRows(PdfPTable table)
+            throws URISyntaxException, BadElementException, IOException {
+        Path path = Paths.get(ClassLoader.getSystemResource("Java_logo.png").toURI());
+        Image img = Image.getInstance(path.toAbsolutePath().toString());
+        img.scalePercent(10);
+
+        PdfPCell imageCell = new PdfPCell(img);
+        table.addCell(imageCell);
+
+        PdfPCell horizontalAlignCell = new PdfPCell(new Phrase("row 2, col 2"));
+        horizontalAlignCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        table.addCell(horizontalAlignCell);
+
+        PdfPCell verticalAlignCell = new PdfPCell(new Phrase("row 2, col 3"));
+        verticalAlignCell.setVerticalAlignment(Element.ALIGN_BOTTOM);
+        table.addCell(verticalAlignCell);
     }
 
     private static void buildTableCell(PdfPTable table, String value) {

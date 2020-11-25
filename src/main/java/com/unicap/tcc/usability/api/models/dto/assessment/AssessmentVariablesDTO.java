@@ -1,6 +1,6 @@
 package com.unicap.tcc.usability.api.models.dto.assessment;
 
-import com.unicap.tcc.usability.api.models.assessment.Variable;
+import com.unicap.tcc.usability.api.models.assessment.Attribute;
 import com.unicap.tcc.usability.api.models.assessment.answer.PlanVariableAnswers;
 import com.unicap.tcc.usability.api.models.enums.ScalesEnum;
 import lombok.AllArgsConstructor;
@@ -23,27 +23,27 @@ public @Data
 class AssessmentVariablesDTO {
 
     private UUID assessmentUid;
-    private List<VariableDTO> variables;
+    private List<AttributeDTO> variables;
     private List<ScalesEnum> scale;
     private PlanVariableAnswers planVariableAnswers;
 
-    public Set<Variable> updateVariableSet(Set<Variable> variables) {
-        if (CollectionUtils.isEmpty(variables)) {
+    public Set<Attribute> updateVariableSet(Set<Attribute> attributes) {
+        if (CollectionUtils.isEmpty(attributes)) {
             return this.variables.stream()
-                    .filter(variableDTO -> StringUtils.isNotEmpty(variableDTO.getVariables())
-                            || StringUtils.isNotEmpty(variableDTO.getObtainedBy()))
-                    .map(variableDTO -> Variable.builder()
-                            .obtainedBy(variableDTO.getObtainedBy())
-                            .variables(variableDTO.getVariables())
-                            .usabilityAttribute(variableDTO.getUsabilityAttribute())
+                    .filter(attributeDTO -> StringUtils.isNotEmpty(attributeDTO.getVariables())
+                            || StringUtils.isNotEmpty(attributeDTO.getObtainedBy()))
+                    .map(attributeDTO -> Attribute.builder()
+                            .obtainedBy(attributeDTO.getObtainedBy())
+                            .variables(attributeDTO.getVariables())
+                            .usabilityAttribute(attributeDTO.getUsabilityAttribute())
                             .build())
                     .collect(Collectors.toSet());
         }
-        return variables.stream().peek(variable ->
-                this.variables.forEach(variableDTO -> {
-                    if (variableDTO.getUsabilityAttribute() == variable.getUsabilityAttribute()) {
-                        variable.setObtainedBy(variableDTO.getObtainedBy());
-                        variable.setVariables(variableDTO.getVariables());
+        return attributes.stream().peek(attribute ->
+                this.variables.forEach(attributeDTO -> {
+                    if (attributeDTO.getUsabilityAttribute() == attribute.getUsabilityAttribute()) {
+                        attribute.setObtainedBy(attributeDTO.getObtainedBy());
+                        attribute.setVariables(attributeDTO.getVariables());
                     }
                 })).collect(Collectors.toSet());
 

@@ -15,9 +15,9 @@ import javax.persistence.*;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "variable")
+@Table(name = "attribute")
 public @Data
-class Variable extends BaseEntity {
+class Attribute extends BaseEntity {
 
     @JsonIgnore
     @Id

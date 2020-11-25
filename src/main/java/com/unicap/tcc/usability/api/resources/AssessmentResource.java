@@ -16,6 +16,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,10 +27,18 @@ import javax.validation.constraints.Pattern;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+
+import static org.springframework.http.MediaType.*;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -231,4 +241,21 @@ public class AssessmentResource {
             return ResponseEntity.noContent().build();
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/{uid}/file")
+    @ApiOperation("Download plan.")
+    public ResponseEntity<byte[]> download(@PathVariable @Pattern(regexp = UUIDUtils.UUID_REGEXP, message = "Invalid uid") String uid) {
+
+        Optional<ByteArrayOutputStream> byteArrayOutputStream = assessmentService.downloadPlan(UUID.fromString(uid));
+
+        if (byteArrayOutputStream.isEmpty())
+            return ResponseEntity.badRequest().build();
+
+        return ResponseEntity.ok()
+                .header("Content-Disposition",
+                        "attachment; filename=" + assessmentService.findPlanProjectName(UUID.fromString(uid)) + "Plan.pdf")
+                .contentType(APPLICATION_OCTET_STREAM)
+                .body(byteArrayOutputStream.get().toByteArray());
+    }
+
 }
