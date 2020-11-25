@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public @Data
-class VariableDTO {
+class AttributeDTO {
 
     private UsabilityAttribute usabilityAttribute;
     private String variables;

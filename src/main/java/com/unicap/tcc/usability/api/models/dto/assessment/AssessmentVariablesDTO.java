@@ -23,27 +23,27 @@ public @Data
 class AssessmentVariablesDTO {
 
     private UUID assessmentUid;
-    private List<VariableDTO> variables;
+    private List<AttributeDTO> variables;
     private List<ScalesEnum> scale;
     private PlanVariableAnswers planVariableAnswers;
 
     public Set<Attribute> updateVariableSet(Set<Attribute> attributes) {
         if (CollectionUtils.isEmpty(attributes)) {
             return this.variables.stream()
-                    .filter(variableDTO -> StringUtils.isNotEmpty(variableDTO.getVariables())
-                            || StringUtils.isNotEmpty(variableDTO.getObtainedBy()))
-                    .map(variableDTO -> Attribute.builder()
-                            .obtainedBy(variableDTO.getObtainedBy())
-                            .variables(variableDTO.getVariables())
-                            .usabilityAttribute(variableDTO.getUsabilityAttribute())
+                    .filter(attributeDTO -> StringUtils.isNotEmpty(attributeDTO.getVariables())
+                            || StringUtils.isNotEmpty(attributeDTO.getObtainedBy()))
+                    .map(attributeDTO -> Attribute.builder()
+                            .obtainedBy(attributeDTO.getObtainedBy())
+                            .variables(attributeDTO.getVariables())
+                            .usabilityAttribute(attributeDTO.getUsabilityAttribute())
                             .build())
                     .collect(Collectors.toSet());
         }
         return attributes.stream().peek(attribute ->
-                this.variables.forEach(variableDTO -> {
-                    if (variableDTO.getUsabilityAttribute() == attribute.getUsabilityAttribute()) {
-                        attribute.setObtainedBy(variableDTO.getObtainedBy());
-                        attribute.setVariables(variableDTO.getVariables());
+                this.variables.forEach(attributeDTO -> {
+                    if (attributeDTO.getUsabilityAttribute() == attribute.getUsabilityAttribute()) {
+                        attribute.setObtainedBy(attributeDTO.getObtainedBy());
+                        attribute.setVariables(attributeDTO.getVariables());
                     }
                 })).collect(Collectors.toSet());
 

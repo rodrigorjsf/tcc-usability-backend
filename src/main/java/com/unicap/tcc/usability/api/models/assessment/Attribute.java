@@ -15,7 +15,7 @@ import javax.persistence.*;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "variable")
+@Table(name = "attribute")
 public @Data
 class Attribute extends BaseEntity {
 
