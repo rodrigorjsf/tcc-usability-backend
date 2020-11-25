@@ -7,7 +7,7 @@ server:
 
 spring:
   profiles:
-    active: dev
+    active: prod
   main:
     allow-bean-definition-overriding: true
   batch:
@@ -76,3 +76,4 @@ sas:
 security:
   jwt-expiration: 120
   jwt-sign-key: n2r5u7x!A%D*G-KaPdSgVkYp3s6v9y/B?E(H+MbQeThWmZq4t7w!z%C&F)J@NcRf
+
