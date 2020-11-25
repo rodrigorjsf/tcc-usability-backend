@@ -36,6 +36,9 @@ public class AssessmentService {
     private final SmartCityQuestionnaireRepository smartCityQuestionnaireRepository;
     private final ParticipantRepository participantRepository;
     private final ScaleRepository scaleRepository;
+    private final ProcedureRepository procedureRepository;
+    private final DataRepository dataRepository;
+    private final ThreatsRepository threatsRepository;
     private final MailSender mailSender;
 
     public SmartCityResponse calculateSmartCityPercentage(SmartCityQuestionnaire questionnaire) {
@@ -224,12 +227,69 @@ public class AssessmentService {
         if (optionalAssessment.isPresent()) {
             optionalAssessment.get().setAssessmentTools(
                     assessmentToolsDTO.updateAssessmentTools(optionalAssessment.get().getAssessmentTools()));
-            assessmentToolsDTO.updateTasks(optionalAssessment.get().getAssessmentTools().getTasks());
             optionalAssessment.get().getAnswers().setPlanTasksAnswers(assessmentToolsDTO.getPlanTasksAnswers());
             if (!optionalAssessment.get().getState().equals(AssessmentState.COLLECTING_DATA))
                 optionalAssessment.get().setState(AssessmentState.COLLECTING_DATA);
             return assessmentRepository.save(optionalAssessment.get());
         }
         return null;
+    }
+
+    public Assessment addAssessmentProcedure(AssessmentProcedureDTO assessmentProcedureDTO) {
+        var optionalAssessment = assessmentRepository.findByUid(assessmentProcedureDTO.getAssessmentUid());
+        if (optionalAssessment.isPresent()) {
+            optionalAssessment.get().setAssessmentProcedure(
+                    assessmentProcedureDTO.updateProcedure(optionalAssessment.get().getAssessmentProcedure()));
+            optionalAssessment.get().getAnswers().setPlanProcedureAnswers(assessmentProcedureDTO.getPlanProcedureAnswers());
+            if (!optionalAssessment.get().getState().equals(AssessmentState.COLLECTING_DATA))
+                optionalAssessment.get().setState(AssessmentState.COLLECTING_DATA);
+            var assessment = assessmentRepository.save(optionalAssessment.get());
+            procedureRepository.updateIsPilotAndQuestionAllowed(assessmentProcedureDTO.getIsPilotAssessment(),
+                    assessmentProcedureDTO.getQuestionsAllowed(),
+                    assessment.getAssessmentProcedure().getId());
+            return assessmentRepository.findByUid(assessment.getUid()).get();
+        }
+        return null;
+    }
+
+    public Assessment addAssessmentData(AssessmentDataDTO assessmentDataDTO) {
+        var optionalAssessment = assessmentRepository.findByUid(assessmentDataDTO.getAssessmentUid());
+        if (optionalAssessment.isPresent()) {
+            optionalAssessment.get().setAssessmentData(
+                    assessmentDataDTO.updateDataCollection(optionalAssessment.get().getAssessmentData()));
+            optionalAssessment.get().getAnswers().setPlanDataAnswers(assessmentDataDTO.getPlanDataAnswers());
+            if (!optionalAssessment.get().getState().equals(AssessmentState.COLLECTING_DATA))
+                optionalAssessment.get().setState(AssessmentState.COLLECTING_DATA);
+            var assessment = assessmentRepository.save(optionalAssessment.get());
+            dataRepository.updateStatisticalMethodFlag(assessmentDataDTO.getStatisticalMethods(),
+                    assessment.getAssessmentData().getId());
+            return assessmentRepository.findByUid(assessment.getUid()).get();
+        }
+        return null;
+    }
+
+    public Assessment addAssessmentThreats(AssessmentThreatDTO assessmentThreatDTO) {
+        var optionalAssessment = assessmentRepository.findByUid(assessmentThreatDTO.getAssessmentUid());
+        if (optionalAssessment.isPresent()) {
+            optionalAssessment.get().setAssessmentThreat(
+                    assessmentThreatDTO.updateThreats(optionalAssessment.get().getAssessmentThreat()));
+            optionalAssessment.get().getAnswers().setPlanThreatsAnswers(assessmentThreatDTO.getPlanThreatsAnswers());
+            if (!optionalAssessment.get().getState().equals(AssessmentState.COLLECTING_DATA))
+                optionalAssessment.get().setState(AssessmentState.COLLECTING_DATA);
+            var assessment = assessmentRepository.save(optionalAssessment.get());
+            threatsRepository.updateEthicalAspectsDefined(assessmentThreatDTO.getEthicalAspectsDefined(),
+                    assessment.getAssessmentData().getId());
+            return assessmentRepository.findByUid(assessment.getUid()).get();
+        }
+        return null;
+    }
+
+    public Optional<Assessment> finishPlanDataCollection(UUID uid) {
+        var optionalAssessment = assessmentRepository.findByUid(uid);
+        if (optionalAssessment.isPresent()) {
+            optionalAssessment.get().setState(AssessmentState.COMPLETED);
+            return Optional.of(assessmentRepository.save(optionalAssessment.get()));
+        }
+        return Optional.empty();
     }
 }

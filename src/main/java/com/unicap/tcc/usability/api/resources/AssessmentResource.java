@@ -6,6 +6,7 @@ import com.unicap.tcc.usability.api.models.SmartCityQuestionnaire;
 import com.unicap.tcc.usability.api.models.assessment.Assessment;
 import com.unicap.tcc.usability.api.models.constants.ApplicationConstants;
 import com.unicap.tcc.usability.api.models.dto.AssessmentListDTO;
+import com.unicap.tcc.usability.api.models.dto.FinishResponseDTO;
 import com.unicap.tcc.usability.api.models.dto.SmartCityResponse;
 import com.unicap.tcc.usability.api.models.dto.assessment.*;
 import com.unicap.tcc.usability.api.service.AssessmentService;
@@ -140,10 +141,10 @@ public class AssessmentResource {
 
     @PostMapping("/add/procedure")
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation("Assessment creation.")
-    @ApiResponse(code = 200, message = "Calculo realizado.")
-    public ResponseEntity<Assessment> addAssessmentProcedure(@RequestBody @Valid AssessmentCreationDTO assessmentCreationDTO) {
-        Assessment assessment = assessmentService.createAssessment(assessmentCreationDTO);
+    @ApiOperation("Add procedure to assessment plan.")
+    @ApiResponse(code = 200, message = "Procedure added.")
+    public ResponseEntity<Assessment> addAssessmentProcedure(@RequestBody @Valid AssessmentProcedureDTO assessmentProcedureDTO) {
+        Assessment assessment = assessmentService.addAssessmentProcedure(assessmentProcedureDTO);
         if (Objects.isNull(assessment)) {
             return ResponseEntity.badRequest().build();
         }
@@ -152,10 +153,10 @@ public class AssessmentResource {
 
     @PostMapping("/add/data")
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation("Assessment creation.")
-    @ApiResponse(code = 200, message = "Calculo realizado.")
-    public ResponseEntity<Assessment> addAssessmentData(@RequestBody @Valid AssessmentCreationDTO assessmentCreationDTO) {
-        Assessment assessment = assessmentService.createAssessment(assessmentCreationDTO);
+    @ApiOperation("Add data collection to assessment plan.")
+    @ApiResponse(code = 200, message = "Data collection added.")
+    public ResponseEntity<Assessment> addAssessmentData(@RequestBody @Valid AssessmentDataDTO assessmentDataDTO) {
+        Assessment assessment = assessmentService.addAssessmentData(assessmentDataDTO);
         if (Objects.isNull(assessment)) {
             return ResponseEntity.badRequest().build();
         }
@@ -164,10 +165,10 @@ public class AssessmentResource {
 
     @PostMapping("/add/threats")
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation("Assessment creation.")
-    @ApiResponse(code = 200, message = "Calculo realizado.")
-    public ResponseEntity<Assessment> addAssessmentThreats(@RequestBody @Valid AssessmentCreationDTO assessmentCreationDTO) {
-        Assessment assessment = assessmentService.createAssessment(assessmentCreationDTO);
+    @ApiOperation("Add threats to assessment plan.")
+    @ApiResponse(code = 200, message = "Threats added.")
+    public ResponseEntity<Assessment> addAssessmentThreats(@RequestBody @Valid AssessmentThreatDTO assessmentThreatDTO) {
+        Assessment assessment = assessmentService.addAssessmentThreats(assessmentThreatDTO);
         if (Objects.isNull(assessment)) {
             return ResponseEntity.badRequest().build();
         }
@@ -187,6 +188,18 @@ public class AssessmentResource {
             throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR,
                     "Internal server error. It was not possible to download this assessment");
         }
+    }
+
+    @PutMapping("/finish/{uid}")
+    @ApiOperation("Finish a plan data collection.")
+    public ResponseEntity<FinishResponseDTO> finishPlanDataCollection(@Valid @PathVariable(value = "uid") @ApiParam("Assessment plan uid") String uid) {
+        Optional<Assessment> assessment = assessmentService.finishPlanDataCollection(UUID.fromString(uid));
+        if (assessment.isEmpty())
+            return ResponseEntity.badRequest().build();
+        return ResponseEntity.ok().body(FinishResponseDTO.builder()
+                .uid(UUID.fromString(uid))
+                .projectName(assessment.get().getProjectName())
+                .build());
     }
 
     @GetMapping("/scales")

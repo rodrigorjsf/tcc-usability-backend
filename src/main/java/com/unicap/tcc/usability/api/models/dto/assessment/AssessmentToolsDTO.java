@@ -32,6 +32,7 @@ public class AssessmentToolsDTO {
                     .toolsUsageDescription(this.toolsUsageDescription)
                     .build();
         }
+        this.updateTasks(assessmentTools.getTasks());
         assessmentTools.setToolsUsageDescription(this.toolsUsageDescription);
         assessmentTools.setTools(this.tools);
         return assessmentTools;
@@ -47,7 +48,7 @@ public class AssessmentToolsDTO {
                 .collect(Collectors.toSet());
     }
 
-    public void updateTasks(Set<Task> tasks) {
+    private void updateTasks(Set<Task> tasks) {
         tasks.forEach(task -> {
             if (!this.taskDTOListToTaskList().contains(task)) {
                 task.setRemovedDate(LocalDateTime.now());

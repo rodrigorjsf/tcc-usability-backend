@@ -48,7 +48,7 @@ public class AssessmentProcedure extends BaseEntity {
     private String occurDetail;
 
     @Column
-    private Integer occurTime;
+    private String occurTime;
 
     @OneToMany(cascade = {CascadeType.ALL})
     @JoinColumn(name = "assessment_procedure_id", referencedColumnName = "id", nullable = false)
