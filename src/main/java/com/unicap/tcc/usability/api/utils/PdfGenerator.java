@@ -6,6 +6,7 @@ import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.draw.DottedLineSeparator;
 import com.unicap.tcc.usability.api.models.Scale;
 import com.unicap.tcc.usability.api.models.assessment.Assessment;
 import com.unicap.tcc.usability.api.models.assessment.Attribute;
@@ -117,7 +118,7 @@ public class PdfGenerator {
                 if (StringUtils.isNotEmpty(usabilityGoal.getGoal()))
                     subCatPart.add(new Paragraph(PARAGRAPH_SPACE + usabilityGoal.getAttribute().getDescription() + ": " + usabilityGoal.getGoal()));
             }
-            addEmptyLine(subPara, 2);
+            addEmptyLine(subCatPart, 2);
             subPara = new Paragraph("Smart city factor", subFont);
             subCatPart = catPart.addSection(subPara);
             subCatPart.add(new Paragraph(getKeyValueParagraph(PARAGRAPH_SPACE + "Percentage result: ", assessment.getSmartCityPercentage().toString() + "%")));
@@ -158,16 +159,21 @@ public class PdfGenerator {
 
             catPart = new Chapter(new Paragraph(anchor), 2);
             subPara = new Paragraph("Usability attributes variables to be measured", subFont);
+            subCatPart = catPart.addSection(subPara);
+            DottedLineSeparator dottedline = new DottedLineSeparator();
+            dottedline.setOffset(-10);
+            dottedline.setGap(2f);
             for (Attribute attribute : assessment.getAttributes()) {
                 if (StringUtils.isNotEmpty(attribute.getVariables())) {
-                    subCatPart = catPart.addSection(subPara);
                     subCatPart.add(new Paragraph(PARAGRAPH_SPACE + attribute.getUsabilityAttribute().getDescription() + " variable(s): ", smallBold));
                     subCatPart.add(new Paragraph(PARAGRAPH_SPACE + PARAGRAPH_SPACE + attribute.getVariables()));
                     addEmptyLine(subCatPart, 1);
                     subCatPart.add(new Paragraph(PARAGRAPH_SPACE + "How will the " +
                             attribute.getUsabilityAttribute().getDescription() +
                             " variables be obtained (methods and criteria for measuring description): ", smallBold));
-                    subCatPart.add(new Paragraph(PARAGRAPH_SPACE + PARAGRAPH_SPACE + attribute.getObtainedBy()));
+                    Paragraph p = new Paragraph(PARAGRAPH_SPACE + PARAGRAPH_SPACE + attribute.getObtainedBy());
+                    p.add(dottedline);
+                    subCatPart.add(p);
                     addEmptyLine(subCatPart, 1);
                 }
             }

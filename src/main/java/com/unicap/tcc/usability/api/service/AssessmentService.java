@@ -295,13 +295,6 @@ public class AssessmentService {
 
     public Optional<ByteArrayOutputStream> downloadPlan(UUID uid) {
         var optionalAssessment = assessmentRepository.findByUid(uid);
-        //            Path path = Paths.get(planFile.get().getAbsolutePath());
-        //            ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
-        //            try(OutputStream outputStream = new FileOutputStream("thefilename")) {
-        //                fileOutputByteArray.writeTo(outputStream);
-        //            } catch (IOException e) {
-        //                e.printStackTrace();
-        //            }
         return optionalAssessment.map(PdfGenerator::generatePlan);
     }
 

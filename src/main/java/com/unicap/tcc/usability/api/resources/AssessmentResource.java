@@ -242,13 +242,13 @@ public class AssessmentResource {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/{planUid}/file")
+    @GetMapping("/{uid}/file")
     @ApiOperation("Download plan.")
-    public ResponseEntity<byte[]> download(@Valid @PathVariable(value = "planUid") @ApiParam("Assessment plan uid") String uid) {
+    public ResponseEntity<byte[]> download(@PathVariable @Pattern(regexp = UUIDUtils.UUID_REGEXP, message = "Invalid uid") String uid) {
 
         Optional<ByteArrayOutputStream> byteArrayOutputStream = assessmentService.downloadPlan(UUID.fromString(uid));
 
-        if (Objects.isNull(byteArrayOutputStream))
+        if (byteArrayOutputStream.isEmpty())
             return ResponseEntity.badRequest().build();
 
         return ResponseEntity.ok()
