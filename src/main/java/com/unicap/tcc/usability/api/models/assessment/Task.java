@@ -1,23 +1,22 @@
 package com.unicap.tcc.usability.api.models.assessment;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.unicap.tcc.usability.api.models.BaseEntity;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import net.minidev.json.annotate.JsonIgnore;
 
 import javax.persistence.*;
+import java.util.Objects;
 
-@Getter
-@Setter
 @SuperBuilder
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "assessment_tasks")
-public class Task extends BaseEntity {
+public @Data
+class Task extends BaseEntity {
 
     @JsonIgnore
     @Id
@@ -31,8 +30,23 @@ public class Task extends BaseEntity {
     private String description;
 
     @Column
-    private Integer taskExecutionTime;
+    private String taskExecutionTime;
 
     @Column
     private String acceptanceCriteria;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return description.equals(task.description) &&
+                taskExecutionTime.equals(task.taskExecutionTime) &&
+                acceptanceCriteria.equals(task.acceptanceCriteria);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(description, taskExecutionTime, acceptanceCriteria);
+    }
 }

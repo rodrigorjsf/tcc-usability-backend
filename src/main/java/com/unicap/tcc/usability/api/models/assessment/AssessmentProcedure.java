@@ -1,5 +1,6 @@
 package com.unicap.tcc.usability.api.models.assessment;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.unicap.tcc.usability.api.models.BaseEntity;
 import com.vladmihalcea.hibernate.type.array.ListArrayType;
 import lombok.AllArgsConstructor;
@@ -7,15 +8,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import net.minidev.json.annotate.JsonIgnore;
-import org.hibernate.annotations.Generated;
-import org.hibernate.annotations.GenerationTime;
-import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
+import org.hibernate.annotations.*;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -47,11 +47,12 @@ public class AssessmentProcedure extends BaseEntity {
     private String occurDetail;
 
     @Column
-    private Integer occurTime;
+    private String occurTime;
 
     @OneToMany(cascade = {CascadeType.ALL})
     @JoinColumn(name = "assessment_procedure_id", referencedColumnName = "id", nullable = false)
-    private List<AssessmentProcedureStep> assessmentProcedureSteps;
+    @Where(clause = "removed_at is NULL")
+    private Set<AssessmentProcedureStep> assessmentProcedureSteps;
 
     @Column(name = "is_pilot_assessment", columnDefinition = "boolean default false")
     @Generated(GenerationTime.ALWAYS)

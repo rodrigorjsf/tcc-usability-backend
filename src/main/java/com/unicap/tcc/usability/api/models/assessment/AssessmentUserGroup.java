@@ -1,5 +1,6 @@
 package com.unicap.tcc.usability.api.models.assessment;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.unicap.tcc.usability.api.models.BaseEntity;
 import com.unicap.tcc.usability.api.models.User;
 import com.unicap.tcc.usability.api.models.enums.UserProfileEnum;
@@ -8,7 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import net.minidev.json.annotate.JsonIgnore;
 
 import javax.persistence.*;
 

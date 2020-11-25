@@ -1,18 +1,12 @@
 package com.unicap.tcc.usability.api.models.assessment;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.unicap.tcc.usability.api.models.BaseEntity;
-import com.unicap.tcc.usability.api.models.Scale;
 import com.unicap.tcc.usability.api.models.enums.UsabilityAttribute;
-import com.vladmihalcea.hibernate.type.array.ListArrayType;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import net.minidev.json.annotate.JsonIgnore;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
 
 import javax.persistence.*;
-import java.util.List;
 
 
 @Getter
