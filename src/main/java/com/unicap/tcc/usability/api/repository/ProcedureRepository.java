@@ -1,7 +1,6 @@
 package com.unicap.tcc.usability.api.repository;
 
 import com.unicap.tcc.usability.api.models.assessment.AssessmentProcedure;
-import com.unicap.tcc.usability.api.models.assessment.Participant;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

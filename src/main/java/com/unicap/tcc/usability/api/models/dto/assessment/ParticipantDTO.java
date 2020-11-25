@@ -1,7 +1,6 @@
 package com.unicap.tcc.usability.api.models.dto.assessment;
 
 import com.unicap.tcc.usability.api.models.assessment.Participant;
-import com.unicap.tcc.usability.api.models.assessment.Variable;
 import com.unicap.tcc.usability.api.models.assessment.answer.PlanParticipantsAnswers;
 import com.unicap.tcc.usability.api.models.enums.ParticipationLocalType;
 import lombok.AllArgsConstructor;

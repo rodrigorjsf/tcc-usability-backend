@@ -2,7 +2,9 @@ package com.unicap.tcc.usability.api.models.assessment;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.unicap.tcc.usability.api.models.BaseEntity;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
