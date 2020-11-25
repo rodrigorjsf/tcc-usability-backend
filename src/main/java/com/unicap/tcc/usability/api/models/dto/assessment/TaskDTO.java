@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 public class TaskDTO{
 
     private String description;
-    private Integer taskExecutionTime;
+    private String taskExecutionTime;
     private String acceptanceCriteria;
 }

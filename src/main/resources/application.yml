@@ -19,23 +19,17 @@ spring:
     chain:
       enabled: true
   jpa:
-    show-sql: false
+    show-sql: true
     generate-ddl: true
     hibernate:
       ddl-auto: update
       naming_strategy: org.hibernate.cfg.DefaultNamingStrategy
-      jdbc:
-        lob:
-          non_contextual_creation: true
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQL95Dialect
-        hbm2ddl:
-          auto: update
+        dialect: org.hibernate.dialect.PostgreSQLDialect
         temp:
           use_jdbc_metadata_defaults: false
-          hibernate.enable_lazy_load_no_trans: true
-        enable_lazy_load_no_trans: true
+
   mail:
     host: email-smtp.sa-east-1.amazonaws.com
     password: BCa7g75XoKPoH65Pu8CL8u5CMDaXH4kjdyBAOOFryVVk
@@ -63,6 +57,13 @@ logging:
         models:
           parameters:
             AbstractSerializableParameter: error
+    org:
+    hibernate:
+      SQL: DEBUG
+    type:
+      descriptor:
+        sql:
+          BasicBinder: TRACE
 
 s3:
   bucket: cadeira-spring-react
@@ -73,5 +74,5 @@ sas:
   from-name: Valid Usability Assessment
 
 security:
-    jwt-expiration: 120
-    jwt-sign-key: n2r5u7x!A%D*G-KaPdSgVkYp3s6v9y/B?E(H+MbQeThWmZq4t7w!z%C&F)J@NcRf
+  jwt-expiration: 120
+  jwt-sign-key: n2r5u7x!A%D*G-KaPdSgVkYp3s6v9y/B?E(H+MbQeThWmZq4t7w!z%C&F)J@NcRf

@@ -20,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -83,7 +82,7 @@ public class AssessmentResource {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation("Add smartcity questionnaire to assessment plan.")
     @ApiResponse(code = 200, message = "Smartcity questionnaire added.")
-    public ResponseEntity<Assessment> addSmartCityQuestionnaire(@RequestBody @Valid SmartCityQuestionnaireDTO questionnaire) {
+    public ResponseEntity<Assessment> addSmartCityQuestionnaire(@RequestBody @Valid ApplicationSectionDTO questionnaire) {
         Assessment assessment = assessmentService.addSmartCityQuestionnaire(questionnaire);
         if (Objects.isNull(assessment)) {
             return ResponseEntity.noContent().build();
@@ -115,66 +114,24 @@ public class AssessmentResource {
         return ResponseEntity.ok().body(assessment);
     }
 
-    @PostMapping("/add/collaborator")
-    @ResponseStatus(HttpStatus.OK)
-    @ApiOperation("Add collaborator to assessment plan.")
-    @ApiResponse(code = 200, message = "Collaborator added.")
-    public ResponseEntity<Assessment> addCollaborators(@RequestBody @Valid CollaboratorDTO collaboratorDTO) {
-        Assessment assessment = assessmentService.addCollaborator(collaboratorDTO);
-        if (Objects.isNull(assessment)) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok().body(assessment);
-    }
-
-    @GetMapping("/scales")
-    @ApiOperation("Get list of scales.")
-    public ResponseEntity< List<Scale>> getScaleList() {
-        List<Scale> scaleList = assessmentService.getScaleList();
-        if (scaleList.isEmpty())
-            return ResponseEntity.noContent().build();
-        return ResponseEntity.ok().body(scaleList);
-    }
-
-    @PutMapping("/delete/{uid}")
-    @ApiOperation("Delete assessment plan.")
-    public ResponseEntity<Object> deleteAssessmentPlan(@Valid @PathVariable(value = "uid") @ApiParam("Assessment plan uid") String uid) {
-        Optional<Assessment> assessmentOptional = assessmentService.deleteAssessmentPlan(UUID.fromString(uid));
-        if (assessmentOptional.isEmpty())
-            return ResponseEntity.noContent().build();
-        return ResponseEntity.ok().build();
-    }
-
-//    @PostMapping("/add/attributes-variables")
-//    @ResponseStatus(HttpStatus.OK)
-//    @ApiOperation("Add atributes variables to assessment.")
-//    @ApiResponse(code = 200, message = "Variables added.")
-//    public ResponseEntity<Assessment> addAssessmentAttributeVariable(@RequestBody @Valid AssessmentVariablesDTO assessmentVariablesDTO) {
-//        Assessment assessment = assessmentService.addAssessmentAttributeVariables(assessmentVariablesDTO);
-//        if (Objects.isNull(assessment)) {
-//            return ResponseEntity.badRequest().build();
-//        }
-//        return ResponseEntity.ok().body(assessment);
-//    }
-
     @PostMapping("/add/participant")
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation("Assessment creation.")
-    @ApiResponse(code = 200, message = "Calculo realizado.")
-    public ResponseEntity<Assessment> addAssessmentParticipant(@RequestBody @Valid AssessmentCreationDTO assessmentCreationDTO) {
-        Assessment assessment = assessmentService.createAssessment(assessmentCreationDTO);
+    @ApiOperation("Add participant to assessment plan.")
+    @ApiResponse(code = 200, message = "Participant added.")
+    public ResponseEntity<Assessment> addParticipant(@RequestBody @Valid ParticipantDTO participantDTO) {
+        Assessment assessment = assessmentService.addParticipant(participantDTO);
         if (Objects.isNull(assessment)) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok().body(assessment);
     }
 
     @PostMapping("/add/tools")
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation("Assessment creation.")
-    @ApiResponse(code = 200, message = "Calculo realizado.")
-    public ResponseEntity<Assessment> addAssessmentTools(@RequestBody @Valid AssessmentCreationDTO assessmentCreationDTO) {
-        Assessment assessment = assessmentService.createAssessment(assessmentCreationDTO);
+    @ApiOperation("Add tools and tasks to assessment plan.")
+    @ApiResponse(code = 200, message = "Tasks and tools added.")
+    public ResponseEntity<Assessment> addAssessmentTools(@RequestBody @Valid AssessmentToolsDTO assessmentToolsDTO) {
+        Assessment assessment = assessmentService.addAssessmentTools(assessmentToolsDTO);
         if (Objects.isNull(assessment)) {
             return ResponseEntity.badRequest().build();
         }
@@ -232,4 +189,33 @@ public class AssessmentResource {
         }
     }
 
+    @GetMapping("/scales")
+    @ApiOperation("Get list of scales.")
+    public ResponseEntity< List<Scale>> getScaleList() {
+        List<Scale> scaleList = assessmentService.getScaleList();
+        if (scaleList.isEmpty())
+            return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().body(scaleList);
+    }
+
+    @PostMapping("/add/collaborator")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation("Add collaborator to assessment plan.")
+    @ApiResponse(code = 200, message = "Collaborator added.")
+    public ResponseEntity<Assessment> addCollaborators(@RequestBody @Valid CollaboratorDTO collaboratorDTO) {
+        Assessment assessment = assessmentService.addCollaborator(collaboratorDTO);
+        if (Objects.isNull(assessment)) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok().body(assessment);
+    }
+
+    @PutMapping("/delete/{uid}")
+    @ApiOperation("Delete assessment plan.")
+    public ResponseEntity<Object> deleteAssessmentPlan(@Valid @PathVariable(value = "uid") @ApiParam("Assessment plan uid") String uid) {
+        Optional<Assessment> assessmentOptional = assessmentService.deleteAssessmentPlan(UUID.fromString(uid));
+        if (assessmentOptional.isEmpty())
+            return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
+    }
 }

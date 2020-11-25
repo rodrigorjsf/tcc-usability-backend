@@ -11,10 +11,7 @@ import com.unicap.tcc.usability.api.models.dto.SmartCityResponse;
 import com.unicap.tcc.usability.api.models.dto.assessment.*;
 import com.unicap.tcc.usability.api.models.enums.AssessmentState;
 import com.unicap.tcc.usability.api.models.enums.UserProfileEnum;
-import com.unicap.tcc.usability.api.repository.AssessmentRepository;
-import com.unicap.tcc.usability.api.repository.AssessmentUserGroupRepository;
-import com.unicap.tcc.usability.api.repository.ScaleRepository;
-import com.unicap.tcc.usability.api.repository.UserRepository;
+import com.unicap.tcc.usability.api.repository.*;
 import com.unicap.tcc.usability.api.utils.PdfGenerator;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -36,6 +33,8 @@ public class AssessmentService {
     private final AssessmentRepository assessmentRepository;
     private final UserRepository userRepository;
     private final AssessmentUserGroupRepository assessmentUserGroupRepository;
+    private final SmartCityQuestionnaireRepository smartCityQuestionnaireRepository;
+    private final ParticipantRepository participantRepository;
     private final ScaleRepository scaleRepository;
     private final MailSender mailSender;
 
@@ -126,23 +125,6 @@ public class AssessmentService {
         return assessmentRepository.findByUid(uid);
     }
 
-    public Assessment addSmartCityQuestionnaire(SmartCityQuestionnaireDTO questionnaire) {
-        var optionalAssessment = assessmentRepository.findByUid(questionnaire.getAssessmentUid());
-        if (optionalAssessment.isPresent()) {
-            optionalAssessment.get().setSmartCityQuestionnaire(questionnaire.updateSmartCityQuestionnaire());
-            var resultList = questionnaire.toSmartCityQuestionnaire().getListOfResults();
-            var resultsQuantity = Long.valueOf(resultList.size());
-            var positiveResults = Long.valueOf(resultList.stream().filter(aBoolean -> aBoolean.equals(true)).count());
-            optionalAssessment.get().getAnswers().setPlanApplicationAnswers(questionnaire.getPlanApplicationAnswers());
-            optionalAssessment.get().setSmartCityPercentage(positiveResults.doubleValue() == 0 ?
-                    0 : (positiveResults.doubleValue() * 100) / resultsQuantity.doubleValue());
-            if (!optionalAssessment.get().getState().equals(AssessmentState.COLLECTING_DATA))
-                optionalAssessment.get().setState(AssessmentState.COLLECTING_DATA);
-            return assessmentRepository.save(optionalAssessment.get());
-        }
-        return null;
-    }
-
     public List<Scale> getScaleList() {
         return scaleRepository.findAll();
     }
@@ -157,10 +139,48 @@ public class AssessmentService {
         return Optional.empty();
     }
 
+    public Assessment addSmartCityQuestionnaire(ApplicationSectionDTO applicationSection) {
+        var optionalAssessment = assessmentRepository.findByUid(applicationSection.getAssessmentUid());
+        if (optionalAssessment.isPresent()) {
+            var assessment = optionalAssessment.get();
+            if (Objects.isNull(assessment.getSmartCityQuestionnaire()))
+                assessment.setSmartCityQuestionnaire(applicationSection.updateSmartCityQuestionnaire(assessment));
+            else
+                assessment.getSmartCityQuestionnaire().updateValues(applicationSection);
+            assessment.getAnswers().setPlanApplicationAnswers(applicationSection.getPlanApplicationAnswers());
+            var resultList = applicationSection.toSmartCityQuestionnaire().getListOfResults();
+            var resultsQuantity = Long.valueOf(resultList.size());
+            var positiveResults = Long.valueOf(resultList.stream().filter(aBoolean -> aBoolean.equals(true)).count());
+            var percentage = positiveResults.doubleValue() == 0 ?
+                    0 : (positiveResults.doubleValue() * 100) / resultsQuantity.doubleValue();
+            assessment = assessmentRepository.save(assessment);
+
+            assessmentRepository.updateProjectAndAnswers(applicationSection.getProjectName(),
+                    applicationSection.getProjectDescription(),
+                    percentage,
+                    assessment.getUid());
+            smartCityQuestionnaireRepository.updateSmartCityQuestionnaire(
+                    applicationSection.getDefineCityModel(),
+                    applicationSection.getHasAppExecution(),
+                    applicationSection.getHasDataAccess(),
+                    applicationSection.getHasDataManagement(),
+                    applicationSection.getHasDataProcessing(),
+                    applicationSection.getHasSensorNetwork(),
+                    applicationSection.getHasServiceManagement(),
+                    applicationSection.getHasSoftwareTools(),
+                    assessment.getId());
+            if (!assessment.getState().equals(AssessmentState.COLLECTING_DATA))
+                assessment.setState(AssessmentState.COLLECTING_DATA);
+            return assessment;
+        }
+        return null;
+    }
+
     public Assessment addUsabilityGoals(UsabilityGoalDTO usabilityGoalDTO) {
         var optionalAssessment = assessmentRepository.findByUid(usabilityGoalDTO.getAssessmentUid());
         if (optionalAssessment.isPresent()) {
-            optionalAssessment.get().setUsabilityGoals(usabilityGoalDTO.toUsabilityGoals());
+            optionalAssessment.get().setUsabilityGoals(usabilityGoalDTO.toUsabilityGoals(
+                    optionalAssessment.get().getUsabilityGoals()));
             optionalAssessment.get().getAnswers().setPlanGoalsAnswers(usabilityGoalDTO.getPlanGoalsAnswers());
             if (!optionalAssessment.get().getState().equals(AssessmentState.COLLECTING_DATA))
                 optionalAssessment.get().setState(AssessmentState.COLLECTING_DATA);
@@ -172,10 +192,40 @@ public class AssessmentService {
     public Assessment addVariables(AssessmentVariablesDTO assessmentVariablesDTO) {
         var optionalAssessment = assessmentRepository.findByUid(assessmentVariablesDTO.getAssessmentUid());
         if (optionalAssessment.isPresent()) {
-            optionalAssessment.get().setVariables(assessmentVariablesDTO.convertToVariableList());
+            optionalAssessment.get().setVariables(assessmentVariablesDTO.updateVariableSet(optionalAssessment.get().getVariables()));
+            optionalAssessment.get().getAnswers().setPlanVariableAnswers(assessmentVariablesDTO.getPlanVariableAnswers());
             var scaleList = scaleRepository.findByAcronymIn(assessmentVariablesDTO.getScale());
             if (CollectionUtils.isNotEmpty(scaleList))
                 optionalAssessment.get().setScale(scaleList);
+            if (!optionalAssessment.get().getState().equals(AssessmentState.COLLECTING_DATA))
+                optionalAssessment.get().setState(AssessmentState.COLLECTING_DATA);
+            return assessmentRepository.save(optionalAssessment.get());
+        }
+        return null;
+    }
+
+    public Assessment addParticipant(ParticipantDTO participantDTO) {
+        var optionalAssessment = assessmentRepository.findByUid(participantDTO.getAssessmentUid());
+        if (optionalAssessment.isPresent()) {
+            optionalAssessment.get().setParticipant(participantDTO.updateParticipant(optionalAssessment.get().getParticipant()));
+            optionalAssessment.get().getAnswers().setPlanParticipantsAnswers(participantDTO.getPlanParticipantsAnswers());
+            if (!optionalAssessment.get().getState().equals(AssessmentState.COLLECTING_DATA))
+                optionalAssessment.get().setState(AssessmentState.COLLECTING_DATA);
+            var assessment = assessmentRepository.save(optionalAssessment.get());
+            participantRepository.updateHasCollectedInformation(participantDTO.getHasCollectedInformation(),
+                    assessment.getParticipant().getId());
+            return assessmentRepository.findByUid(assessment.getUid()).get();
+        }
+        return null;
+    }
+
+    public Assessment addAssessmentTools(AssessmentToolsDTO assessmentToolsDTO) {
+        var optionalAssessment = assessmentRepository.findByUid(assessmentToolsDTO.getAssessmentUid());
+        if (optionalAssessment.isPresent()) {
+            optionalAssessment.get().setAssessmentTools(
+                    assessmentToolsDTO.updateAssessmentTools(optionalAssessment.get().getAssessmentTools()));
+            assessmentToolsDTO.updateTasks(optionalAssessment.get().getAssessmentTools().getTasks());
+            optionalAssessment.get().getAnswers().setPlanTasksAnswers(assessmentToolsDTO.getPlanTasksAnswers());
             if (!optionalAssessment.get().getState().equals(AssessmentState.COLLECTING_DATA))
                 optionalAssessment.get().setState(AssessmentState.COLLECTING_DATA);
             return assessmentRepository.save(optionalAssessment.get());

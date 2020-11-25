@@ -1,6 +1,7 @@
 package com.unicap.tcc.usability.api.models.dto.assessment;
 
 import com.unicap.tcc.usability.api.models.SmartCityQuestionnaire;
+import com.unicap.tcc.usability.api.models.assessment.Assessment;
 import com.unicap.tcc.usability.api.models.assessment.answer.PlanApplicationAnswers;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,9 +14,11 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SmartCityQuestionnaireDTO {
+public class ApplicationSectionDTO {
 
     private UUID assessmentUid;
+    private String projectName;
+    private String projectDescription;
     private Boolean hasDataManagement;
     private Boolean hasAppExecution;
     private Boolean hasSensorNetwork;
@@ -39,8 +42,9 @@ public class SmartCityQuestionnaireDTO {
                 .build();
     }
 
-    public SmartCityQuestionnaire updateSmartCityQuestionnaire() {
-        return SmartCityQuestionnaire.builder().hasDataManagement(this.hasDataManagement)
+    public SmartCityQuestionnaire updateSmartCityQuestionnaire(Assessment assessment) {
+        return SmartCityQuestionnaire.builder()
+                .hasDataManagement(this.hasDataManagement)
                 .hasAppExecution(this.hasAppExecution)
                 .hasSensorNetwork(this.hasSensorNetwork)
                 .hasDataProcessing(this.hasDataProcessing)
@@ -48,7 +52,9 @@ public class SmartCityQuestionnaireDTO {
                 .hasServiceManagement(this.hasServiceManagement)
                 .hasSoftwareTools(this.hasSoftwareTools)
                 .defineCityModel(this.defineCityModel)
+                .assessment(assessment)
                 .build();
+
     }
 
 }

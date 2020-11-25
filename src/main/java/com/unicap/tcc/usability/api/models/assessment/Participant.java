@@ -1,5 +1,6 @@
 package com.unicap.tcc.usability.api.models.assessment;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.unicap.tcc.usability.api.models.BaseEntity;
 import com.unicap.tcc.usability.api.models.enums.ParticipationLocalType;
 import com.vladmihalcea.hibernate.type.array.ListArrayType;
@@ -8,7 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.annotations.*;
 
 import javax.persistence.Entity;
@@ -49,7 +49,7 @@ public class Participant extends BaseEntity {
     @Column
     private String compensationDescription;
 
-    @Column(name = "eligibility_criteria", columnDefinition = "text[]")
+    @Column(name = "eligibility_criteria", columnDefinition = "text")
     private String criteria;
 
     @Column(name = "has_collected_information", columnDefinition = "boolean default false")

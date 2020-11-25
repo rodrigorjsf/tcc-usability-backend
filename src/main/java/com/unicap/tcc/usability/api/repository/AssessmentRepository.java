@@ -2,12 +2,16 @@ package com.unicap.tcc.usability.api.repository;
 
 import com.unicap.tcc.usability.api.models.assessment.Assessment;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Repository
 public interface AssessmentRepository extends JpaRepository<Assessment, Long> {
 
     Optional<Assessment> findByUid(UUID uuid);
@@ -23,4 +27,15 @@ public interface AssessmentRepository extends JpaRepository<Assessment, Long> {
             "  AND su.removed_at IS NULL;")
     List<Assessment> findByCollaboratorUid(UUID uid);
 
+    @Transactional
+    @Modifying
+    @Query(nativeQuery = true, value = "UPDATE assessment\n" +
+            "SET project_name          = :projectName,\n" +
+            "    project_description   = :projectDescription,\n" +
+            "    smart_city_percentage = :percentage\n" +
+            "WHERE uid = :uid")
+    void updateProjectAndAnswers(@Param("projectName") String projectName,
+                                        @Param("projectDescription") String projectDescription,
+                                        @Param("percentage") Double percentage,
+                                        @Param("uid") UUID uid);
 }
