@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
-import java.io.ByteArrayOutputStream;
+import java.io.*;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -62,7 +62,7 @@ public class AssessmentService {
             throw new ApiException(Response.Status.NOT_FOUND,
                     "Assessment not found");
 
-        ByteArrayOutputStream byteArrayOutputStream = PdfGenerator.generatePlanReport(assessment);
+        ByteArrayOutputStream byteArrayOutputStream = PdfGenerator.generatePlan(assessment);
 
         StreamingOutput output = out -> {
             byteArrayOutputStream.writeTo(out);
@@ -195,7 +195,7 @@ public class AssessmentService {
     public Assessment addVariables(AssessmentVariablesDTO assessmentVariablesDTO) {
         var optionalAssessment = assessmentRepository.findByUid(assessmentVariablesDTO.getAssessmentUid());
         if (optionalAssessment.isPresent()) {
-            optionalAssessment.get().setVariables(assessmentVariablesDTO.updateVariableSet(optionalAssessment.get().getVariables()));
+            optionalAssessment.get().setAttributes(assessmentVariablesDTO.updateVariableSet(optionalAssessment.get().getAttributes()));
             optionalAssessment.get().getAnswers().setPlanVariableAnswers(assessmentVariablesDTO.getPlanVariableAnswers());
             var scaleList = scaleRepository.findByAcronymIn(assessmentVariablesDTO.getScale());
             if (CollectionUtils.isNotEmpty(scaleList))
@@ -291,5 +291,25 @@ public class AssessmentService {
             return Optional.of(assessmentRepository.save(optionalAssessment.get()));
         }
         return Optional.empty();
+    }
+
+    public Optional<ByteArrayOutputStream> downloadPlan(UUID uid) {
+        var optionalAssessment = assessmentRepository.findByUid(uid);
+        //            Path path = Paths.get(planFile.get().getAbsolutePath());
+        //            ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
+        //            try(OutputStream outputStream = new FileOutputStream("thefilename")) {
+        //                fileOutputByteArray.writeTo(outputStream);
+        //            } catch (IOException e) {
+        //                e.printStackTrace();
+        //            }
+        return optionalAssessment.map(PdfGenerator::generatePlan);
+    }
+
+    public String findPlanProjectName(UUID uid) {
+        var assessmentOptional = assessmentRepository.findByUid(uid);
+        if (assessmentOptional.isPresent()) {
+            return assessmentOptional.get().getProjectName();
+        }
+        return "assessmentUsabiity";
     }
 }

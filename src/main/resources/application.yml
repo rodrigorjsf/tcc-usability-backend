@@ -19,10 +19,7 @@ spring:
     chain:
       enabled: true
   jpa:
-    show-sql: true
-    generate-ddl: true
     hibernate:
-      ddl-auto: update
       naming_strategy: org.hibernate.cfg.DefaultNamingStrategy
     properties:
       hibernate:
@@ -50,23 +47,9 @@ aws:
   access_key_id:
   secret_access_key:
 
-logging:
-  level:
-    io:
-      swagger:
-        models:
-          parameters:
-            AbstractSerializableParameter: error
-    org:
-    hibernate:
-      SQL: DEBUG
-    type:
-      descriptor:
-        sql:
-          BasicBinder: TRACE
 
 s3:
-  bucket: cadeira-spring-react
+  bucket: final-paper-bucket
   region: sa-east-1
 
 sas:

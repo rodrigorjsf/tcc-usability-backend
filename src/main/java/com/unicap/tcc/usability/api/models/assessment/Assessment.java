@@ -96,7 +96,7 @@ public class Assessment extends BaseEntity {
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "assessment_id", referencedColumnName = "id", nullable = false)
     @Where(clause = "removed_at is NULL")
-    private Set<Variable> variables;
+    private Set<Attribute> attributes;
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
