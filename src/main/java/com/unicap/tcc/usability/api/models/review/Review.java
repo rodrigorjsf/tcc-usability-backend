@@ -31,10 +31,10 @@ public class Review extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private EReviewState state;
 
-    @OneToOne(fetch=FetchType.LAZY)
+    @OneToOne
     private User systemUser;
 
-    @OneToOne(fetch=FetchType.LAZY)
+    @OneToOne
     private Assessment assessment;
 }
 

@@ -15,6 +15,7 @@ import java.util.UUID;
 public class CollaboratorDTO {
 
     private UUID assessmentUid;
+    private UUID userUid;
     private List<String> collaboratorsEmail;
 
 

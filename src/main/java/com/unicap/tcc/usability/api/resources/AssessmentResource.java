@@ -4,6 +4,7 @@ import com.unicap.tcc.usability.api.exception.ApiException;
 import com.unicap.tcc.usability.api.models.Scale;
 import com.unicap.tcc.usability.api.models.SmartCityQuestionnaire;
 import com.unicap.tcc.usability.api.models.assessment.Assessment;
+import com.unicap.tcc.usability.api.models.assessment.AssessmentUserGroup;
 import com.unicap.tcc.usability.api.models.constants.ApplicationConstants;
 import com.unicap.tcc.usability.api.models.dto.*;
 import com.unicap.tcc.usability.api.models.dto.assessment.*;
@@ -223,6 +224,18 @@ public class AssessmentResource {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok().body(assessment);
+    }
+
+    @PostMapping("/enter/collaborator")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation("Enter as collaborator to assessment plan.")
+    @ApiResponse(code = 200, message = "Collaborator entered.")
+    public ResponseEntity<Object> enterAsCollaborator(@RequestBody @Valid CollaboratorDTO collaboratorDTO) {
+        AssessmentUserGroup assessmentUserGroup = assessmentService.enterAsCollaborator(collaboratorDTO);
+        if (Objects.isNull(assessmentUserGroup)) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/delete/{uid}")

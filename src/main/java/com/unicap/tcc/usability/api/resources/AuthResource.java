@@ -25,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.mail.MessagingException;
 import javax.validation.Valid;
 import java.util.*;
 
@@ -47,7 +48,7 @@ public class AuthResource {
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation("Criação de novo usuário")
     @ApiResponse(code = 201, message = "Cadastro efetuado com sucesso.")
-    public ResponseEntity<UserDTO> save(@RequestBody @Valid UserRegisterDTO userRegisterDTO) {
+    public ResponseEntity<UserDTO> save(@RequestBody @Valid UserRegisterDTO userRegisterDTO) throws MessagingException {
         var oldUser = userService.findByEmail(userRegisterDTO.getEmail());
         if (Objects.nonNull(oldUser)) {
             return ResponseEntity.noContent().build();
@@ -61,6 +62,7 @@ public class AuthResource {
                 .uid(UUID.randomUUID())
                 .isReviewer(userRegisterDTO.getIsReviewer())
                 .password(encryptedPassword)
+                .isEnabled(true)  //TODO REMOVE WHEN USING EMAIL VALIDATION BELOW.
                 .build();
         newUser = userService.save(newUser);
         ConfirmationToken confirmationToken = ConfirmationToken.builder().user(newUser).build();
@@ -69,12 +71,13 @@ public class AuthResource {
         var optionalToken = confirmationTokenRepository.findUidById(confirmationToken.getId());
         String token;
         if (optionalToken.isPresent()) {
-            token = optionalToken.get();
+            //TODO EMAIL VALIDATION
+//            token = optionalToken.get();
 //            String subject = "ValidUsabilityAssessment - Complete Registration!";
-//            String url = "http://localhost:8084/api/auth/confirm-account?token=" + token;
+//            String url = "https://validuatool-app.herokuapp.com/api/auth/confirm-account?token=" + token;
 //            String body = "To confirm your account, please click here: "
 //                    + "<a href=" + "\"" + url + "\"" + ">Confirm</a>";
-            //mailSender.send(new String[]{userRegisterDTO.getEmail()}, subject, body);
+//            mailSender.send(new String[]{userRegisterDTO.getEmail()}, subject, body, null, null);
             return ResponseEntity.ok()
                     .body(UserDTO.builder()
                             .login(newUser.getLogin())
@@ -99,8 +102,8 @@ public class AuthResource {
                     .password(credentialDTO.getPassword())
                     .build();
             User registeredUser;
-            Optional<User> registeredUserLogin = userRepository.findByLogin(user.getLogin());
-            Optional<User> registeredUserEmail = userRepository.findByEmail(user.getLogin());
+            Optional<User> registeredUserLogin = userRepository.findByLoginAndRemovedDateIsNull(user.getLogin());
+            Optional<User> registeredUserEmail = userRepository.findByEmailAndRemovedDateIsNull(user.getLogin());
             if (registeredUserLogin.isEmpty() && registeredUserEmail.isEmpty()) {
                 throw new UsernameNotFoundException("User not found.");
             } else

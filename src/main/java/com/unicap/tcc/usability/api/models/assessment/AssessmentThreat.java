@@ -35,6 +35,7 @@ public class AssessmentThreat extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     @Column(name = "assessment_tools_id", insertable = false, updatable = false)
     private Long assessmentToolsId;
 
