@@ -3,6 +3,7 @@ package com.unicap.tcc.usability.api.repository;
 import com.unicap.tcc.usability.api.models.User;
 import com.unicap.tcc.usability.api.models.assessment.Assessment;
 import com.unicap.tcc.usability.api.models.assessment.AssessmentUserGroup;
+import com.unicap.tcc.usability.api.models.enums.UserProfileEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -20,6 +21,8 @@ public interface AssessmentUserGroupRepository extends JpaRepository<AssessmentU
     Optional<AssessmentUserGroup> findBySystemUserAndAssessmentAndRemovedDateIsNull(User user, Assessment assessment);
 
     List<AssessmentUserGroup> findAllBySystemUserUidAndAssessmentRemovedDateIsNullAndRemovedDateIsNull(UUID uid);
+
+    List<AssessmentUserGroup> findAllByAssessmentAndProfile(Assessment assessment, UserProfileEnum profile);
 
     Optional<AssessmentUserGroup> findByAssessmentUidAndRemovedDateIsNull(UUID uid);
 

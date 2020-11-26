@@ -3,6 +3,7 @@ package com.unicap.tcc.usability.api.service;
 import com.unicap.tcc.usability.api.exception.ApiException;
 import com.unicap.tcc.usability.api.models.Scale;
 import com.unicap.tcc.usability.api.models.SmartCityQuestionnaire;
+import com.unicap.tcc.usability.api.models.User;
 import com.unicap.tcc.usability.api.models.assessment.Assessment;
 import com.unicap.tcc.usability.api.models.assessment.AssessmentUserGroup;
 import com.unicap.tcc.usability.api.models.assessment.SectionsControl;
@@ -68,7 +69,10 @@ public class AssessmentService {
             throw new ApiException(Response.Status.NOT_FOUND,
                     "Assessment not found");
 
-        ByteArrayOutputStream byteArrayOutputStream = PdfGenerator.generatePlan(assessment);
+        var userGroups =
+                assessmentUserGroupRepository.findAllByAssessmentAndProfile(assessment, UserProfileEnum.COLLABORATOR);
+        var collaborators = userGroups.stream().map(AssessmentUserGroup::getSystemUser).collect(Collectors.toList());
+        ByteArrayOutputStream byteArrayOutputStream = PdfGenerator.generatePlan(assessment, collaborators);
 
         StreamingOutput output = out -> {
             byteArrayOutputStream.writeTo(out);
@@ -168,7 +172,7 @@ public class AssessmentService {
     public Optional<Assessment> findAssessmentPlanByUid(UUID uid) {
         var userGroup =
                 assessmentUserGroupRepository.findByAssessmentUidAndAssessmentRemovedDateIsNullAndRemovedDateIsNull(uid);
-        if (userGroup.isPresent()){
+        if (userGroup.isPresent()) {
             userGroup.get().getAssessment().setUserProfile(userGroup.get().getProfile());
             return Optional.of(userGroup.get().getAssessment());
         }
@@ -342,7 +346,14 @@ public class AssessmentService {
 
     public Optional<ByteArrayOutputStream> downloadPlan(UUID uid) {
         var optionalAssessment = assessmentRepository.findByUid(uid);
-        return optionalAssessment.map(PdfGenerator::generatePlan);
+        List<User> collaborators = new ArrayList<>();
+        if (optionalAssessment.isPresent()) {
+            var userGroup =
+                    assessmentUserGroupRepository.findAllByAssessmentAndProfile(optionalAssessment.get(), UserProfileEnum.COLLABORATOR);
+            collaborators = userGroup.stream().map(AssessmentUserGroup::getSystemUser).collect(Collectors.toList());
+            return Optional.of(PdfGenerator.generatePlan(optionalAssessment.get(), collaborators));
+        }
+        return Optional.empty();
     }
 
     public String findPlanProjectName(UUID uid) {
@@ -356,7 +367,10 @@ public class AssessmentService {
     public ResponseEntity<Object> sendPlanToEmail(SendMailRequest emailList) {
         var optionalAssessment = assessmentRepository.findByUid(emailList.getAssessmentUid());
         if (optionalAssessment.isPresent()) {
-            var baos = PdfGenerator.generatePlan(optionalAssessment.get());
+            var userGroups =
+                    assessmentUserGroupRepository.findAllByAssessmentAndProfile(optionalAssessment.get(), UserProfileEnum.COLLABORATOR);
+            var collaborators = userGroups.stream().map(AssessmentUserGroup::getSystemUser).collect(Collectors.toList());
+            var baos = PdfGenerator.generatePlan(optionalAssessment.get(), collaborators);
             mailSender.sendPlanExportEmail(optionalAssessment.get(), emailList.getEmails(), baos);
             return ResponseEntity.ok().build();
         }

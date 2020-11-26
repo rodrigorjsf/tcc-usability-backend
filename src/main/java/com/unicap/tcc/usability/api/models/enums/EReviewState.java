@@ -3,12 +3,12 @@ package com.unicap.tcc.usability.api.models.enums;
 public enum EReviewState {
 	
 	
-	ReviewRequested("Review Requested"),
-	Reviewing("Reviewing"),
+	REVIEW_REQUESTED("Review Requested"),
+	REVIEWING("Reviewing"),
 	Refused("Refused"),
 	Canceled("Canceled"),
 	Expired("Expired"),
-	Completed("Completed"),
+	COMPLETED("Completed"),
 	Invalid("Invalid");
 	
 	private String description;
@@ -23,10 +23,10 @@ public enum EReviewState {
 	}
 	
 	public boolean isReportable(){
-		return this == Reviewing || this == EReviewState.Completed;
+		return this == REVIEWING || this == EReviewState.COMPLETED;
 	}
 	
 	public boolean isExpirable(){
-		return this == Reviewing || this == EReviewState.ReviewRequested;
+		return this == REVIEWING || this == EReviewState.REVIEW_REQUESTED;
 	}
 }
