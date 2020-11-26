@@ -8,12 +8,21 @@ import com.unicap.tcc.usability.api.utils.LoggerUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
+import javax.activation.DataHandler;
+import javax.mail.BodyPart;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import java.io.ByteArrayOutputStream;
 import java.util.List;
+import java.util.Objects;
 
 @Component("MailSender")
 @Slf4j
@@ -24,10 +33,13 @@ public class MailSender {
     private final UserRepository userRepository;
     private final AmazonSASProperties amazonSASProperties;
 
-    public void send(String[] recipients, String subject, String text) {
-
+    public void send(String[] recipients, String subject, String text, ByteArrayOutputStream source, String projectName) throws MessagingException {
         MimeMessage message = javaMailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, "utf-8");
+        MimeMessageHelper helper = new MimeMessageHelper(message, true,"utf-8");
+        if (Objects.nonNull(source)){
+            helper.addAttachment(projectName.replaceAll("\\s+","") + "Plan.pdf",
+                    new ByteArrayResource(source.toByteArray()));
+        }
         try {
             helper.setText(text, true);
             helper.setTo(recipients);
@@ -38,6 +50,7 @@ public class MailSender {
             LoggerUtil.logError(log, e, text);
         }
     }
+
 
 //    public void sendReturnFileErrorEmail(ReturnFile returnFile) {
 //        var returnFileImpl = returnFile.getReturnFileImpl();
@@ -60,14 +73,34 @@ public class MailSender {
 
     public void sendCollaboratorEmail(Assessment assessment, String assessmentUid, List<String> emails) {
         emails.forEach(email -> {
-            String htmlMailText;
-            var userOptional = userRepository.findByEmail(email);
-            htmlMailText = userOptional.map(user ->
-                    HtmlUtils.setHtmlMailCollaborator(assessment, assessmentUid, user))
-                    .orElseGet(() -> HtmlUtils.setHtmlMailNewCollaborator(assessment, assessmentUid));
-            if (!htmlMailText.equals("")) {
-                String subject = "[VALID USABILITY ASSESSMENT] - COLLABORATOR INVITE";
-                send(new String[]{email}, subject, htmlMailText);
+            try {
+                String htmlMailText;
+                var userOptional = userRepository.findByEmail(email);
+                htmlMailText = userOptional.map(user ->
+                        HtmlUtils.setHtmlMailCollaborator(assessment, assessmentUid, user))
+                        .orElseGet(() -> HtmlUtils.setHtmlMailNewCollaborator(assessment, assessmentUid));
+                if (!htmlMailText.equals("")) {
+                    String subject = "[VALID USABILITY ASSESSMENT] - COLLABORATOR INVITE";
+                    send(new String[]{email}, subject, htmlMailText, null, assessment.getProjectName());
+                }
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void sendPlanExportEmail(Assessment assessment, List<String> emails, ByteArrayOutputStream source) {
+        emails.forEach(email -> {
+            try {
+                String htmlMailText = HtmlUtils.setHtmlSendPlan(assessment);
+                if (!htmlMailText.equals("")) {
+                    String subject = "[VALID USABILITY ASSESSMENT] - PLAN FILE";
+                    if (Objects.nonNull(source)) {
+                        send(new String[]{email}, subject, htmlMailText, source, assessment.getProjectName());
+                    }
+                }
+            } catch (MessagingException e) {
+                e.printStackTrace();
             }
         });
     }

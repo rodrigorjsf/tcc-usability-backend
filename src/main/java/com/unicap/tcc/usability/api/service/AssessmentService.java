@@ -1,5 +1,6 @@
 package com.unicap.tcc.usability.api.service;
 
+import com.google.common.io.Files;
 import com.unicap.tcc.usability.api.exception.ApiException;
 import com.unicap.tcc.usability.api.models.Scale;
 import com.unicap.tcc.usability.api.models.SmartCityQuestionnaire;
@@ -7,6 +8,7 @@ import com.unicap.tcc.usability.api.models.assessment.Assessment;
 import com.unicap.tcc.usability.api.models.assessment.AssessmentUserGroup;
 import com.unicap.tcc.usability.api.models.assessment.answer.PlanAnswers;
 import com.unicap.tcc.usability.api.models.dto.AssessmentListDTO;
+import com.unicap.tcc.usability.api.models.dto.SendMailRequest;
 import com.unicap.tcc.usability.api.models.dto.SmartCityResponse;
 import com.unicap.tcc.usability.api.models.dto.assessment.*;
 import com.unicap.tcc.usability.api.models.enums.AssessmentState;
@@ -14,10 +16,16 @@ import com.unicap.tcc.usability.api.models.enums.UserProfileEnum;
 import com.unicap.tcc.usability.api.repository.*;
 import com.unicap.tcc.usability.api.utils.PdfGenerator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
+import javax.validation.Valid;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
@@ -26,7 +34,10 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.nio.file.Files.*;
+
 @Service
+@Slf4j
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class AssessmentService {
 
@@ -304,5 +315,15 @@ public class AssessmentService {
             return assessmentOptional.get().getProjectName();
         }
         return "assessmentUsabiity";
+    }
+
+    public ResponseEntity<Object> sendPlanToEmail(SendMailRequest emailList) throws IOException {
+        var optionalAssessment = assessmentRepository.findByUid(emailList.getAssessmentUid());
+        if (optionalAssessment.isPresent()) {
+            var baos = PdfGenerator.generatePlan(optionalAssessment.get());
+            mailSender.sendPlanExportEmail(optionalAssessment.get(),emailList.getEmails(), baos);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.badRequest().build();
     }
 }
