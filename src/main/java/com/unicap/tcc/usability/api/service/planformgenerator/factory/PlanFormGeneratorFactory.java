@@ -1,7 +1,7 @@
 package com.unicap.tcc.usability.api.service.planformgenerator.factory;
 
 import com.unicap.tcc.usability.api.exception.ResourceNotFoundException;
-import com.unicap.tcc.usability.api.models.enums.CategoriesEnum;
+import com.unicap.tcc.usability.api.models.enums.SectionEnum;
 import com.unicap.tcc.usability.api.models.enums.MessageType;
 import com.unicap.tcc.usability.api.service.planformgenerator.PlanFromGenerator;
 import com.unicap.tcc.usability.api.service.planformgenerator.impl.*;
@@ -22,7 +22,7 @@ public class PlanFormGeneratorFactory {
     private final TasksPlanFormGenerator tasksPlanFormGenerator;
     private final VariablesPlanFormGenerator variablesPlanFormGenerator;
 
-    public PlanFromGenerator getPlanFormGenerator(CategoriesEnum category) {
+    public PlanFromGenerator getPlanFormGenerator(SectionEnum category) {
         switch (category) {
             case AP:
                 return applicationPlanFormGenerator;

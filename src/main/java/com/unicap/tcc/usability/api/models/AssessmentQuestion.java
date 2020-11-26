@@ -1,7 +1,7 @@
 package com.unicap.tcc.usability.api.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.unicap.tcc.usability.api.models.enums.CategoriesEnum;
+import com.unicap.tcc.usability.api.models.enums.SectionEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,7 +26,7 @@ public class AssessmentQuestion extends BaseEntity {
 
     @Column(name = "category", columnDefinition = "varchar(2)", nullable = false)
     @Enumerated(EnumType.STRING)
-    private CategoriesEnum category;
+    private SectionEnum category;
 
 
     @Column(name = "instruction", columnDefinition = "text")

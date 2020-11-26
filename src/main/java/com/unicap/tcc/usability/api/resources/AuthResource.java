@@ -58,6 +58,7 @@ public class AuthResource {
                 .name(userRegisterDTO.getName())
                 .login(userRegisterDTO.getUserName())
                 .email(userRegisterDTO.getEmail())
+                .uid(UUID.randomUUID())
                 .isReviewer(userRegisterDTO.getIsReviewer())
                 .password(encryptedPassword)
                 .build();

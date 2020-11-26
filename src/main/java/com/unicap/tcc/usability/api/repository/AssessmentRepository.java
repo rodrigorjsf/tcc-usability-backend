@@ -1,5 +1,6 @@
 package com.unicap.tcc.usability.api.repository;
 
+import com.unicap.tcc.usability.api.models.User;
 import com.unicap.tcc.usability.api.models.assessment.Assessment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -14,6 +15,8 @@ import java.util.UUID;
 
 @Repository
 public interface AssessmentRepository extends JpaRepository<Assessment, Long> {
+
+    List<Assessment> findAllBySystemUserAndRemovedDateIsNull(User user);
 
     Optional<Assessment> findByUid(UUID uuid);
 

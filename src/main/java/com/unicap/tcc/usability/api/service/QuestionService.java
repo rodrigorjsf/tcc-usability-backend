@@ -3,7 +3,7 @@ package com.unicap.tcc.usability.api.service;
 
 import com.google.gson.Gson;
 import com.unicap.tcc.usability.api.models.assessment.question.PlanForm;
-import com.unicap.tcc.usability.api.models.enums.CategoriesEnum;
+import com.unicap.tcc.usability.api.models.enums.SectionEnum;
 import com.unicap.tcc.usability.api.service.planformgenerator.factory.PlanFormGeneratorFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ public class QuestionService {
 
     private final PlanFormGeneratorFactory planFormGeneratorFactory;
 
-    public PlanForm findQuestionsFormByCategory(CategoriesEnum category) {
+    public PlanForm findQuestionsFormByCategory(SectionEnum category) {
         PlanForm planForm = new PlanForm();
         try {
             var planFormGenerator = planFormGeneratorFactory.getPlanFormGenerator(category);

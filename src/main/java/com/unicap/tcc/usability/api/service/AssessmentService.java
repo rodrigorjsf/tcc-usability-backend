@@ -1,40 +1,36 @@
 package com.unicap.tcc.usability.api.service;
 
-import com.google.common.io.Files;
 import com.unicap.tcc.usability.api.exception.ApiException;
 import com.unicap.tcc.usability.api.models.Scale;
 import com.unicap.tcc.usability.api.models.SmartCityQuestionnaire;
 import com.unicap.tcc.usability.api.models.assessment.Assessment;
 import com.unicap.tcc.usability.api.models.assessment.AssessmentUserGroup;
+import com.unicap.tcc.usability.api.models.assessment.SectionsControl;
+import com.unicap.tcc.usability.api.models.assessment.SectionsControlGroup;
 import com.unicap.tcc.usability.api.models.assessment.answer.PlanAnswers;
-import com.unicap.tcc.usability.api.models.dto.AssessmentListDTO;
-import com.unicap.tcc.usability.api.models.dto.SendMailRequest;
-import com.unicap.tcc.usability.api.models.dto.SmartCityResponse;
+import com.unicap.tcc.usability.api.models.dto.*;
 import com.unicap.tcc.usability.api.models.dto.assessment.*;
 import com.unicap.tcc.usability.api.models.enums.AssessmentState;
+import com.unicap.tcc.usability.api.models.enums.SectionControlEnum;
+import com.unicap.tcc.usability.api.models.enums.SectionEnum;
 import com.unicap.tcc.usability.api.models.enums.UserProfileEnum;
 import com.unicap.tcc.usability.api.repository.*;
 import com.unicap.tcc.usability.api.utils.PdfGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
-import javax.validation.Valid;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static java.nio.file.Files.*;
 
 @Service
 @Slf4j
@@ -95,6 +91,10 @@ public class AssessmentService {
                 .projectDescription(assessmentCreationDTO.getProjectDescription())
                 .state(AssessmentState.CREATED)
                 .answers(PlanAnswers.newPlanAnswers())
+                .uid(UUID.randomUUID())
+                .sectionsControlGroup(SectionsControlGroup.builder()
+                        .sectionsControls(initializeSections())
+                        .build())
                 .build());
         assessmentUserGroupRepository.save(AssessmentUserGroup.builder()
                 .assessment(assessment)
@@ -105,6 +105,18 @@ public class AssessmentService {
         optionalUid.ifPresent(s ->
                 mailSender.sendCollaboratorEmail(assessment, s, assessmentCreationDTO.getCollaboratorsEmail()));
         return assessment;
+    }
+
+    private Set<SectionsControl> initializeSections() {
+        return SectionEnum.getSectionList()
+                .stream()
+                .map(sectionEnum ->
+                        SectionsControl.builder()
+                                .beingEditedBy(null)
+                                .section(sectionEnum)
+                                .sectionControlEnum(SectionControlEnum.AVAILABLE)
+                                .build())
+                .collect(Collectors.toSet());
     }
 
     public Assessment addCollaborator(CollaboratorDTO collaboratorDTO) {
@@ -321,9 +333,69 @@ public class AssessmentService {
         var optionalAssessment = assessmentRepository.findByUid(emailList.getAssessmentUid());
         if (optionalAssessment.isPresent()) {
             var baos = PdfGenerator.generatePlan(optionalAssessment.get());
-            mailSender.sendPlanExportEmail(optionalAssessment.get(),emailList.getEmails(), baos);
+            mailSender.sendPlanExportEmail(optionalAssessment.get(), emailList.getEmails(), baos);
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.badRequest().build();
+    }
+
+    public void releaseSection(UUID userUid) {
+        var optionalUser = userRepository.findByUid(userUid);
+        if (optionalUser.isPresent()) {
+            var userAssessmentList =
+                    assessmentRepository.findAllBySystemUserAndRemovedDateIsNull(optionalUser.get());
+            if (CollectionUtils.isNotEmpty(userAssessmentList)) {
+                userAssessmentList.forEach(assessment -> {
+                    assessment.getSectionsControlGroup().getSectionsControls().forEach(sectionsControl -> {
+                        if (sectionsControl.getBeingEditedBy().equals(userUid)) {
+                            sectionsControl.setSectionControlEnum(SectionControlEnum.AVAILABLE);
+                            sectionsControl.setBeingEditedBy(null);
+                        }
+                    });
+                });
+            }
+        }
+    }
+
+    public SectionControlResponseDTO verifySection(SectionUpdateRequestDTO sectionUpdateRequestDTO) {
+        var optionalAssessment = assessmentRepository.findByUid(sectionUpdateRequestDTO.getAssessmentUid());
+        SectionControlResponseDTO response = SectionControlResponseDTO.builder()
+                .userName(null)
+                .sectionControlEnum(SectionControlEnum.AVAILABLE)
+                .build();
+        if (optionalAssessment.isPresent()) {
+            optionalAssessment.get().getSectionsControlGroup().getSectionsControls()
+                    .stream()
+                    .filter(sectionsControl -> sectionsControl.getSection().equals(sectionUpdateRequestDTO.getSectionEnum()))
+                    .forEach(sectionsControl -> {
+                        if (sectionsControl.getSectionControlEnum().equals(SectionControlEnum.BUSY) &&
+                        !sectionsControl.getBeingEditedBy().equals(sectionUpdateRequestDTO.getUserUid())) {
+                            response.setSectionControlEnum(SectionControlEnum.BUSY);
+                            if (Objects.nonNull(sectionsControl.getBeingEditedBy())) {
+                                var optionalUser = userRepository.findByUid(sectionsControl.getBeingEditedBy());
+                                optionalUser.ifPresent(user -> response.setUserName(user.getName()));
+                            }
+                        } else {
+                            sectionsControl.setSectionControlEnum(SectionControlEnum.BUSY);
+                            sectionsControl.setBeingEditedBy(sectionUpdateRequestDTO.getUserUid());
+                        }
+                    });
+            assessmentRepository.save(optionalAssessment.get());
+        }
+        return response;
+    }
+
+    public void updateSectionState(SectionUpdateRequestDTO sectionUpdateRequestDTO) {
+        var optionalAssessment = assessmentRepository.findByUid(sectionUpdateRequestDTO.getAssessmentUid());
+        if (optionalAssessment.isPresent()){
+            optionalAssessment.get().getSectionsControlGroup().getSectionsControls()
+                    .stream()
+                    .filter(sectionsControl -> sectionsControl.getSection().equals(sectionUpdateRequestDTO.getSectionEnum()))
+                    .forEach(sectionsControl -> {
+                        sectionsControl.setBeingEditedBy(sectionUpdateRequestDTO.getUserUid());
+                        sectionsControl.setSectionControlEnum(SectionControlEnum.BUSY);
+                    });
+            assessmentRepository.save(optionalAssessment.get());
+        }
     }
 }

@@ -44,7 +44,7 @@ public class Assessment extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "uuid default uuid_generate_v4()", insertable = false)
+    @Column(columnDefinition = "uuid default uuid_generate_v4()")
     private UUID uid;
 
     @OneToOne(fetch=FetchType.EAGER)
@@ -92,6 +92,13 @@ public class Assessment extends BaseEntity {
             columnDefinition = "jsonb"
     )
     private PlanAnswers answers;
+
+    @Type(type = "jsonb")
+    @Column(
+            name = "sections_control",
+            columnDefinition = "jsonb"
+    )
+    private SectionsControlGroup sectionsControlGroup;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "assessment_id", referencedColumnName = "id", nullable = false)

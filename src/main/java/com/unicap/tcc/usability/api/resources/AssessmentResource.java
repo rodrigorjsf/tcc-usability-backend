@@ -5,10 +5,7 @@ import com.unicap.tcc.usability.api.models.Scale;
 import com.unicap.tcc.usability.api.models.SmartCityQuestionnaire;
 import com.unicap.tcc.usability.api.models.assessment.Assessment;
 import com.unicap.tcc.usability.api.models.constants.ApplicationConstants;
-import com.unicap.tcc.usability.api.models.dto.AssessmentListDTO;
-import com.unicap.tcc.usability.api.models.dto.FinishResponseDTO;
-import com.unicap.tcc.usability.api.models.dto.SendMailRequest;
-import com.unicap.tcc.usability.api.models.dto.SmartCityResponse;
+import com.unicap.tcc.usability.api.models.dto.*;
 import com.unicap.tcc.usability.api.models.dto.assessment.*;
 import com.unicap.tcc.usability.api.service.AssessmentService;
 import com.unicap.tcc.usability.api.utils.UUIDUtils;
@@ -17,8 +14,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,11 +24,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -265,5 +256,28 @@ public class AssessmentResource {
     @ApiResponse(code = 200, message = "Email sended.")
     public ResponseEntity<Object> sendPlanToEmail(@RequestBody @Valid SendMailRequest sendMailRequest) throws IOException {
         return assessmentService.sendPlanToEmail(sendMailRequest);
+    }
+
+    @GetMapping("/release/section/{uid}")
+    @ApiOperation("Delete assessment plan.")
+    public ResponseEntity<Object> releaseSection(@Valid @PathVariable(value = "uid") @ApiParam("user uid") String uid) {
+        assessmentService.releaseSection(UUID.fromString(uid));
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/verify/section")
+    @ApiOperation("Check state of section plan.")
+    public ResponseEntity<SectionControlResponseDTO> verifySection(
+            @RequestBody @Valid SectionUpdateRequestDTO sectionUpdateRequestDTO) {
+        SectionControlResponseDTO response = assessmentService.verifySection(sectionUpdateRequestDTO);
+        return ResponseEntity.ok().body(response);
+    }
+
+    @PostMapping("/update/section")
+    @ApiOperation("Update section of plan.")
+    public ResponseEntity<Object> updateSectionState(
+            @RequestBody @Valid SectionUpdateRequestDTO sectionUpdateRequestDTO) {
+        assessmentService.updateSectionState(sectionUpdateRequestDTO);
+        return ResponseEntity.ok().build();
     }
 }
