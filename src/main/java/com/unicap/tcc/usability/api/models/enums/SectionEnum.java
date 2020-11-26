@@ -2,10 +2,13 @@ package com.unicap.tcc.usability.api.models.enums;
 
 import lombok.Getter;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 @Getter
-public enum CategoriesEnum {
+public enum SectionEnum {
     AP("Application"),
-    SC("SmartCity"),
     GO("Goals"),
     VM("VariablesAndMeasurement"),
     PA("Participants"),
@@ -16,16 +19,20 @@ public enum CategoriesEnum {
 
     private final String description;
 
-    CategoriesEnum(String description){
+    SectionEnum(String description) {
         this.description = description;
     }
 
-    public static CategoriesEnum convert(String name){
-        for (CategoriesEnum value : CategoriesEnum.values()) {
-            if(value.name().equals(name)){
+    public static SectionEnum convert(String name) {
+        for (SectionEnum value : SectionEnum.values()) {
+            if (value.name().equals(name)) {
                 return value;
             }
         }
         return null;
+    }
+
+    public static Set<SectionEnum> getSectionList() {
+        return Stream.of(SectionEnum.values()).collect(Collectors.toSet());
     }
 }

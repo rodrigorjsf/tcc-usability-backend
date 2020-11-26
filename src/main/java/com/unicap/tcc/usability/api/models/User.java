@@ -26,7 +26,7 @@ public class User extends BaseEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "uuid default uuid_generate_v4()", insertable = false)
+    @Column(columnDefinition = "uuid default uuid_generate_v4()")
     private UUID uid;
 
     @JsonIgnore
