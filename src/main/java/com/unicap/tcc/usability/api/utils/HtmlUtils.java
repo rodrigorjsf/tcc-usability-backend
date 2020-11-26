@@ -38,5 +38,16 @@ public class HtmlUtils {
         return "";
     }
 
+    public static String setHtmlSendPlan(Assessment assessment) {
+        File input = new File("src/main/resources/templates/SendPlansToEmail.html");
+        try {
+            var mailTemplate = Files.asCharSource(input, StandardCharsets.UTF_8).read();
+            return mailTemplate.replace(":plan", assessment.getProjectName());
+        } catch (IOException e) {
+            log.error(ExceptionUtils.getStackTrace(e));
+        }
+        return "";
+    }
+
 
 }

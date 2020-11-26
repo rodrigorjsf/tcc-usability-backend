@@ -7,6 +7,7 @@ import com.unicap.tcc.usability.api.models.assessment.Assessment;
 import com.unicap.tcc.usability.api.models.constants.ApplicationConstants;
 import com.unicap.tcc.usability.api.models.dto.AssessmentListDTO;
 import com.unicap.tcc.usability.api.models.dto.FinishResponseDTO;
+import com.unicap.tcc.usability.api.models.dto.SendMailRequest;
 import com.unicap.tcc.usability.api.models.dto.SmartCityResponse;
 import com.unicap.tcc.usability.api.models.dto.assessment.*;
 import com.unicap.tcc.usability.api.service.AssessmentService;
@@ -258,4 +259,11 @@ public class AssessmentResource {
                 .body(byteArrayOutputStream.get().toByteArray());
     }
 
+    @PostMapping("/export/to-email")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation("Send plan to email.")
+    @ApiResponse(code = 200, message = "Email sended.")
+    public ResponseEntity<Object> sendPlanToEmail(@RequestBody @Valid SendMailRequest sendMailRequest) throws IOException {
+        return assessmentService.sendPlanToEmail(sendMailRequest);
+    }
 }
