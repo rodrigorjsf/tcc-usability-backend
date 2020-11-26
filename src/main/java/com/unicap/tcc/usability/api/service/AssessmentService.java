@@ -3,6 +3,7 @@ package com.unicap.tcc.usability.api.service;
 import com.unicap.tcc.usability.api.exception.ApiException;
 import com.unicap.tcc.usability.api.models.Scale;
 import com.unicap.tcc.usability.api.models.SmartCityQuestionnaire;
+import com.unicap.tcc.usability.api.models.User;
 import com.unicap.tcc.usability.api.models.assessment.Assessment;
 import com.unicap.tcc.usability.api.models.assessment.AssessmentUserGroup;
 import com.unicap.tcc.usability.api.models.assessment.SectionsControl;
@@ -27,7 +28,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -69,7 +69,10 @@ public class AssessmentService {
             throw new ApiException(Response.Status.NOT_FOUND,
                     "Assessment not found");
 
-        ByteArrayOutputStream byteArrayOutputStream = PdfGenerator.generatePlan(assessment);
+        var userGroups =
+                assessmentUserGroupRepository.findAllByAssessmentAndProfile(assessment, UserProfileEnum.COLLABORATOR);
+        var collaborators = userGroups.stream().map(AssessmentUserGroup::getSystemUser).collect(Collectors.toList());
+        ByteArrayOutputStream byteArrayOutputStream = PdfGenerator.generatePlan(assessment, collaborators);
 
         StreamingOutput output = out -> {
             byteArrayOutputStream.writeTo(out);
@@ -120,7 +123,7 @@ public class AssessmentService {
     }
 
     public Assessment addCollaborator(CollaboratorDTO collaboratorDTO) {
-        var assessment = assessmentRepository.findByUid(collaboratorDTO.getAssessmentUid());
+        var assessment = assessmentRepository.findByUidAndRemovedDateIsNull(collaboratorDTO.getAssessmentUid());
         if (assessment.isEmpty()) {
             return null;
         }
@@ -130,25 +133,50 @@ public class AssessmentService {
         return assessment.get();
     }
 
+    public AssessmentUserGroup enterAsCollaborator(CollaboratorDTO collaboratorDTO) {
+        var assessment = assessmentRepository.findByUidAndRemovedDateIsNull(collaboratorDTO.getAssessmentUid());
+        if (assessment.isPresent()) {
+            var optionalUser = userRepository.findByUidAndRemovedDateIsNull(collaboratorDTO.getUserUid());
+            if (optionalUser.isPresent()) {
+                var assessmentGroup = assessmentUserGroupRepository
+                        .findBySystemUserAndAssessmentAndRemovedDateIsNull(optionalUser.get(), assessment.get());
+                if (assessmentGroup.isPresent()) {
+                    return null;
+                }
+                return assessmentUserGroupRepository.save(AssessmentUserGroup.builder()
+                        .assessment(assessment.get())
+                        .systemUser(optionalUser.get())
+                        .profile(UserProfileEnum.COLLABORATOR)
+                        .build());
+            }
+        }
+        return null;
+    }
+
     public List<AssessmentListDTO> findUserAssessmentList(UUID uid) {
-        List<Assessment> assessmentList;
-        assessmentList = assessmentRepository.findBySystemUserUidAndRemovedDateIsNullAndSystemUserRemovedDateIsNull(uid);
-        if (assessmentList.isEmpty())
-            assessmentList = assessmentRepository.findByCollaboratorUid(uid);
-        if (assessmentList.isEmpty())
-            return Collections.emptyList();
-        return assessmentList.stream().map(assessment ->
-                AssessmentListDTO.builder()
-                        .assessmentUid(assessment.getUid().toString())
-                        .authorName(assessment.getSystemUser().getName())
-                        .projectName(assessment.getProjectName())
-                        .state(assessment.getState().getValue())
-                        .build())
-                .collect(Collectors.toList());
+        var userGroupList =
+                assessmentUserGroupRepository.findAllBySystemUserUidAndAssessmentRemovedDateIsNullAndRemovedDateIsNull(uid);
+        if (CollectionUtils.isNotEmpty(userGroupList)) {
+            return userGroupList.stream().map(assessmentUserGroup ->
+                    AssessmentListDTO.builder()
+                            .assessmentUid(assessmentUserGroup.getAssessment().getUid().toString())
+                            .authorName(assessmentUserGroup.getAssessment().getSystemUser().getName())
+                            .projectName(assessmentUserGroup.getAssessment().getProjectName())
+                            .state(assessmentUserGroup.getAssessment().getState().getValue())
+                            .profile(assessmentUserGroup.getProfile())
+                            .build()).collect(Collectors.toList());
+        }
+        return Collections.emptyList();
     }
 
     public Optional<Assessment> findAssessmentPlanByUid(UUID uid) {
-        return assessmentRepository.findByUid(uid);
+        var userGroup =
+                assessmentUserGroupRepository.findByAssessmentUidAndAssessmentRemovedDateIsNullAndRemovedDateIsNull(uid);
+        if (userGroup.isPresent()) {
+            userGroup.get().getAssessment().setUserProfile(userGroup.get().getProfile());
+            return Optional.of(userGroup.get().getAssessment());
+        }
+        return Optional.empty();
     }
 
     public List<Scale> getScaleList() {
@@ -166,7 +194,7 @@ public class AssessmentService {
     }
 
     public Assessment addSmartCityQuestionnaire(ApplicationSectionDTO applicationSection) {
-        var optionalAssessment = assessmentRepository.findByUid(applicationSection.getAssessmentUid());
+        var optionalAssessment = assessmentRepository.findByUidAndRemovedDateIsNull(applicationSection.getAssessmentUid());
         if (optionalAssessment.isPresent()) {
             var assessment = optionalAssessment.get();
             if (Objects.isNull(assessment.getSmartCityQuestionnaire()))
@@ -203,7 +231,7 @@ public class AssessmentService {
     }
 
     public Assessment addUsabilityGoals(UsabilityGoalDTO usabilityGoalDTO) {
-        var optionalAssessment = assessmentRepository.findByUid(usabilityGoalDTO.getAssessmentUid());
+        var optionalAssessment = assessmentRepository.findByUidAndRemovedDateIsNull(usabilityGoalDTO.getAssessmentUid());
         if (optionalAssessment.isPresent()) {
             optionalAssessment.get().setUsabilityGoals(usabilityGoalDTO.toUsabilityGoals(
                     optionalAssessment.get().getUsabilityGoals()));
@@ -216,7 +244,7 @@ public class AssessmentService {
     }
 
     public Assessment addVariables(AssessmentVariablesDTO assessmentVariablesDTO) {
-        var optionalAssessment = assessmentRepository.findByUid(assessmentVariablesDTO.getAssessmentUid());
+        var optionalAssessment = assessmentRepository.findByUidAndRemovedDateIsNull(assessmentVariablesDTO.getAssessmentUid());
         if (optionalAssessment.isPresent()) {
             optionalAssessment.get().setAttributes(assessmentVariablesDTO.updateVariableSet(optionalAssessment.get().getAttributes()));
             optionalAssessment.get().getAnswers().setPlanVariableAnswers(assessmentVariablesDTO.getPlanVariableAnswers());
@@ -231,7 +259,7 @@ public class AssessmentService {
     }
 
     public Assessment addParticipant(ParticipantDTO participantDTO) {
-        var optionalAssessment = assessmentRepository.findByUid(participantDTO.getAssessmentUid());
+        var optionalAssessment = assessmentRepository.findByUidAndRemovedDateIsNull(participantDTO.getAssessmentUid());
         if (optionalAssessment.isPresent()) {
             optionalAssessment.get().setParticipant(participantDTO.updateParticipant(optionalAssessment.get().getParticipant()));
             optionalAssessment.get().getAnswers().setPlanParticipantsAnswers(participantDTO.getPlanParticipantsAnswers());
@@ -246,7 +274,7 @@ public class AssessmentService {
     }
 
     public Assessment addAssessmentTools(AssessmentToolsDTO assessmentToolsDTO) {
-        var optionalAssessment = assessmentRepository.findByUid(assessmentToolsDTO.getAssessmentUid());
+        var optionalAssessment = assessmentRepository.findByUidAndRemovedDateIsNull(assessmentToolsDTO.getAssessmentUid());
         if (optionalAssessment.isPresent()) {
             optionalAssessment.get().setAssessmentTools(
                     assessmentToolsDTO.updateAssessmentTools(optionalAssessment.get().getAssessmentTools()));
@@ -259,7 +287,7 @@ public class AssessmentService {
     }
 
     public Assessment addAssessmentProcedure(AssessmentProcedureDTO assessmentProcedureDTO) {
-        var optionalAssessment = assessmentRepository.findByUid(assessmentProcedureDTO.getAssessmentUid());
+        var optionalAssessment = assessmentRepository.findByUidAndRemovedDateIsNull(assessmentProcedureDTO.getAssessmentUid());
         if (optionalAssessment.isPresent()) {
             optionalAssessment.get().setAssessmentProcedure(
                     assessmentProcedureDTO.updateProcedure(optionalAssessment.get().getAssessmentProcedure()));
@@ -276,7 +304,7 @@ public class AssessmentService {
     }
 
     public Assessment addAssessmentData(AssessmentDataDTO assessmentDataDTO) {
-        var optionalAssessment = assessmentRepository.findByUid(assessmentDataDTO.getAssessmentUid());
+        var optionalAssessment = assessmentRepository.findByUidAndRemovedDateIsNull(assessmentDataDTO.getAssessmentUid());
         if (optionalAssessment.isPresent()) {
             optionalAssessment.get().setAssessmentData(
                     assessmentDataDTO.updateDataCollection(optionalAssessment.get().getAssessmentData()));
@@ -292,7 +320,7 @@ public class AssessmentService {
     }
 
     public Assessment addAssessmentThreats(AssessmentThreatDTO assessmentThreatDTO) {
-        var optionalAssessment = assessmentRepository.findByUid(assessmentThreatDTO.getAssessmentUid());
+        var optionalAssessment = assessmentRepository.findByUidAndRemovedDateIsNull(assessmentThreatDTO.getAssessmentUid());
         if (optionalAssessment.isPresent()) {
             optionalAssessment.get().setAssessmentThreat(
                     assessmentThreatDTO.updateThreats(optionalAssessment.get().getAssessmentThreat()));
@@ -308,7 +336,7 @@ public class AssessmentService {
     }
 
     public Optional<Assessment> finishPlanDataCollection(UUID uid) {
-        var optionalAssessment = assessmentRepository.findByUid(uid);
+        var optionalAssessment = assessmentRepository.findByUidAndRemovedDateIsNull(uid);
         if (optionalAssessment.isPresent()) {
             optionalAssessment.get().setState(AssessmentState.COMPLETED);
             return Optional.of(assessmentRepository.save(optionalAssessment.get()));
@@ -318,21 +346,31 @@ public class AssessmentService {
 
     public Optional<ByteArrayOutputStream> downloadPlan(UUID uid) {
         var optionalAssessment = assessmentRepository.findByUid(uid);
-        return optionalAssessment.map(PdfGenerator::generatePlan);
+        List<User> collaborators = new ArrayList<>();
+        if (optionalAssessment.isPresent()) {
+            var userGroup =
+                    assessmentUserGroupRepository.findAllByAssessmentAndProfile(optionalAssessment.get(), UserProfileEnum.COLLABORATOR);
+            collaborators = userGroup.stream().map(AssessmentUserGroup::getSystemUser).collect(Collectors.toList());
+            return Optional.of(PdfGenerator.generatePlan(optionalAssessment.get(), collaborators));
+        }
+        return Optional.empty();
     }
 
     public String findPlanProjectName(UUID uid) {
-        var assessmentOptional = assessmentRepository.findByUid(uid);
+        var assessmentOptional = assessmentRepository.findByUidAndRemovedDateIsNull(uid);
         if (assessmentOptional.isPresent()) {
             return assessmentOptional.get().getProjectName();
         }
         return "assessmentUsabiity";
     }
 
-    public ResponseEntity<Object> sendPlanToEmail(SendMailRequest emailList) throws IOException {
+    public ResponseEntity<Object> sendPlanToEmail(SendMailRequest emailList) {
         var optionalAssessment = assessmentRepository.findByUid(emailList.getAssessmentUid());
         if (optionalAssessment.isPresent()) {
-            var baos = PdfGenerator.generatePlan(optionalAssessment.get());
+            var userGroups =
+                    assessmentUserGroupRepository.findAllByAssessmentAndProfile(optionalAssessment.get(), UserProfileEnum.COLLABORATOR);
+            var collaborators = userGroups.stream().map(AssessmentUserGroup::getSystemUser).collect(Collectors.toList());
+            var baos = PdfGenerator.generatePlan(optionalAssessment.get(), collaborators);
             mailSender.sendPlanExportEmail(optionalAssessment.get(), emailList.getEmails(), baos);
             return ResponseEntity.ok().build();
         }
@@ -345,14 +383,17 @@ public class AssessmentService {
             var userAssessmentList =
                     assessmentRepository.findAllBySystemUserAndRemovedDateIsNull(optionalUser.get());
             if (CollectionUtils.isNotEmpty(userAssessmentList)) {
-                userAssessmentList.forEach(assessment -> {
-                    assessment.getSectionsControlGroup().getSectionsControls().forEach(sectionsControl -> {
-                        if (sectionsControl.getBeingEditedBy().equals(userUid)) {
-                            sectionsControl.setSectionControlEnum(SectionControlEnum.AVAILABLE);
-                            sectionsControl.setBeingEditedBy(null);
-                        }
-                    });
-                });
+                userAssessmentList.forEach(assessment ->
+                        assessment.getSectionsControlGroup().getSectionsControls()
+                                .stream()
+                                .filter(sectionsControl -> Objects.nonNull(sectionsControl.getBeingEditedBy()))
+                                .forEach(sectionsControl -> {
+                                    if (sectionsControl.getBeingEditedBy().equals(userUid)) {
+                                        sectionsControl.setSectionControlEnum(SectionControlEnum.AVAILABLE);
+                                        sectionsControl.setBeingEditedBy(null);
+                                        assessmentRepository.save(assessment);
+                                    }
+                                }));
             }
         }
     }
@@ -369,7 +410,7 @@ public class AssessmentService {
                     .filter(sectionsControl -> sectionsControl.getSection().equals(sectionUpdateRequestDTO.getSectionEnum()))
                     .forEach(sectionsControl -> {
                         if (sectionsControl.getSectionControlEnum().equals(SectionControlEnum.BUSY) &&
-                        !sectionsControl.getBeingEditedBy().equals(sectionUpdateRequestDTO.getUserUid())) {
+                                !sectionsControl.getBeingEditedBy().equals(sectionUpdateRequestDTO.getUserUid())) {
                             response.setSectionControlEnum(SectionControlEnum.BUSY);
                             if (Objects.nonNull(sectionsControl.getBeingEditedBy())) {
                                 var optionalUser = userRepository.findByUid(sectionsControl.getBeingEditedBy());
@@ -387,7 +428,7 @@ public class AssessmentService {
 
     public void updateSectionState(SectionUpdateRequestDTO sectionUpdateRequestDTO) {
         var optionalAssessment = assessmentRepository.findByUid(sectionUpdateRequestDTO.getAssessmentUid());
-        if (optionalAssessment.isPresent()){
+        if (optionalAssessment.isPresent()) {
             optionalAssessment.get().getSectionsControlGroup().getSectionsControls()
                     .stream()
                     .filter(sectionsControl -> sectionsControl.getSection().equals(sectionUpdateRequestDTO.getSectionEnum()))
@@ -398,4 +439,6 @@ public class AssessmentService {
             assessmentRepository.save(optionalAssessment.get());
         }
     }
+
+
 }

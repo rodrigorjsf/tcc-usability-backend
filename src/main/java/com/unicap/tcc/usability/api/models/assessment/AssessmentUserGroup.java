@@ -26,10 +26,10 @@ public class AssessmentUserGroup extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch=FetchType.LAZY)
+    @OneToOne
     private User systemUser;
 
-    @OneToOne(fetch=FetchType.LAZY)
+    @OneToOne
     private Assessment assessment;
 
     @Column(name = "profile", columnDefinition = "varchar(15)", nullable = false)

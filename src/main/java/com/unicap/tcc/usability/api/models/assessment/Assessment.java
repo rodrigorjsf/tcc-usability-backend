@@ -8,6 +8,7 @@ import com.unicap.tcc.usability.api.models.SmartCityQuestionnaire;
 import com.unicap.tcc.usability.api.models.User;
 import com.unicap.tcc.usability.api.models.assessment.answer.PlanAnswers;
 import com.unicap.tcc.usability.api.models.enums.AssessmentState;
+import com.unicap.tcc.usability.api.models.enums.UserProfileEnum;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -111,6 +112,9 @@ public class Assessment extends BaseEntity {
             joinColumns = @JoinColumn(name = "assessment_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "scale_id", referencedColumnName = "id"))
     private Set<Scale> scale;
+
+    @Transient
+    private UserProfileEnum UserProfile;
 
 }
 

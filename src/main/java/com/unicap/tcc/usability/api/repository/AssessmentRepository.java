@@ -20,6 +20,8 @@ public interface AssessmentRepository extends JpaRepository<Assessment, Long> {
 
     Optional<Assessment> findByUid(UUID uuid);
 
+    Optional<Assessment> findByUidAndRemovedDateIsNull(UUID uuid);
+
     List<Assessment> findBySystemUserUidAndRemovedDateIsNullAndSystemUserRemovedDateIsNull(UUID uid);
 
     @Query(nativeQuery = true, value = "SELECT a.*\n" +

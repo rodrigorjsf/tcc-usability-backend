@@ -29,7 +29,7 @@ public class ReviewItem extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private EScore score;
 
-    @OneToOne(fetch=FetchType.LAZY)
+    @OneToOne
     private Review review;
 
     @Column(name = "comment", columnDefinition = "text")

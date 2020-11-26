@@ -46,7 +46,7 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByLogin(username)
+        User user = userRepository.findByLoginAndRemovedDateIsNull(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found in database."));
         user.setAdmin(!Objects.isNull(user.getAdmin()) && user.getAdmin());
         String[] roles = user.isAdmin() ? new String[]{"USER", "ADMIN"} : new String[]{"USER"};
