@@ -4,14 +4,10 @@ package com.unicap.tcc.usability.api.service;
 import com.google.common.collect.Lists;
 import com.unicap.tcc.usability.api.models.User;
 import com.unicap.tcc.usability.api.models.assessment.AssessmentUserGroup;
-import com.unicap.tcc.usability.api.models.dto.review.BeginReviewDTO;
-import com.unicap.tcc.usability.api.models.dto.review.FinishReviewDTO;
-import com.unicap.tcc.usability.api.models.dto.review.ReviewListResponseDTO;
-import com.unicap.tcc.usability.api.models.dto.review.ReviewRequestDTO;
+import com.unicap.tcc.usability.api.models.dto.review.*;
 import com.unicap.tcc.usability.api.models.enums.AssessmentState;
 import com.unicap.tcc.usability.api.models.enums.EReviewState;
 import com.unicap.tcc.usability.api.models.enums.SectionEnum;
-import com.unicap.tcc.usability.api.models.enums.UserProfileEnum;
 import com.unicap.tcc.usability.api.models.review.Comment;
 import com.unicap.tcc.usability.api.models.review.Review;
 import com.unicap.tcc.usability.api.repository.AssessmentRepository;
@@ -26,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -147,6 +145,7 @@ public class ReviewService {
         if (optionalReview.isPresent()) {
             optionalReview.get().setState(EReviewState.COMPLETED);
             optionalReview.get().getAssessment().setState(AssessmentState.REVIEWED);
+            optionalReview.get().setReviewedDate(LocalDate.now());
             optionalReview.get().setComments(finishReviewDTO.getComments());
             var savedReview = reviewRepository.save(optionalReview.get());
             new Thread(() -> sendFinishedReviewEmails(savedReview)).start();
@@ -157,7 +156,7 @@ public class ReviewService {
 
     private void sendFinishedReviewEmails(Review review) {
         var userList = userRepository.findReviewUsers(review.getId());
-        if (CollectionUtils.isNotEmpty(userList)){
+        if (CollectionUtils.isNotEmpty(userList)) {
             var userEmailList = userList.stream().map(User::getEmail).collect(Collectors.toSet());
             var fileSource = PdfGenerator.generatePlanReview(review);
             mailSender.sendFinishedReviewEmail(review, Lists.newArrayList(userEmailList), fileSource);
@@ -167,5 +166,30 @@ public class ReviewService {
     public Optional<ByteArrayOutputStream> downloadPlanReview(UUID uid) {
         var optionalReview = reviewRepository.findByUid(uid);
         return optionalReview.map(PdfGenerator::generatePlanReview);
+    }
+
+    public List<ReviewedPlanDTO> getReviewedPlanList(UUID uid) {
+        var userReviews = reviewRepository.findAllWUserReviews(uid);
+        if (CollectionUtils.isNotEmpty(userReviews)) {
+            return userReviews.stream().map(review ->
+                    ReviewedPlanDTO.builder()
+                            .limitReviewDate(review.getLimitReviewDate())
+                            .reviewedDate(review.getReviewedDate())
+                            .projectName(review.getAssessment().getProjectName())
+                            .reviewer(review.getReviewer().getName())
+                            .reviewUid(review.getUid())
+                            .build())
+                    .collect(Collectors.toList());
+        }
+        return Collections.emptyList();
+    }
+
+    public Optional<Review> deleteReview(UUID uid) {
+        Optional<Review> reviewOptional = reviewRepository.findByUid(uid);
+        if (reviewOptional.isPresent()){
+            reviewOptional.get().setRemovedDate(LocalDateTime.now());
+            return Optional.of(reviewRepository.save(reviewOptional.get()));
+        }
+        return Optional.empty();
     }
 }

@@ -51,6 +51,9 @@ public class Review extends BaseEntity {
     @Column
     private LocalDate limitReviewDate;
 
+    @Column
+    private LocalDate reviewedDate;
+
     @JsonIgnore
     @OneToOne
     private User reviewer;
