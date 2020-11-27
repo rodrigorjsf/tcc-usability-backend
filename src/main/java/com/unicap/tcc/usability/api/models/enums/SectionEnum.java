@@ -10,12 +10,12 @@ import java.util.stream.Stream;
 public enum SectionEnum {
     AP("Application"),
     GO("Goals"),
-    VM("VariablesAndMeasurement"),
+    VM("Variables And Measurement"),
     PA("Participants"),
-    TM("TasksAndMaterials"),
+    TM("Tasks And Materials"),
     PR("Procedure"),
-    DT("DataCollectionAndAnalysis"),
-    TH("Threats");
+    DT("Data Collection And Data Analysis"),
+    TH("Threats to validity");
 
     private final String description;
 

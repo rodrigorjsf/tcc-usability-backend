@@ -1,8 +1,8 @@
 package com.unicap.tcc.usability.api.models.enums;
 
 public enum EReviewState {
-	
-	
+
+	AVAILABLE("Available"),
 	REVIEW_REQUESTED("Review Requested"),
 	REVIEWING("Reviewing"),
 	Refused("Refused"),

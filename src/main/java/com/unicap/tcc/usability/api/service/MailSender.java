@@ -1,6 +1,7 @@
 package com.unicap.tcc.usability.api.service;
 
 import com.unicap.tcc.usability.api.models.assessment.Assessment;
+import com.unicap.tcc.usability.api.models.review.Review;
 import com.unicap.tcc.usability.api.properties.AmazonSASProperties;
 import com.unicap.tcc.usability.api.repository.UserRepository;
 import com.unicap.tcc.usability.api.utils.HtmlUtils;
@@ -37,7 +38,7 @@ public class MailSender {
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true,"utf-8");
         if (Objects.nonNull(source)){
-            helper.addAttachment(projectName.replaceAll("\\s+","") + "Plan.pdf",
+            helper.addAttachment(projectName.replaceAll("\\s+",""),
                     new ByteArrayResource(source.toByteArray()));
         }
         try {
@@ -51,25 +52,34 @@ public class MailSender {
         }
     }
 
+    public void sendAvailableReviewEmail(Assessment assessment, Review review, List<String> emails) {
+        emails.forEach(email -> {
+            try {
+                String htmlMailText = HtmlUtils.setHtmlMailNewReview(assessment, review);
+                if (!htmlMailText.equals("")) {
+                    String subject = "[VALID USABILITY ASSESSMENT] - NEW PLAN REVIEW AVAILABLE";
+                    send(new String[]{email}, subject, htmlMailText, null, assessment.getProjectName());
+                }
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
+        });
+    }
 
-//    public void sendReturnFileErrorEmail(ReturnFile returnFile) {
-//        var returnFileImpl = returnFile.getReturnFileImpl();
-//        var dealershipName = returnFileImpl
-//                .getDealershipConfig().getFilePath();
-//        var steps = returnFile.getSteps();
-//        var fileNameWithPath = returnFileImpl.getDealershipConfig().getFilePath()
-//                .concat("/")
-//                .concat(returnFile.getFilename());
-//
-//        var environmentName = environmentProperties.getName().toUpperCase();
-//        var htmlMailText = HtmlUtils.setHtmlMailReturnFileErrorLayout(environmentName, fileNameWithPath,
-//                dealershipName, returnFileImpl.getReference(), steps);
-//
-//        LocalDate processingDate = LocalDate.now();
-//        String subject = String.format("[%s - %s] - ERRO ARQUIVO DE RETORNO %s", environmentName, dealershipName,
-//                DateUtils.formatLocalDate(processingDate, "dd-MM-yyyy"));
-//        send(returnFileImpl.getEmails(), subject, htmlMailText);
-//    }
+    public void sendFinishedReviewEmail(Review review, List<String> emails, ByteArrayOutputStream source) {
+        emails.forEach(email -> {
+            try {
+                String htmlMailText = HtmlUtils.setHtmlMailFinishedReview(review);
+                if (!htmlMailText.equals("")) {
+                    String subject = "[VALID USABILITY ASSESSMENT] - COMPLETED PLAN REVIEW";
+                    send(new String[]{email}, subject, htmlMailText, source,
+                            review.getAssessment().getProjectName() + "-Plan-Review.pdf");
+                }
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
+        });
+    }
 
     public void sendCollaboratorEmail(Assessment assessment, String assessmentUid, List<String> emails) {
         emails.forEach(email -> {
@@ -96,7 +106,7 @@ public class MailSender {
                 if (!htmlMailText.equals("")) {
                     String subject = "[VALID USABILITY ASSESSMENT] - PLAN FILE";
                     if (Objects.nonNull(source)) {
-                        send(new String[]{email}, subject, htmlMailText, source, assessment.getProjectName());
+                        send(new String[]{email}, subject, htmlMailText, source, assessment.getProjectName()  + "Plan.pdf");
                     }
                 }
             } catch (MessagingException e) {

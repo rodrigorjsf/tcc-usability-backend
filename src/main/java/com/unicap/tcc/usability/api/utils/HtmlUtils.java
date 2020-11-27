@@ -3,7 +3,11 @@ package com.unicap.tcc.usability.api.utils;
 import com.google.common.io.Files;
 import com.unicap.tcc.usability.api.models.User;
 import com.unicap.tcc.usability.api.models.assessment.Assessment;
+import com.unicap.tcc.usability.api.models.enums.SectionEnum;
+import com.unicap.tcc.usability.api.models.review.Comment;
+import com.unicap.tcc.usability.api.models.review.Review;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.io.File;
@@ -38,6 +42,55 @@ public class HtmlUtils {
         return "";
     }
 
+    public static String setHtmlMailNewReview(Assessment assessment, Review review) {
+        File input = new File("src/main/resources/templates/NewReview.html");
+        try {
+            var mailTemplate = Files.asCharSource(input, StandardCharsets.UTF_8).read();
+            return mailTemplate.replace(":date", review.getLimitReviewDate().toString())
+                    .replace(":projectName", assessment.getProjectName());
+        } catch (IOException e) {
+            log.error(ExceptionUtils.getStackTrace(e));
+        }
+        return "";
+    }
+
+    public static String setHtmlMailFinishedReview(Review review) {
+        File input = new File("src/main/resources/templates/FinishedReview.html");
+        try {
+            var mailTemplate = Files.asCharSource(input, StandardCharsets.UTF_8).read();
+            for (Comment comment : review.getComments()) {
+                if (comment.getSection().equals(SectionEnum.AP))
+                    mailTemplate = mailTemplate.replace(":applicationComent", StringUtils.isEmpty(comment.getComment()) ?
+                            "N/A" : comment.getComment());
+                if (comment.getSection().equals(SectionEnum.AP))
+                    mailTemplate = mailTemplate.replace(":goalsComent", StringUtils.isEmpty(comment.getComment()) ?
+                            "N/A" : comment.getComment());
+                if (comment.getSection().equals(SectionEnum.AP))
+                    mailTemplate = mailTemplate.replace(":variableComent", StringUtils.isEmpty(comment.getComment()) ?
+                            "N/A" : comment.getComment());
+                if (comment.getSection().equals(SectionEnum.AP))
+                    mailTemplate = mailTemplate.replace(":participantComent", StringUtils.isEmpty(comment.getComment()) ?
+                            "N/A" : comment.getComment());
+                if (comment.getSection().equals(SectionEnum.AP))
+                    mailTemplate = mailTemplate.replace(":taskComent", StringUtils.isEmpty(comment.getComment()) ?
+                            "N/A" : comment.getComment());
+                if (comment.getSection().equals(SectionEnum.AP))
+                    mailTemplate = mailTemplate.replace(":procedureComent", StringUtils.isEmpty(comment.getComment()) ?
+                            "N/A" : comment.getComment());
+                if (comment.getSection().equals(SectionEnum.AP))
+                    mailTemplate = mailTemplate.replace(":dataComent", StringUtils.isEmpty(comment.getComment()) ?
+                            "N/A" : comment.getComment());
+                if (comment.getSection().equals(SectionEnum.AP))
+                    mailTemplate = mailTemplate.replace(":threatComent", StringUtils.isEmpty(comment.getComment()) ?
+                            "N/A" : comment.getComment());
+            }
+            return mailTemplate.replace(":projectName", review.getAssessment().getProjectName());
+        } catch (IOException e) {
+            log.error(ExceptionUtils.getStackTrace(e));
+        }
+        return "";
+    }
+
     public static String setHtmlSendPlan(Assessment assessment) {
         File input = new File("src/main/resources/templates/SendPlansToEmail.html");
         try {
@@ -48,6 +101,4 @@ public class HtmlUtils {
         }
         return "";
     }
-
-
 }

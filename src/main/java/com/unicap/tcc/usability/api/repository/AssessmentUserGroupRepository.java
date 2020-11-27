@@ -30,4 +30,6 @@ public interface AssessmentUserGroupRepository extends JpaRepository<AssessmentU
 
     Optional<AssessmentUserGroup> findBySystemUserUidAndRemovedDateIsNull(UUID uid);
 
+    List<AssessmentUserGroup> findAllByAssessmentAndAssessmentRemovedDateIsNull(Assessment assessment);
+
 }
