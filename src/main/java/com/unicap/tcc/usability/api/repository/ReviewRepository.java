@@ -21,6 +21,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     List<Review> findAllByReviewerUidAndRemovedDateIsNull(UUID uid);
 
+
     @Transactional
     @Modifying
     @Query(nativeQuery = true, value = "SELECT r.*\n" +
@@ -33,4 +34,19 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             "  and a.removed_at is null\n" +
             "  and aug.removed_at is null")
     List<Review> findAllWhereUserEvaluatorIsNotReviewer(@Param("userId") Long userId);
+
+    @Transactional
+    @Modifying
+    @Query(nativeQuery = true, value = "SELECT r.*\n" +
+            "FROM review r\n" +
+            "         INNER JOIN assessment a on a.id = r.assessment_id\n" +
+            "         INNER JOIN assessment_user_group aug on a.id = aug.assessment_id\n" +
+            "         INNER JOIN sys_user su on su.id = aug.system_user_id\n" +
+            "WHERE su.uid = :userUid\n" +
+            "  AND r.state = 'COMPLETED'\n" +
+            "  AND r.removed_at IS NULL\n" +
+            "  AND a.removed_at IS NULL\n" +
+            "  AND aug.removed_at IS NULL\n" +
+            "  AND su.removed_at IS NULL")
+    List<Review> findAllWUserReviews(@Param("userUid") UUID userUid);
 }

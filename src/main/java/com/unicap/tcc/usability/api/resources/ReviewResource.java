@@ -2,10 +2,7 @@ package com.unicap.tcc.usability.api.resources;
 
 import com.unicap.tcc.usability.api.models.assessment.Assessment;
 import com.unicap.tcc.usability.api.models.assessment.question.PlanForm;
-import com.unicap.tcc.usability.api.models.dto.review.BeginReviewDTO;
-import com.unicap.tcc.usability.api.models.dto.review.FinishReviewDTO;
-import com.unicap.tcc.usability.api.models.dto.review.ReviewListResponseDTO;
-import com.unicap.tcc.usability.api.models.dto.review.ReviewRequestDTO;
+import com.unicap.tcc.usability.api.models.dto.review.*;
 import com.unicap.tcc.usability.api.models.review.Review;
 import com.unicap.tcc.usability.api.service.ReviewService;
 import com.unicap.tcc.usability.api.utils.UUIDUtils;
@@ -57,7 +54,8 @@ public class ReviewResource {
 
     @GetMapping("/list/{uid}")
     @ApiOperation("Get list of scales.")
-    public ResponseEntity<Set<ReviewListResponseDTO>> getScaleList(@PathVariable @Pattern(regexp = UUIDUtils.UUID_REGEXP, message = "Invalid uid") String uid) {
+    public ResponseEntity<Set<ReviewListResponseDTO>> getScaleList(
+            @PathVariable @Pattern(regexp = UUIDUtils.UUID_REGEXP, message = "Invalid uid") String uid) {
         Set<ReviewListResponseDTO> reviewList = reviewService.getAvailableReviews(UUID.fromString(uid));
         if (reviewList.isEmpty())
             return ResponseEntity.noContent().build();
@@ -112,5 +110,31 @@ public class ReviewResource {
         return ResponseEntity.ok()
                 .contentType(APPLICATION_OCTET_STREAM)
                 .body(byteArrayOutputStream.get().toByteArray());
+    }
+
+    @GetMapping("/completed/list/{uid}")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation("Finish plan review.")
+    @ApiResponse(code = 200, message = "Review finished.")
+    public ResponseEntity<List<ReviewedPlanDTO>> getReviewedPlanList(
+            @PathVariable @Pattern(regexp = UUIDUtils.UUID_REGEXP, message = "Invalid uid") String uid) {
+        List<ReviewedPlanDTO>  reviewedPlanList = reviewService.getReviewedPlanList(UUID.fromString(uid));
+        if (reviewedPlanList.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok().body(reviewedPlanList);
+    }
+
+    @PutMapping("/detete/{uid}")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation("Finish plan review.")
+    @ApiResponse(code = 200, message = "Review finished.")
+    public ResponseEntity<Review> deleteReview(
+            @PathVariable @Pattern(regexp = UUIDUtils.UUID_REGEXP, message = "Invalid uid") String uid) {
+        Optional<Review>  review = reviewService.deleteReview(UUID.fromString(uid));
+        if (review.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok().body(review.get());
     }
 }
