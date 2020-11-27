@@ -1,6 +1,7 @@
 package com.unicap.tcc.usability.api.service;
 
 import com.unicap.tcc.usability.api.models.assessment.Assessment;
+import com.unicap.tcc.usability.api.models.review.Review;
 import com.unicap.tcc.usability.api.properties.AmazonSASProperties;
 import com.unicap.tcc.usability.api.repository.UserRepository;
 import com.unicap.tcc.usability.api.utils.HtmlUtils;
@@ -51,25 +52,19 @@ public class MailSender {
         }
     }
 
-
-//    public void sendReturnFileErrorEmail(ReturnFile returnFile) {
-//        var returnFileImpl = returnFile.getReturnFileImpl();
-//        var dealershipName = returnFileImpl
-//                .getDealershipConfig().getFilePath();
-//        var steps = returnFile.getSteps();
-//        var fileNameWithPath = returnFileImpl.getDealershipConfig().getFilePath()
-//                .concat("/")
-//                .concat(returnFile.getFilename());
-//
-//        var environmentName = environmentProperties.getName().toUpperCase();
-//        var htmlMailText = HtmlUtils.setHtmlMailReturnFileErrorLayout(environmentName, fileNameWithPath,
-//                dealershipName, returnFileImpl.getReference(), steps);
-//
-//        LocalDate processingDate = LocalDate.now();
-//        String subject = String.format("[%s - %s] - ERRO ARQUIVO DE RETORNO %s", environmentName, dealershipName,
-//                DateUtils.formatLocalDate(processingDate, "dd-MM-yyyy"));
-//        send(returnFileImpl.getEmails(), subject, htmlMailText);
-//    }
+    public void sendAvailableReviewEmail(Assessment assessment, Review review, List<String> emails) {
+        emails.forEach(email -> {
+            try {
+                String htmlMailText = HtmlUtils.setHtmlMailNewReview(assessment, review);
+                if (!htmlMailText.equals("")) {
+                    String subject = "[VALID USABILITY ASSESSMENT] - NEW PLAN REVIEW AVAILABLE";
+                    send(new String[]{email}, subject, htmlMailText, null, assessment.getProjectName());
+                }
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
+        });
+    }
 
     public void sendCollaboratorEmail(Assessment assessment, String assessmentUid, List<String> emails) {
         emails.forEach(email -> {
