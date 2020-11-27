@@ -4,6 +4,7 @@ import com.google.common.io.Files;
 import com.unicap.tcc.usability.api.models.User;
 import com.unicap.tcc.usability.api.models.assessment.Assessment;
 import com.unicap.tcc.usability.api.models.enums.SectionEnum;
+import com.unicap.tcc.usability.api.models.review.Comment;
 import com.unicap.tcc.usability.api.models.review.Review;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -57,26 +58,33 @@ public class HtmlUtils {
         File input = new File("src/main/resources/templates/FinishedReview.html");
         try {
             var mailTemplate = Files.asCharSource(input, StandardCharsets.UTF_8).read();
-            review.getComments().forEach(comment -> {
+            for (Comment comment : review.getComments()) {
                 if (comment.getSection().equals(SectionEnum.AP))
-                    mailTemplate.replace(":applicationComent", StringUtils.isEmpty(comment.getComment())? "N/A" : comment.getComment());
+                    mailTemplate = mailTemplate.replace(":applicationComent", StringUtils.isEmpty(comment.getComment()) ?
+                            "N/A" : comment.getComment());
                 if (comment.getSection().equals(SectionEnum.AP))
-                    mailTemplate.replace(":goalsComent", StringUtils.isEmpty(comment.getComment())? "N/A" : comment.getComment());
+                    mailTemplate = mailTemplate.replace(":goalsComent", StringUtils.isEmpty(comment.getComment()) ?
+                            "N/A" : comment.getComment());
                 if (comment.getSection().equals(SectionEnum.AP))
-                    mailTemplate.replace(":variableComent", StringUtils.isEmpty(comment.getComment())? "N/A" : comment.getComment());
+                    mailTemplate = mailTemplate.replace(":variableComent", StringUtils.isEmpty(comment.getComment()) ?
+                            "N/A" : comment.getComment());
                 if (comment.getSection().equals(SectionEnum.AP))
-                    mailTemplate.replace(":participantComent", StringUtils.isEmpty(comment.getComment())? "N/A" : comment.getComment());
+                    mailTemplate = mailTemplate.replace(":participantComent", StringUtils.isEmpty(comment.getComment()) ?
+                            "N/A" : comment.getComment());
                 if (comment.getSection().equals(SectionEnum.AP))
-                    mailTemplate.replace(":taskComent", StringUtils.isEmpty(comment.getComment())? "N/A" : comment.getComment());
+                    mailTemplate = mailTemplate.replace(":taskComent", StringUtils.isEmpty(comment.getComment()) ?
+                            "N/A" : comment.getComment());
                 if (comment.getSection().equals(SectionEnum.AP))
-                    mailTemplate.replace(":procedureComent", StringUtils.isEmpty(comment.getComment())? "N/A" : comment.getComment());
+                    mailTemplate = mailTemplate.replace(":procedureComent", StringUtils.isEmpty(comment.getComment()) ?
+                            "N/A" : comment.getComment());
                 if (comment.getSection().equals(SectionEnum.AP))
-                    mailTemplate.replace(":dataComent", StringUtils.isEmpty(comment.getComment())? "N/A" : comment.getComment());
+                    mailTemplate = mailTemplate.replace(":dataComent", StringUtils.isEmpty(comment.getComment()) ?
+                            "N/A" : comment.getComment());
                 if (comment.getSection().equals(SectionEnum.AP))
-                    mailTemplate.replace(":threatComent", StringUtils.isEmpty(comment.getComment())? "N/A" : comment.getComment());
-
-            });
-            return mailTemplate;
+                    mailTemplate = mailTemplate.replace(":threatComent", StringUtils.isEmpty(comment.getComment()) ?
+                            "N/A" : comment.getComment());
+            }
+            return mailTemplate.replace(":projectName", review.getAssessment().getProjectName());
         } catch (IOException e) {
             log.error(ExceptionUtils.getStackTrace(e));
         }
@@ -93,6 +101,4 @@ public class HtmlUtils {
         }
         return "";
     }
-
-
 }

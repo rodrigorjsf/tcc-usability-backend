@@ -38,7 +38,7 @@ public class MailSender {
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true,"utf-8");
         if (Objects.nonNull(source)){
-            helper.addAttachment(projectName.replaceAll("\\s+","") + "Plan.pdf",
+            helper.addAttachment(projectName.replaceAll("\\s+",""),
                     new ByteArrayResource(source.toByteArray()));
         }
         try {
@@ -59,6 +59,21 @@ public class MailSender {
                 if (!htmlMailText.equals("")) {
                     String subject = "[VALID USABILITY ASSESSMENT] - NEW PLAN REVIEW AVAILABLE";
                     send(new String[]{email}, subject, htmlMailText, null, assessment.getProjectName());
+                }
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void sendFinishedReviewEmail(Review review, List<String> emails, ByteArrayOutputStream source) {
+        emails.forEach(email -> {
+            try {
+                String htmlMailText = HtmlUtils.setHtmlMailFinishedReview(review);
+                if (!htmlMailText.equals("")) {
+                    String subject = "[VALID USABILITY ASSESSMENT] - COMPLETED PLAN REVIEW";
+                    send(new String[]{email}, subject, htmlMailText, source,
+                            review.getAssessment().getProjectName() + "-Plan-Review.pdf");
                 }
             } catch (MessagingException e) {
                 e.printStackTrace();
@@ -91,7 +106,7 @@ public class MailSender {
                 if (!htmlMailText.equals("")) {
                     String subject = "[VALID USABILITY ASSESSMENT] - PLAN FILE";
                     if (Objects.nonNull(source)) {
-                        send(new String[]{email}, subject, htmlMailText, source, assessment.getProjectName());
+                        send(new String[]{email}, subject, htmlMailText, source, assessment.getProjectName()  + "Plan.pdf");
                     }
                 }
             } catch (MessagingException e) {

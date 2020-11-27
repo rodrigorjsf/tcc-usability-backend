@@ -12,7 +12,9 @@ import com.unicap.tcc.usability.api.models.assessment.Assessment;
 import com.unicap.tcc.usability.api.models.assessment.Attribute;
 import com.unicap.tcc.usability.api.models.assessment.UsabilityGoal;
 import com.unicap.tcc.usability.api.models.enums.ScalesEnum;
+import com.unicap.tcc.usability.api.models.enums.SectionEnum;
 import com.unicap.tcc.usability.api.models.enums.SmartCityAttribute;
+import com.unicap.tcc.usability.api.models.review.Review;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -539,6 +541,58 @@ public class PdfGenerator {
 
             addEmptyLine(subCatPart, 1);
 
+            document.add(catPart);
+
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+
+        } catch (DocumentException de) {
+            System.err.println(de.getMessage());
+        }
+        document.close();
+
+        return baos;
+    }
+
+
+    public static ByteArrayOutputStream generatePlanReview(Review review) {
+        Document document = new Document();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        try {
+            PdfWriter.getInstance(document, baos);
+
+            document.open();
+
+            // report header
+            document.add(getBoldParagraph("ValidUATool -Usability Assessment Planning Tool", 18));
+            document.add(Chunk.NEWLINE);
+            document.add(getKeyValueParagraph("Project name: ", review.getAssessment().getProjectName()));
+            document.add(getKeyValueParagraph("Project description: ", review.getAssessment().getProjectDescription()));
+            document.add(Chunk.NEWLINE);
+            document.add(getKeyValueParagraph("Created by: ", review.getAssessment().getSystemUser().getName()));
+            document.add(getKeyValueParagraph("Creation date: ", review.getAssessment().getSystemUser().getCreationDate().toLocalDate().toString()));
+            document.add(Chunk.NEWLINE);
+            document.add(getKeyValueParagraph("Reviewer: ", review.getReviewer().getName()));
+
+            Anchor anchor = new Anchor("REVIEW RESULTS", catFont);
+            anchor.setName("REVIEW RESULTS");
+
+            // Second parameter is the number of the chapter
+            Chapter catPart = new Chapter(new Paragraph(anchor), 1);
+
+            review.getComments().forEach(comment -> {
+                SectionEnum.getSectionList().forEach(sectionEnum -> {
+                    if (comment.getSection().equals(sectionEnum)) {
+                        Paragraph subPara = new Paragraph("Comments on the " + sectionEnum.getDescription() + " section:", subFont);
+                        Section subCatPart;
+                        subCatPart = catPart.addSection(subPara);
+                        subCatPart.add(new Paragraph(PARAGRAPH_SPACE + PARAGRAPH_SPACE +
+                                (StringUtils.isNotEmpty(comment.getComment()) ? comment.getComment() : "N/A")));
+                        addEmptyLine(subCatPart, 1);
+                    }
+                });
+            });
             document.add(catPart);
 
             document.add(Chunk.NEWLINE);

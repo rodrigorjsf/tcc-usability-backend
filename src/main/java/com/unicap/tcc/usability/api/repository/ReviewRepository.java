@@ -15,6 +15,8 @@ import java.util.UUID;
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
+    Optional<Review> findByUid(UUID uid);
+
     Optional<Review> findByUidAndRemovedDateIsNull(UUID uid);
 
     List<Review> findAllByReviewerUidAndRemovedDateIsNull(UUID uid);
