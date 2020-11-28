@@ -57,13 +57,12 @@ public class Assessment extends BaseEntity {
     ////////// GOALS
     @Column
     private String projectName;
-    @Column
+    @Column(columnDefinition = "text")
     private String projectDescription;
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "assessment_id", referencedColumnName = "id", nullable = false)
     private List<UsabilityGoal> usabilityGoals;
-    @Column
-    private Boolean isSmartCity;
+
     @Column
     private Double smartCityPercentage;
 
