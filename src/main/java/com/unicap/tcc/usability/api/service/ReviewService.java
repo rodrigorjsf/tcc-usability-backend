@@ -192,4 +192,8 @@ public class ReviewService {
         }
         return Optional.empty();
     }
+
+    public Optional<Review> findReviewPlanByUid(UUID uid) {
+        return reviewRepository.findByUid(uid);
+    }
 }

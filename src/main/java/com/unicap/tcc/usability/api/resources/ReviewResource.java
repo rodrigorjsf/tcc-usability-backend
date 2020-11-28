@@ -8,6 +8,7 @@ import com.unicap.tcc.usability.api.service.ReviewService;
 import com.unicap.tcc.usability.api.utils.UUIDUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -136,5 +137,14 @@ public class ReviewResource {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok().body(review.get());
+    }
+
+    @GetMapping("/by-uid/{uid}")
+    @ApiOperation("Search list of assessment plans.")
+    public ResponseEntity<Review> findReviewPlanByUid(@PathVariable(value = "uid") @ApiParam("Assessment plan uid") String uid) {
+        Optional<Review> reviewOptional = reviewService.findReviewPlanByUid(UUID.fromString(uid));
+        if (reviewOptional.isEmpty())
+            return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().body(reviewOptional.get());
     }
 }
