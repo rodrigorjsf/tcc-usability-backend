@@ -35,6 +35,6 @@ class Attribute extends BaseEntity {
     @Column(name = "variable_list", columnDefinition = "text")
     private String variables;
 
-    @Column
+    @Column(columnDefinition = "text")
     private String obtainedBy;
 }

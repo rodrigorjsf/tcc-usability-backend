@@ -28,7 +28,7 @@ public class AssessmentProcedureStep extends BaseEntity {
     @Column(name = "assessment_procedure_id", insertable = false, updatable = false)
     private Long assessmentProcedureId;
 
-    @Column
+    @Column(columnDefinition = "text")
     private String name;
 
     @Column(name = "description", columnDefinition = "text")

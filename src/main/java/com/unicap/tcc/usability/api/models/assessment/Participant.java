@@ -46,7 +46,7 @@ public class Participant extends BaseEntity {
     @Generated(GenerationTime.ALWAYS)
     private Boolean hasCompensation;
 
-    @Column
+    @Column(columnDefinition = "text")
     private String compensationDescription;
 
     @Column(name = "eligibility_criteria", columnDefinition = "text")
@@ -56,10 +56,10 @@ public class Participant extends BaseEntity {
     @Generated(GenerationTime.ALWAYS)
     private Boolean hasCollectedInformation;
 
-    @Column
+    @Column(columnDefinition = "text")
     private String collectedInformationUse;
 
-    @Column
+    @Column(columnDefinition = "text")
     private String instructions;
 
     @Type(
