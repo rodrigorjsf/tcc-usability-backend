@@ -29,7 +29,7 @@ class UsabilityGoal {
     @Column(name = "attribute", nullable = false)
     @Enumerated(EnumType.STRING)
     private UsabilityAttribute attribute;
-    @Column
+    @Column(columnDefinition = "text")
     private String goal;
     @Column(name = "done", columnDefinition = "boolean default false")
     @Generated(GenerationTime.ALWAYS)

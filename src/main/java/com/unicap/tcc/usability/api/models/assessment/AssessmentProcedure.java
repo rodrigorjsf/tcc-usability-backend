@@ -40,13 +40,13 @@ public class AssessmentProcedure extends BaseEntity {
     @Column
     private LocalDate occurDate;
 
-    @Column
+    @Column(columnDefinition = "text")
     private String occurLocal;
 
-    @Column
+    @Column(columnDefinition = "text")
     private String occurDetail;
 
-    @Column
+    @Column(columnDefinition = "text")
     private String occurTime;
 
     @OneToMany(cascade = {CascadeType.ALL})
@@ -58,7 +58,7 @@ public class AssessmentProcedure extends BaseEntity {
     @Generated(GenerationTime.ALWAYS)
     private Boolean isPilotAssessment;
 
-    @Column
+    @Column(columnDefinition = "text")
     private String pilotDescription;
 
     @Column(name = "questions_allowed", columnDefinition = "boolean default false")

@@ -43,7 +43,7 @@ public class Scale extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ScalesEnum acronym;
 
-    @Column
+    @Column(columnDefinition = "text")
     private String name;
 
     @Column(name = "description", columnDefinition = "text")

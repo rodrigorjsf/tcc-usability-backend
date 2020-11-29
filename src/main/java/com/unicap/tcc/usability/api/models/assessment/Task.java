@@ -29,10 +29,10 @@ class Task extends BaseEntity {
     @Column(name = "description", columnDefinition = "text")
     private String description;
 
-    @Column
+    @Column(columnDefinition = "text")
     private String taskExecutionTime;
 
-    @Column
+    @Column(columnDefinition = "text")
     private String acceptanceCriteria;
 
     @Override

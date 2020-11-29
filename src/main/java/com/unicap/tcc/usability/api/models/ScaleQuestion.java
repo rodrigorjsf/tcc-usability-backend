@@ -31,7 +31,7 @@ public class ScaleQuestion extends BaseEntity {
     @Column(name = "key", columnDefinition = "varchar(10)", nullable = false)
     private String key;
 
-    @Column
+    @Column(columnDefinition = "text")
     private String question;
 
     @Column(name = "lower_score_label", columnDefinition = "varchar(25)", nullable = false)

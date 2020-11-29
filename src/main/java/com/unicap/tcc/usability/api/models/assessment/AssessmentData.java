@@ -35,7 +35,7 @@ public class AssessmentData extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(columnDefinition = "text")
     private String dataCollectionProcedure;
 
     @Column(name = "analysis_description", columnDefinition = "text")
