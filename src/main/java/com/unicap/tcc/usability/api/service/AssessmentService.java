@@ -48,8 +48,8 @@ public class AssessmentService {
     private final ThreatsRepository threatsRepository;
     private final MailSender mailSender;
 
-    public SmartCityResponse calculateSmartCityPercentage(SmartCityQuestionnaire questionnaire) {
-        var resultList = questionnaire.getListOfResults();
+    public SmartCityResponse calculateSmartCityPercentage(SmartCityQuestionnaire smartCityQuestionnaire) {
+        var resultList = smartCityQuestionnaire.getListOfResults();
         var resultsQuantity = Long.valueOf(resultList.size());
         var positiveResults = Long.valueOf(resultList.stream().filter(aBoolean -> aBoolean.equals(true)).count());
         return SmartCityResponse.builder()
@@ -202,6 +202,8 @@ public class AssessmentService {
             else
                 assessment.getSmartCityQuestionnaire().updateValues(applicationSection);
             assessment.getAnswers().setPlanApplicationAnswers(applicationSection.getPlanApplicationAnswers());
+            assessment.setProjectName(applicationSection.getProjectName());
+            assessment.setProjectDescription(applicationSection.getProjectDescription());
             var resultList = applicationSection.toSmartCityQuestionnaire().getListOfResults();
             var resultsQuantity = Long.valueOf(resultList.size());
             var positiveResults = Long.valueOf(resultList.stream().filter(aBoolean -> aBoolean.equals(true)).count());
