@@ -73,7 +73,7 @@ public class AuthResource {
         if (optionalToken.isPresent()) {
             //TODO EMAIL VALIDATION
 //            token = optionalToken.get();
-//            String subject = "ValidUsabilityAssessment - Complete Registration!";
+//            String subject = "Usability Validation Instrument - Complete Registration!";
 //            String url = "https://validuatool-app.herokuapp.com/api/auth/confirm-account?token=" + token;
 //            String body = "To confirm your account, please click here: "
 //                    + "<a href=" + "\"" + url + "\"" + ">Confirm</a>";
