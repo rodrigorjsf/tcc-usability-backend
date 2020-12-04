@@ -23,7 +23,6 @@ public class BaseEntity {
 
     protected static final long serialVersionUID = 1L;
 
-    @JsonIgnore
     @Column(name = "created_at", columnDefinition = "timestamp default now()")
     @CreationTimestamp
     protected LocalDateTime creationDate;
