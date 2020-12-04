@@ -62,7 +62,7 @@ public class PdfGenerator {
 
         PdfPCell cell;
 
-        cell = new PdfPCell(new Phrase("ValidUATool -Usability Assessment Planning Tool"));
+        cell = new PdfPCell(new Phrase("Usavalins - Usability Validation Instrument"));
         cell.setColspan(2);
         table.addCell(cell);
 
@@ -99,7 +99,7 @@ public class PdfGenerator {
             document.open();
 
             // report header
-            document.add(getBoldParagraph("ValidUATool -Usability Assessment Planning Tool", 18));
+            document.add(getBoldParagraph("Usavalins - Usability Validation Instrument", 18));
             document.add(Chunk.NEWLINE);
             document.add(getKeyValueParagraph("Project name: ", assessment.getProjectName()));
             document.add(getKeyValueParagraph("Project description: ", assessment.getProjectDescription()));
@@ -565,7 +565,7 @@ public class PdfGenerator {
             document.open();
 
             // report header
-            document.add(getBoldParagraph("ValidUATool -Usability Assessment Planning Tool", 18));
+            document.add(getBoldParagraph("Usavalins - Usability Validation Instrument", 18));
             document.add(Chunk.NEWLINE);
             document.add(getKeyValueParagraph("Project name: ", review.getAssessment().getProjectName()));
             document.add(getKeyValueParagraph("Project description: ", review.getAssessment().getProjectDescription()));

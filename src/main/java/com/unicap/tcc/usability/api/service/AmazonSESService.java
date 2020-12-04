@@ -12,7 +12,7 @@ import java.util.Properties;
 @Service
 public class AmazonSESService {
     static final String FROM = "rodrigo.2018150572@unicap.br";
-    static final String FROMNAME = "Valid Usability Assessment";
+    static final String FROMNAME = "Usability Validation Instrument";
     static final String SMTP_USERNAME = "AKIAVEETHJ3RMC46IWUI";
     static final String SMTP_PASSWORD = "BCa7g75XoKPoH65Pu8CL8u5CMDaXH4kjdyBAOOFryVVk";
     static final String HOST = "email-smtp.sa-east-1.amazonaws.com";

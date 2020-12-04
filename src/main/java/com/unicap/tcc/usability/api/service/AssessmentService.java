@@ -209,6 +209,7 @@ public class AssessmentService {
             var positiveResults = Long.valueOf(resultList.stream().filter(aBoolean -> aBoolean.equals(true)).count());
             var percentage = positiveResults.doubleValue() == 0 ?
                     0 : (positiveResults.doubleValue() * 100) / resultsQuantity.doubleValue();
+            assessment.setSmartCityPercentage(percentage);
             assessment = assessmentRepository.save(assessment);
 
             assessmentRepository.updateProjectAndAnswers(applicationSection.getProjectName(),
