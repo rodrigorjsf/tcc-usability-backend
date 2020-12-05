@@ -210,6 +210,8 @@ public class AssessmentService {
             var percentage = positiveResults.doubleValue() == 0 ?
                     0 : (positiveResults.doubleValue() * 100) / resultsQuantity.doubleValue();
             assessment.setSmartCityPercentage(percentage);
+            if (!assessment.getState().equals(AssessmentState.COLLECTING_DATA))
+                assessment.setState(AssessmentState.COLLECTING_DATA);
             assessment = assessmentRepository.save(assessment);
 
             assessmentRepository.updateProjectAndAnswers(applicationSection.getProjectName(),
@@ -226,8 +228,6 @@ public class AssessmentService {
                     applicationSection.getHasServiceManagement(),
                     applicationSection.getHasSoftwareTools(),
                     assessment.getId());
-            if (!assessment.getState().equals(AssessmentState.COLLECTING_DATA))
-                assessment.setState(AssessmentState.COLLECTING_DATA);
             return assessment;
         }
         return null;
