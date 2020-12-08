@@ -1,5 +1,6 @@
 package com.unicap.tcc.usability.api.service;
 
+import com.google.common.io.Files;
 import com.unicap.tcc.usability.api.exception.ApiException;
 import com.unicap.tcc.usability.api.models.Scale;
 import com.unicap.tcc.usability.api.models.SmartCityQuestionnaire;
@@ -28,6 +29,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -349,7 +353,7 @@ public class AssessmentService {
 
     public Optional<ByteArrayOutputStream> downloadPlan(UUID uid) {
         var optionalAssessment = assessmentRepository.findByUid(uid);
-        List<User> collaborators = new ArrayList<>();
+        List<User> collaborators;
         if (optionalAssessment.isPresent()) {
             var userGroup =
                     assessmentUserGroupRepository.findAllByAssessmentAndProfile(optionalAssessment.get(), UserProfileEnum.COLLABORATOR);
@@ -444,4 +448,8 @@ public class AssessmentService {
     }
 
 
+    public Optional<byte[]> downloadExpressPlan() throws IOException {
+        File file = new File("src/main/resources/dashboard-image/instrument-canvas.pdf");
+        return Optional.of(Files.toByteArray(file));
+    }
 }
