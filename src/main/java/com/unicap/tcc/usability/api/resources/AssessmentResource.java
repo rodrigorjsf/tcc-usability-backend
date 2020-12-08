@@ -293,4 +293,18 @@ public class AssessmentResource {
         assessmentService.updateSectionState(sectionUpdateRequestDTO);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/express/file")
+    @ApiOperation("Download express plan.")
+    public ResponseEntity<byte[]> downloadExpressPlanning() throws IOException {
+
+        Optional<byte[]> byteArrayOutputStream = assessmentService.downloadExpressPlan();
+
+        if (byteArrayOutputStream.isEmpty())
+            return ResponseEntity.badRequest().build();
+
+        return ResponseEntity.ok()
+                .contentType(APPLICATION_OCTET_STREAM)
+                .body(byteArrayOutputStream.get());
+    }
 }
