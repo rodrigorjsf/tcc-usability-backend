@@ -62,25 +62,25 @@ public class HtmlUtils {
                 if (comment.getSection().equals(SectionEnum.AP))
                     mailTemplate = mailTemplate.replace(":applicationComent", StringUtils.isEmpty(comment.getComment()) ?
                             "N/A" : comment.getComment());
-                if (comment.getSection().equals(SectionEnum.AP))
+                if (comment.getSection().equals(SectionEnum.GO))
                     mailTemplate = mailTemplate.replace(":goalsComent", StringUtils.isEmpty(comment.getComment()) ?
                             "N/A" : comment.getComment());
-                if (comment.getSection().equals(SectionEnum.AP))
+                if (comment.getSection().equals(SectionEnum.VM))
                     mailTemplate = mailTemplate.replace(":variableComent", StringUtils.isEmpty(comment.getComment()) ?
                             "N/A" : comment.getComment());
-                if (comment.getSection().equals(SectionEnum.AP))
+                if (comment.getSection().equals(SectionEnum.PA))
                     mailTemplate = mailTemplate.replace(":participantComent", StringUtils.isEmpty(comment.getComment()) ?
                             "N/A" : comment.getComment());
-                if (comment.getSection().equals(SectionEnum.AP))
+                if (comment.getSection().equals(SectionEnum.TM))
                     mailTemplate = mailTemplate.replace(":taskComent", StringUtils.isEmpty(comment.getComment()) ?
                             "N/A" : comment.getComment());
-                if (comment.getSection().equals(SectionEnum.AP))
+                if (comment.getSection().equals(SectionEnum.PR))
                     mailTemplate = mailTemplate.replace(":procedureComent", StringUtils.isEmpty(comment.getComment()) ?
                             "N/A" : comment.getComment());
-                if (comment.getSection().equals(SectionEnum.AP))
+                if (comment.getSection().equals(SectionEnum.DT))
                     mailTemplate = mailTemplate.replace(":dataComent", StringUtils.isEmpty(comment.getComment()) ?
                             "N/A" : comment.getComment());
-                if (comment.getSection().equals(SectionEnum.AP))
+                if (comment.getSection().equals(SectionEnum.TH))
                     mailTemplate = mailTemplate.replace(":threatComent", StringUtils.isEmpty(comment.getComment()) ?
                             "N/A" : comment.getComment());
             }

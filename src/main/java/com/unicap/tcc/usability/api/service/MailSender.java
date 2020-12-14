@@ -57,7 +57,7 @@ public class MailSender {
             try {
                 String htmlMailText = HtmlUtils.setHtmlMailNewReview(assessment, review);
                 if (!htmlMailText.equals("")) {
-                    String subject = "[Usavalins] - NEW PLAN REVIEW AVAILABLE";
+                    String subject = "[Usabivalid] - NEW PLAN REVIEW AVAILABLE";
                     send(new String[]{email}, subject, htmlMailText, null, assessment.getProjectName());
                 }
             } catch (MessagingException e) {
@@ -71,7 +71,7 @@ public class MailSender {
             try {
                 String htmlMailText = HtmlUtils.setHtmlMailFinishedReview(review);
                 if (!htmlMailText.equals("")) {
-                    String subject = "[Usavalins] - COMPLETED PLAN REVIEW";
+                    String subject = "[Usabivalid] - COMPLETED PLAN REVIEW";
                     send(new String[]{email}, subject, htmlMailText, source,
                             review.getAssessment().getProjectName() + "-Plan-Review.pdf");
                 }
@@ -90,7 +90,7 @@ public class MailSender {
                         HtmlUtils.setHtmlMailCollaborator(assessment, assessmentUid, user))
                         .orElseGet(() -> HtmlUtils.setHtmlMailNewCollaborator(assessment, assessmentUid));
                 if (!htmlMailText.equals("")) {
-                    String subject = "[Usavalins] - COLLABORATOR INVITE";
+                    String subject = "[Usabivalid] - COLLABORATOR INVITE";
                     send(new String[]{email}, subject, htmlMailText, null, assessment.getProjectName());
                 }
             } catch (MessagingException e) {
@@ -104,7 +104,7 @@ public class MailSender {
             try {
                 String htmlMailText = HtmlUtils.setHtmlSendPlan(assessment);
                 if (!htmlMailText.equals("")) {
-                    String subject = "[Usavalins] - PLAN FILE";
+                    String subject = "[Usabivalid] - PLAN FILE";
                     if (Objects.nonNull(source)) {
                         send(new String[]{email}, subject, htmlMailText, source, assessment.getProjectName()  + "Plan.pdf");
                     }
