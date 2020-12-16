@@ -91,7 +91,7 @@ A organização e significado de cada um dos pacotes do projeto segue abaixo:
 ```
 src
 ├── main
-│   ├── java/com/unicap/react/api
+│   ├── java/com/unicap/tcc/usability/api
 │   │   ├── config                                      -> classes de configurações
 │   │   ├── exception                                   -> classes de exceções
 │   │   ├── models                                      -> classes de entidades/pojos/dtos
@@ -101,7 +101,7 @@ src
 │   │   ├── service                                     -> classes da camada de negócio
 │   │   └── utils                                       -> classes utilitárias
 │   ├── resources
-│   │   ├── aplication.properties                       -> arquivos de propriedades do sistema
+│   │   ├── application.yml                             -> arquivos de propriedades do sistema
 └── test
 ```
 
