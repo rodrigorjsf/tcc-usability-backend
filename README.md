@@ -1,9 +1,9 @@
-# Usability Validation Instrument :: Backend
+# Usability Validation Tool :: Backend
 
-Projeto de desenvolvimento do módulo _backend_ da aplicação **Usability Validation Instrument**  implementado em linguagem de programação Java, com o objetivo de prover as funcionalidades necessárias para o módulo _frontend_ implementado no framework Angular.
+Projeto de desenvolvimento do módulo _backend_ da aplicação **Usability Validation Tool**  implementado em linguagem de programação Java, com o objetivo de prover as funcionalidades necessárias para o módulo _frontend_ implementado no framework Angular.
 
 ```
-                    :: Usability Validation Instrument ::
+                    :: Usability Validation Tool ::
 
 ┌────────────┐       ┌───┬─────────┐       ┌──────────────┐
 │            │       │ R │         │       │              │
