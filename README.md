@@ -95,11 +95,13 @@ src
 │   │   ├── config                                      -> classes de configurações
 │   │   ├── exception                                   -> classes de exceções
 │   │   ├── models                                      -> classes de entidades/pojos/dtos
+│   │   ├── properties                                  -> classes de propriedades da aplicação
 │   │   ├── repository                                  -> classes da camada de persistência
 │   │   ├── resources                                   -> classes da camada de serviço
 │   │   ├── security                                    -> classes da camada de segurança (JWT)
 │   │   ├── service                                     -> classes da camada de negócio
-│   │   └── utils                                       -> classes utilitárias
+│   │   ├── utils                                       -> classes utilitárias
+│   │   └── validators                                  -> classes validadoras
 │   ├── resources
 │   │   ├── application.yml                             -> arquivos de propriedades do sistema
 └── test
