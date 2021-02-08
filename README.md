@@ -1,38 +1,31 @@
-# Backend Whiskies
+# Usability Validation Tool :: Backend
 
-**Backend destinado ao projeto da eletiva de React da Universidade Católica de Pernambuco.**
-
-```
-:: GRUPO ::
-
-Rodrigo França
-Lucas Matheus
-```
-
-Projeto de desenvolvimento do módulo _backend_ da aplicação **Whiskies**, implementado em linguagem de programação Java, com o objetivo de prover as funcionalidades necessárias para o módulo _frontend_ implementado em linguagem de programação TypeScript utilizando a biblioteca React.
+Projeto de desenvolvimento do módulo _backend_ da aplicação **Usability Validation Tool**  implementado em linguagem de programação Java, com o objetivo de prover as funcionalidades necessárias para o módulo _frontend_ implementado no framework Angular.
 
 ```
-                    :: PROJETO WHISKIES ::
+                    :: Usability Validation Tool ::
 
-┌────────────┐       ┌───┬──────────┐       ┌──────────────┐
-│  WHISKIES  │       │ R │ WHISKIES │       │              │
-│  frontend  │ <===> │ E │ Backend  │ <===> │      BD      │
-│  (React)   │       │ S │ (Java)   │       │ (PostgreSQL) │
-│            │       │ T │          │       │              │
-└────────────┘       └───┴──────────┘       └──────────────┘
+┌────────────┐       ┌───┬─────────┐       ┌──────────────┐
+│            │       │ R │         │       │              │
+│  Frontend  │ <===> │ E │ Backend │ <===> │      BD      │
+│  (Angular) │       │ S │ (Java)  │       │ (PostgreSQL) │
+│            │       │ T │         │       │              │
+└────────────┘       └───┴─────────┘       └──────────────┘
 ```
 
 Este projeto usa as seguintes tecnologias:
+
 - [Java 11](https://www.oracle.com/technetwork/java/javase/downloads/index.html)
 - [Sprint Boot](https://spring.io/projects/spring-boot)
 - [Maven](https://maven.apache.org/)
 - [Spring Data](https://spring.io/projects/spring-data)
-     ->  [Java Persistence is the API(JPA)](https://docs.oracle.com/javaee/7/api/javax/persistence/package-summary.html)
-     ->  [Hibernate](https://hibernate.org/)
-     ->  [PostgreSQL](https://www.postgresql.org/)
+  ->  [Java Persistence is the API(JPA)](https://docs.oracle.com/javaee/7/api/javax/persistence/package-summary.html)
+  ->  [Hibernate](https://hibernate.org/)
+  ->  [PostgreSQL](https://www.postgresql.org/)
 - [Lombok](https://projectlombok.org/)
-- [JWT](https://jwt.io/)
-
+- [Spring Security](https://spring.io/projects/spring-security)
+  ->  [JWT](https://jwt.io/)
+- [Swagger](https://springfox.github.io/springfox/docs/snapshot/)
 
 ## 1- Ferramentas e Configurações
 
@@ -47,7 +40,7 @@ Baixar e descompactar um dos pacotes (Win ou Linux 64-bit) da versão `Eclipse I
 Após abrir o Eclipse, importar projeto do Git:
 
 1. _File_ -> _Import..._ -> _Projects from Git_ -> _Clone URI_
-2. URI: `git@github.com:rodrigorjsf/WhiskiesReact.git` -> _Next_
+2. URI: `git@github.com:rodrigorjsf/tcc-usability-backend.git` -> _Next_
 3. Escolher _branch_ `master`
 4. Local destination: _pasta-do-workspace_
 5. _Import as general project_ -> _Next_ -> _Finish_
@@ -60,8 +53,8 @@ Após abrir o Eclipse, importar projeto do Git:
 
 Incluir `Run Configurations`:
 
-1. _**Maven Build**_ -> New launch configuration -> Name: `WhiskiesReact [clean package]`, Base directory: `WhiskiesReact`, Goals: `clean package`
-2. _**Java Application**_ -> New launch configuration -> Spring Boot, Project: `WhiskiesReact`, Main class: `com\unicap\react\api\ApiApplication`
+1. _**Maven Build**_ -> New launch configuration -> Name: `tcc-usability-backend [clean package]`, Base directory: `tcc-usability-backend`, Goals: `clean package`
+2. _**Java Application**_ -> New launch configuration -> Spring Boot, Project: `tcc-usability-backend`, Main class: `com\unicap\tcc\usability\api\ApiApplication`
 
 ### 1.2- pgAdmin
 
@@ -98,17 +91,19 @@ A organização e significado de cada um dos pacotes do projeto segue abaixo:
 ```
 src
 ├── main
-│   ├── java/com/unicap/react/api
+│   ├── java/com/unicap/tcc/usability/api
 │   │   ├── config                                      -> classes de configurações
 │   │   ├── exception                                   -> classes de exceções
 │   │   ├── models                                      -> classes de entidades/pojos/dtos
+│   │   ├── properties                                  -> classes de propriedades da aplicação
 │   │   ├── repository                                  -> classes da camada de persistência
 │   │   ├── resources                                   -> classes da camada de serviço
 │   │   ├── security                                    -> classes da camada de segurança (JWT)
 │   │   ├── service                                     -> classes da camada de negócio
-│   │   └── utils                                       -> classes utilitárias
+│   │   ├── utils                                       -> classes utilitárias
+│   │   └── validators                                  -> classes validadoras
 │   ├── resources
-│   │   ├── aplication.properties                       -> arquivos de propriedades do sistema
+│   │   ├── application.yml                             -> arquivos de propriedades do sistema
 └── test
 ```
 
