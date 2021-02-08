@@ -3,7 +3,7 @@ spring:
     show-sql: false
     generate-ddl: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://ec2-34-233-186-251.compute-1.amazonaws.com:5432/d2q6uf5r8c32ok
