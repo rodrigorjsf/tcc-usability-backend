@@ -28,8 +28,8 @@ spring:
           use_jdbc_metadata_defaults: false
 
   mail:
-    host: email-smtp.sa-east-1.amazonaws.com
-    password: BCa7g75XoKPoH65Pu8CL8u5CMDaXH4kjdyBAOOFryVVk
+    host: --AWS EMAIL REGION HERE--
+    password: --AWS EMAIL PASSWORD HERE--
     port: 587
     properties:
       mail:
@@ -41,7 +41,7 @@ spring:
             required: true
           timeout: 5000
           writetimeout: 5000
-    username: AKIAVEETHJ3RMC46IWUI
+    username: --AWS EMAIL USERNAME HERE--
 
 aws:
   access_key_id:
@@ -49,12 +49,12 @@ aws:
 
 
 s3:
-  bucket: final-paper-bucket
-  region: sa-east-1
+  bucket: --AWS BUCKET NAME HERE--
+  region: --AWS BUCKET REGION HERE--
 
 sas:
-  from: rodrigo.2018150572@unicap.br
-  from-name: Valid Usability Assessment
+  from: --EMAIL ADDRESS HERE--
+  from-name: Usability Validation Tool
 
 security:
   jwt-expiration: 120
