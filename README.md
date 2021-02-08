@@ -1,9 +1,9 @@
-# Usability Validation Instrument :: Backend
+# Usability Validation Tool :: Backend
 
-Projeto de desenvolvimento do módulo _backend_ da aplicação **Usability Validation Instrument**  implementado em linguagem de programação Java, com o objetivo de prover as funcionalidades necessárias para o módulo _frontend_ implementado no framework Angular.
+Projeto de desenvolvimento do módulo _backend_ da aplicação **Usability Validation Tool**  implementado em linguagem de programação Java, com o objetivo de prover as funcionalidades necessárias para o módulo _frontend_ implementado no framework Angular.
 
 ```
-                    :: Usability Validation Instrument ::
+                    :: Usability Validation Tool ::
 
 ┌────────────┐       ┌───┬─────────┐       ┌──────────────┐
 │            │       │ R │         │       │              │
@@ -91,17 +91,19 @@ A organização e significado de cada um dos pacotes do projeto segue abaixo:
 ```
 src
 ├── main
-│   ├── java/com/unicap/react/api
+│   ├── java/com/unicap/tcc/usability/api
 │   │   ├── config                                      -> classes de configurações
 │   │   ├── exception                                   -> classes de exceções
 │   │   ├── models                                      -> classes de entidades/pojos/dtos
+│   │   ├── properties                                  -> classes de propriedades da aplicação
 │   │   ├── repository                                  -> classes da camada de persistência
 │   │   ├── resources                                   -> classes da camada de serviço
 │   │   ├── security                                    -> classes da camada de segurança (JWT)
 │   │   ├── service                                     -> classes da camada de negócio
-│   │   └── utils                                       -> classes utilitárias
+│   │   ├── utils                                       -> classes utilitárias
+│   │   └── validators                                  -> classes validadoras
 │   ├── resources
-│   │   ├── aplication.properties                       -> arquivos de propriedades do sistema
+│   │   ├── application.yml                             -> arquivos de propriedades do sistema
 └── test
 ```
 
